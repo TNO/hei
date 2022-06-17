@@ -140,7 +140,6 @@ export const TechnologyPage: MeiosisComponent = () => {
                                 getOptionsLabel(mainCapabilityOptions, curTech.mainCap) + '.',
                               ]),
                             curTech.specificCap &&
-                              curTech.specificCap.length > 0 &&
                               m('p', [
                                 m('span.bold', 'Specific capability: '),
                                 joinListWithAnd(

@@ -714,3 +714,5 @@ export const resolveRefs = (literature: Literature[] = []) => {
     },
   };
 };
+
+export const isUnique = <T>(item: T, pos: number, arr: T[]) => arr.indexOf(item) == pos;

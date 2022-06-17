@@ -95,7 +95,8 @@ export const routingSvc: RoutingService = new RoutingService([
   {
     id: Dashboards.TECHNOLOGIES,
     title: 'OVERVIEW',
-    icon: 'display_settings',
+    icon: 'dashboard',
+    // icon: 'display_settings',
     route: '/overview',
     visible: true,
     component: TechnologyOverviewPage,

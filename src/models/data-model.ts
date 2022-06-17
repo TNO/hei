@@ -227,8 +227,8 @@ export type Technology = {
   similar: ID[];
   /** Main capability */
   mainCap: MAIN_CAPABILITY;
-  /** Specific capabilities */
-  specificCap: SPECIFIC_CAPABILITY[];
+  /** Specific capability */
+  specificCap: SPECIFIC_CAPABILITY;
   /** Synonyms and keywords */
   keywords: string[];
   invasive: INVASIVENESS_OBTRUSIVENESS;
