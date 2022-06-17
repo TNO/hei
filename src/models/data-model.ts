@@ -173,9 +173,9 @@ export enum LITERATURE_TYPE {
 }
 
 export enum EVIDENCE_LEVEL {
-  A = 1,
-  B,
-  C,
+  GOOD = 1,
+  MEDIUM,
+  LOW,
 }
 
 export enum EVIDENCE_DIRECTION {
@@ -213,9 +213,12 @@ export type Technology = {
   owner: ID;
   /** Epoch time when last updated */
   updated: number;
-  reviewer: ID[];
+  // reviewer: ID[];
+  /** Merge or combine the technology with others */
+  merge: ID[];
   status: STATUS;
   technology: string;
+  desc?: string;
   /** Specific application */
   application: string;
   category: TECHNOLOGY_CATEGORY;
@@ -227,7 +230,7 @@ export type Technology = {
   /** Specific capabilities */
   specificCap: SPECIFIC_CAPABILITY[];
   /** Synonyms and keywords */
-  synonyms: string[];
+  keywords: string[];
   invasive: INVASIVENESS_OBTRUSIVENESS;
   mechanism: string;
   booster: boolean;
@@ -252,8 +255,10 @@ export type Technology = {
   /** Evidence score */
   evidenceScore: EVIDENCE_LEVEL;
   availability: AVAILABILITY;
-  /** Image link */
+  /** Image link (one of the default images) */
   url: string;
+  /** Bas64 image */
+  img: string;
   measurementIDs: ID[];
   /** Literature referred to in this article */
   literature: Literature[];

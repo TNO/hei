@@ -94,9 +94,9 @@ export const routingSvc: RoutingService = new RoutingService([
   },
   {
     id: Dashboards.TECHNOLOGIES,
-    title: 'TECHNOLOGY OVERVIEW',
+    title: 'OVERVIEW',
     icon: 'display_settings',
-    route: '/technologies',
+    route: '/overview',
     visible: true,
     component: TechnologyOverviewPage,
   },
@@ -110,9 +110,9 @@ export const routingSvc: RoutingService = new RoutingService([
   },
   {
     id: Dashboards.SETTINGS,
-    title: 'References',
+    title: 'Settings',
     icon: 'settings',
-    route: '/literature',
+    route: '/settings',
     visible: true,
     component: SettingsPage,
   },

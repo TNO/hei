@@ -626,3 +626,10 @@ h5.separator {
 .sharpen {
   background: rgba(255, 255, 255, 0.5);
 }
+p.overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

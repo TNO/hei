@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Collapsible, FlatButton, Select } from 'mithril-materialized';
+import { Collapsible, FlatButton } from 'mithril-materialized';
 import { LayoutForm, UIForm } from 'mithril-ui-form';
 import { Dashboards, defaultModel, User } from '../models';
 import { MeiosisComponent } from '../services';
@@ -27,7 +27,6 @@ const userForm = [
     label: 'Phone',
     icon: 'phone',
     type: 'text',
-    required: true,
     className: 'col s3',
   },
   {
@@ -35,7 +34,6 @@ const userForm = [
     label: 'Author',
     icon: 'edit_note',
     type: 'checkbox',
-    required: false,
     className: 'col s2',
   },
   {
@@ -43,7 +41,6 @@ const userForm = [
     label: 'Image link',
     icon: 'link',
     type: 'url',
-    required: false,
     className: 'col s12',
   },
 ] as UIForm;
@@ -61,36 +58,13 @@ export const SettingsPage: MeiosisComponent = () => {
     }) => setPage(Dashboards.SETTINGS),
     view: ({
       attrs: {
-        state: { model = defaultModel, curUser },
-        actions: { saveModel, saveCurUser },
+        state: { model = defaultModel },
+        actions: { saveModel },
       },
     }) => {
       const { users = [] } = model;
       return [
         m('.settings', [
-          m('.row', [
-            [
-              m(Select, {
-                key: curUser,
-                label: 'Current user',
-                initialValue: curUser,
-                placeholder: 'Select user',
-                options: users.map((u) => ({ id: u.id, label: u.name })),
-                // data: users.reduce((acc, cur) => {
-                //   acc[cur.name] = cur.url || null;
-                //   return acc;
-                // }, {} as Record<string, string | null>),
-                onchange: (v) => v && saveCurUser(v[0] as string),
-                className: 'col s6',
-              }),
-            ],
-            m(FlatButton, {
-              label: 'Logout',
-              onclick: () => saveCurUser(''),
-              iconName: 'logout',
-              className: 'col s6',
-            }),
-          ]),
           m('.row.users', [
             m('h4', 'Users'),
             m(Collapsible, {

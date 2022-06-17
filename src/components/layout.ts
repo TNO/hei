@@ -1,7 +1,7 @@
 import m from 'mithril';
 import { Icon } from 'mithril-materialized';
 import logo from '../assets/logo.svg';
-import { IDashboard } from '../models';
+import { Dashboards, IDashboard } from '../models';
 import { routingSvc } from '../services/routing-service';
 import { MeiosisComponent } from '../services';
 
@@ -9,7 +9,7 @@ export const Layout: MeiosisComponent = () => ({
   view: ({
     children,
     attrs: {
-      state: { page },
+      state: { page, curUser },
       actions: { changePage },
     },
   }) => {
@@ -58,6 +58,7 @@ export const Layout: MeiosisComponent = () => ({
               'ul.right',
               routingSvc
                 .getList()
+                .filter((d) => curUser === 'admin' || d.id !== Dashboards.SETTINGS)
                 .filter(
                   (d) => (typeof d.visible === 'boolean' ? d.visible : d.visible()) || isActive(d)
                 )

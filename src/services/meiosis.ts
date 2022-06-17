@@ -1,7 +1,8 @@
 import m, { FactoryComponent } from 'mithril';
-import setup, { MeiosisCell } from 'meiosis-setup/mergerino';
+import setup, { MeiosisCell, Update } from 'meiosis-setup/mergerino';
 import { routingSvc } from '.';
 import { Dashboards, DataModel, defaultModel, ID, Technology } from '../models';
+import { ldb } from '../utils/local-ldb';
 
 const MODEL_KEY = 'HPET_MODEL';
 const CUR_USER_KEY = 'HPET_CUR_USER';
@@ -45,16 +46,18 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
   },
   saveModel: (model) => {
     model.lastUpdate = Date.now();
-    model.version = model.version ? model.version++ : 1;
-    localStorage.setItem(MODEL_KEY, JSON.stringify(model));
+    model.version = model.version ? ++model.version : 1;
+    if (model.technologies)
+      model.technologies.sort((a, b) => a.technology.localeCompare(b.technology));
+    ldb.set(MODEL_KEY, JSON.stringify(model));
     console.log(JSON.stringify(model, null, 2));
     update({ model: () => model });
   },
   saveCurUser: (curUser: string) => {
-    localStorage.setItem(CUR_USER_KEY, curUser);
+    ldb.set(CUR_USER_KEY, curUser);
     update({ curUser });
   },
-  setTechnology: (curTech: Technology) => update({ curTech }),
+  setTechnology: (curTech: Technology) => update({ curTech: () => curTech }),
   bookmark: (id: ID) =>
     update({
       bookmarks: (bookmarks = []) => {
@@ -63,22 +66,32 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
           bookmarks.push(id);
           return bookmarks;
         })();
-        localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(newBookmarks));
+        ldb.set(BOOKMARKS_KEY, JSON.stringify(newBookmarks));
         return newBookmarks;
       },
     }),
 });
 
-const ds = localStorage.getItem(MODEL_KEY);
-const model = ds ? JSON.parse(ds) : defaultModel;
-const b = localStorage.getItem(BOOKMARKS_KEY);
-const bookmarks = b ? JSON.parse(b) : [];
-const curUser = localStorage.getItem(CUR_USER_KEY) || '';
+const initialize = async (update: Update<State>) => {
+  const ds = await ldb.get(MODEL_KEY);
+  const model = ds ? JSON.parse(ds) : defaultModel;
+  const b = await ldb.get(BOOKMARKS_KEY);
+  const bookmarks = b ? JSON.parse(b) : [];
+  const curUser = (await ldb.get(CUR_USER_KEY)) || '';
+  update({ model: () => model, bookmarks: () => bookmarks, curUser });
+};
 
 const app = {
-  initial: { page: Dashboards.HOME, model, curTech: undefined, bookmarks, curUser } as State,
+  initial: {
+    page: Dashboards.HOME,
+    model: defaultModel,
+    curTech: undefined,
+    bookmarks: [],
+    curUser: 'mod',
+  } as State,
 };
 export const cells = setup<State>({ app });
+initialize(cells().update);
 
 cells.map(() => {
   m.redraw();

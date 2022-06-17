@@ -76,6 +76,7 @@ export const TechnologyPage: MeiosisComponent = () => {
           { style: 'height: 95vh' },
           m('.col.s12', [
             curUser &&
+              curUser === 'admin' &&
               m(
                 '.row',
                 m(FlatButton, {
@@ -119,10 +120,11 @@ export const TechnologyPage: MeiosisComponent = () => {
                           '.row.bottom-margin0',
                           m('h5.orange.separator', 'Description'),
                           m('section', [
+                            curTech.desc && m('p', curTech.desc),
                             curTech.category &&
                               m('p', [
                                 m('span.bold', 'Category: '),
-                                getOptionsLabel(technologyCategoryOptions, curTech.category) + '.',
+                                getOptionsLabel(technologyCategoryOptions, curTech.category),
                               ]),
                             curTech.hpeClassification &&
                               m('p', [
@@ -167,7 +169,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                         m(
                           '.col.s6.m6',
                           m('img.responsive-img', {
-                            src: resolveImg(curTech.url),
+                            src: resolveImg(curTech.url, curTech.img),
                             alt: curTech.technology,
                           })
                         ),
@@ -175,7 +177,8 @@ export const TechnologyPage: MeiosisComponent = () => {
                         '.col.s12',
                         m('.row.bottom-margin0', [
                           m('h5.orange.separator', 'How it works'),
-                          curTech.mechanism && m('p', md(curTech.mechanism)),
+                          curTech.mechanism &&
+                            m('p', [m('span.bold', 'Mechanism: '), md(curTech.mechanism)]),
                           curTech.examples &&
                             m('p', [m('span.bold', 'Examples: '), md(curTech.examples)]),
                           curTech.incubation &&
@@ -226,11 +229,6 @@ export const TechnologyPage: MeiosisComponent = () => {
                                 )
                               )
                             ),
-                        ])
-                      ),
-                      m(
-                        '.col.s6.m8',
-                        m('.row', [
                           curTech.evidenceDir &&
                             m('p', [
                               m('span.bold', 'Evidence direction: '),
@@ -246,8 +244,13 @@ export const TechnologyPage: MeiosisComponent = () => {
                               m('span.bold', 'Availability: '),
                               getOptionsLabel(availabilityOptions, curTech.availability) + '.',
                             ]),
+                          m('h5.orange.separator', 'References'),
+                        ])
+                      ),
+                      m(
+                        '.col.s6.m8',
+                        m('.row', [
                           usedLiterature && [
-                            m('h5', 'References'),
                             m(
                               'ol.browser-default',
                               usedLiterature.map((l) =>
@@ -271,15 +274,16 @@ export const TechnologyPage: MeiosisComponent = () => {
                       owner &&
                         m(
                           '.col.s6.m4',
-                          m('.card.large', [
-                            m('.card-image.waves-effect.waves-block.waves-light', [
-                              m(
-                                'a',
-                                owner &&
-                                  owner.url &&
-                                  m('img.activator', { src: owner.url, alt: owner.name })
-                              ),
-                            ]),
+                          m('.card', [
+                            owner.url &&
+                              m('.card-image.waves-effect.waves-block.waves-light', [
+                                m(
+                                  'a',
+                                  owner &&
+                                    owner.url &&
+                                    m('img.activator', { src: owner.url, alt: owner.name })
+                                ),
+                              ]),
                             m(
                               '.card-content',
                               m(
@@ -290,13 +294,14 @@ export const TechnologyPage: MeiosisComponent = () => {
                                   m('i.material-icons.right', 'more_vert')
                                 ),
                                 m('ul', [
-                                  m('li', [
-                                    m(Icon, {
-                                      iconName: 'phone',
-                                      className: 'tiny',
-                                    }),
-                                    m('a', { href: `tel:${owner.phone}` }, ' ' + owner.phone),
-                                  ]),
+                                  owner.phone &&
+                                    m('li', [
+                                      m(Icon, {
+                                        iconName: 'phone',
+                                        className: 'tiny',
+                                      }),
+                                      m('a', { href: `tel:${owner.phone}` }, ' ' + owner.phone),
+                                    ]),
                                   m('li', [
                                     m(Icon, {
                                       iconName: 'email',
@@ -311,7 +316,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                             m('.card-reveal', [
                               m(
                                 'span.card-title.bold',
-                                `Owner: ${owner.name}`,
+                                owner.name,
                                 m(Icon, { iconName: 'close', className: 'right' })
                               ),
                               updated &&

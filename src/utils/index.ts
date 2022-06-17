@@ -78,7 +78,9 @@ export const getOptionsLabel = <T>(
     return '';
   }
   const found = options.filter((o) => o.id === id).shift();
-  return found ? `${found.label}${found.title ? ` (${found.title})` : ''}` : '';
+  return found
+    ? `${found.label}${found.title ? ` (${found.title.replace(/\.\s*$/, '')})` : ''}`
+    : '';
 };
 
 /** Join a list of items with a comma, and use AND for the last item in the list. */
@@ -126,52 +128,171 @@ export const resolveChoice = (choice?: CHOICE, text?: string) =>
     : text;
 
 export const technologyCategoryOptions = [
-  { id: TECHNOLOGY_CATEGORY.HARDWARE, label: 'Hardware' },
-  { id: TECHNOLOGY_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement' },
+  { id: TECHNOLOGY_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
+  { id: TECHNOLOGY_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
   {
     id: TECHNOLOGY_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
     label: 'Pharmacological substances, supplements and nutrition',
+    title: '',
   },
-  { id: TECHNOLOGY_CATEGORY.TRAINING, label: 'Training' },
-  { id: TECHNOLOGY_CATEGORY.SELF_REGULATION, label: 'Self-regulation' },
-  { id: TECHNOLOGY_CATEGORY.NUTRITION, label: 'Nutrition' },
-  { id: TECHNOLOGY_CATEGORY.OTHER, label: 'Other' },
+  { id: TECHNOLOGY_CATEGORY.TRAINING, label: 'Training', title: '' },
+  { id: TECHNOLOGY_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
+  { id: TECHNOLOGY_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
+  { id: TECHNOLOGY_CATEGORY.OTHER, label: 'Other', title: '' },
 ];
 
 export const hpeClassificationOptions = [
-  { id: HPE_CLASSIFICATION.OPTIMIZATION, label: 'Optimization' },
-  { id: HPE_CLASSIFICATION.ENHANCEMENT, label: 'Enhancement' },
-  { id: HPE_CLASSIFICATION.DEGRADATION, label: 'Degradation' },
+  {
+    id: HPE_CLASSIFICATION.OPTIMIZATION,
+    label: 'Optimization',
+    title:
+      'The technology improves human performance on a specific capability within biological limits',
+  },
+  {
+    id: HPE_CLASSIFICATION.ENHANCEMENT,
+    label: 'Enhancement',
+    title:
+      'The technology improves human performance on a specific capability above biological limits',
+  },
+  {
+    id: HPE_CLASSIFICATION.DEGRADATION,
+    label: 'Degradation',
+    title: 'The technology decreases human performance on a specific capability',
+  },
 ];
 
 export const mainCapabilityOptions = [
-  { id: MAIN_CAPABILITY.COGNITION, label: 'Cognition' },
-  { id: MAIN_CAPABILITY.PHYSICAL, label: 'Physical' },
-  { id: MAIN_CAPABILITY.MENTAL, label: 'Mental' },
-  { id: MAIN_CAPABILITY.SOCIAL, label: 'Social' },
-  { id: MAIN_CAPABILITY.PHYSIOLOGICAL, label: 'Physiological' },
-  { id: MAIN_CAPABILITY.PERSONALITY, label: 'Personality' },
+  {
+    id: MAIN_CAPABILITY.COGNITION,
+    label: 'Cognition',
+    title:
+      'The capability to perform intellectual functions and activities such as thinking, planning, maintaining situation awareness, vigilance, perception and memory.',
+  },
+  {
+    id: MAIN_CAPABILITY.PHYSICAL,
+    label: 'Physical',
+    title:
+      'The capability to perform body movements at, for instance, high speed, accuracy, strength or with long endurance. ',
+  },
+  {
+    id: MAIN_CAPABILITY.MENTAL,
+    label: 'Mental',
+    title:
+      'The capability to achieve an optimal emotional and motivational state, for instance through self-confidence or mental thoughness.',
+  },
+  {
+    id: MAIN_CAPABILITY.SOCIAL,
+    label: 'Social',
+    title:
+      'The capability to achieve goals with others, for instance through leadership, team situational awareness, or connectedness.',
+  },
+  {
+    id: MAIN_CAPABILITY.PERSONALITY,
+    label: 'Personality',
+    title:
+      'Having an optimal, long-term, style of thinking, feeling and behaving. Examples include dispositional optimism, internal locus of control, self-regulation, and anxiety sensitivity.',
+  },
 ];
 
 export const specificCapabilityOptions = [
-  { id: SPECIFIC_CAPABILITY.SITUATION_AWARENESS, label: 'Situation awareness' },
-  { id: SPECIFIC_CAPABILITY.EXECUTIVE_FUNCTIONS, label: 'Executive functions' },
-  { id: SPECIFIC_CAPABILITY.LONG_TERM_MEMORY, label: 'Long term memory' },
-  { id: SPECIFIC_CAPABILITY.SHORT_TERM_MEMORY, label: 'Short term memory' },
-  { id: SPECIFIC_CAPABILITY.DECLARATIVE_MEMORY, label: 'Declarative memory' },
-  { id: SPECIFIC_CAPABILITY.VIGILANCE, label: 'Vigilance' },
-  { id: SPECIFIC_CAPABILITY.PSYCHOMOTOR, label: 'Psychomotor' },
-  { id: SPECIFIC_CAPABILITY.VISUAL_PERCEPTION, label: 'Visual perception' },
-  { id: SPECIFIC_CAPABILITY.AUDITORY_PERCEPTION, label: 'Auditory perception' },
-  { id: SPECIFIC_CAPABILITY.TACTILE_PERCEPTION, label: 'Tactile perception' },
-  { id: SPECIFIC_CAPABILITY.PAIN, label: 'Pain' },
-  { id: SPECIFIC_CAPABILITY.ATTENTION, label: 'Attention' },
-  { id: SPECIFIC_CAPABILITY.SPEECH, label: 'Speech' },
-  { id: SPECIFIC_CAPABILITY.LEARNING, label: 'Learning' },
-  { id: SPECIFIC_CAPABILITY.ARITHMETIC, label: 'Arithmetic' },
-  { id: SPECIFIC_CAPABILITY.SOCIAL_INTERACTION, label: 'Social interaction' },
-  { id: SPECIFIC_CAPABILITY.RECOVERY, label: 'Recovery' },
-  { id: SPECIFIC_CAPABILITY.WORKING_MEMORY, label: 'Working memory' },
+  {
+    id: SPECIFIC_CAPABILITY.SITUATION_AWARENESS,
+    label: 'Situation awareness',
+    title:
+      'The perception of environmental elements and events with respect to time or space, the comprehension of their meaning, and the projection of their future status.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.EXECUTIVE_FUNCTIONS,
+    label: 'Executive functions',
+    title:
+      'Executive functions (collectively referred to as executive function and cognitive control) are a set of cognitive processes that are necessary for the cognitive control of behavior: selecting and successfully monitoring behaviors that facilitate the attainment of chosen goals. Executive functions include basic cognitive processes such as attentional control, cognitive inhibition, inhibitory control, working memory, and cognitive flexibility.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.LONG_TERM_MEMORY,
+    label: 'Long term memory',
+    title:
+      'Long-term memory allows us to store information for long periods of time. This information may be retrieved consciously (explicit memory) or unconsciously (implicit memory).',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.SHORT_TERM_MEMORY,
+    label: 'Short term memory',
+    title:
+      'Short-term memory refers to the information processed by the individual in a short period of time. Working memory performs this processing.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.DECLARATIVE_MEMORY,
+    label: 'Declarative memory',
+    title:
+      'What defines declarative memory is the ability to consciously recollect the situation in which you learned something new. ',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.VIGILANCE,
+    label: 'Vigilance',
+    title: 'Vigilance is devoted attentiveness or watchfulness.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.PSYCHOMOTOR,
+    label: 'Psychomotor',
+    title:
+      'any ability (e.g., handwriting, drawing, driving a car) whose performance draws on a combined and coordinated set of cognitive and motor processes',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.VISUAL_PERCEPTION,
+    label: 'Visual perception',
+    title:
+      'Visual perception is the ability to perceive our surroundings through the light that enters our eyes',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.AUDITORY_PERCEPTION,
+    label: 'Auditory perception',
+    title:
+      'Auditory perception could be defined as the ability to receive and interpret information that reached the ears through audible frequency waves transmitted through the air or other means.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.TACTILE_PERCEPTION,
+    label: 'Tactile perception',
+    title: 'the ability to perceive objects or judge sensations through the sense of touch.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.PAIN,
+    label: 'Pain',
+    title:
+      'Potentially damaging mechanical, thermal, and chemical stimuli are detected by nerve endings called nociceptors, which are found in the skin, on internal surfaces such as the periosteum, joint surfaces, and in some internal organs. ',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.ATTENTION,
+    label: 'Attention',
+    title:
+      'attention is the ability to focus and maintain interest in a given task or idea while avoiding distractions.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.SPEECH,
+    label: 'Speech',
+    title: 'The delivering of language through the mouth',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.LEARNING,
+    label: 'Learning',
+    title: 'the acquisition of knowledge or skills through study, experience, or being taught.',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.ARITHMETIC,
+    label: 'Arithmetic',
+    title:
+      'the branch of mathematics concerned with numerical calculations, such as addition, subtraction, multiplication, and division',
+  },
+  {
+    id: SPECIFIC_CAPABILITY.SOCIAL_INTERACTION,
+    label: 'Social interaction',
+    title:
+      'A social skill is any competence facilitating interaction and communication with others where social rules and relations are created, communicated, and changed in verbal and nonverbal ways',
+  },
+  { id: SPECIFIC_CAPABILITY.RECOVERY, label: 'Recovery', title: '' },
+  {
+    id: SPECIFIC_CAPABILITY.WORKING_MEMORY,
+    label: 'Working memory',
+    title: 'memory as it is used to plan and carry out behavior.',
+  },
 ];
 
 export const invasivenessOptions = [
@@ -214,20 +335,48 @@ export const maturityOptions = [
 ];
 
 export const effectDirectionOptions = [
-  { id: EFFECT_DIRECTION.NEGATIVE, label: 'The technology descreases a subjects capability level' },
-  { id: EFFECT_DIRECTION.POSITIVE, label: 'The technology increases a subjects capability level' },
+  {
+    id: EFFECT_DIRECTION.NEGATIVE,
+    label: 'Negative',
+    title: 'The technology descreases a subjects capability level',
+  },
+  {
+    id: EFFECT_DIRECTION.POSITIVE,
+    label: 'Positive',
+    title: 'The technology increases a subjects capability level',
+  },
 ];
 
 export const evidenceDirOptions = [
-  { id: EVIDENCE_DIRECTION.GENERALLY_IN_FAVOR, label: 'Generally in favor' },
-  { id: EVIDENCE_DIRECTION.GENERALLY_AGAINST, label: 'Generally against' },
-  { id: EVIDENCE_DIRECTION.UNDECIDED, label: 'Undecided' },
+  {
+    id: EVIDENCE_DIRECTION.GENERALLY_IN_FAVOR,
+    label: '(Generally) in favor',
+    title: 'Evidence generally indicates the presence of an effect',
+  },
+  {
+    id: EVIDENCE_DIRECTION.GENERALLY_AGAINST,
+    label: '(Generally) against',
+    title: 'Evidence generally indicates the absence of an effect (evidence is very mixed)',
+  },
+  {
+    id: EVIDENCE_DIRECTION.UNDECIDED,
+    label: 'Undecided',
+    title: 'Not enough evidence to suggest the presence or absence of an effect',
+  },
 ];
 
 export const evidenceLevelOptions = [
-  { id: EVIDENCE_LEVEL.A, label: 'Based on consistent and good quality evidence' },
-  { id: EVIDENCE_LEVEL.B, label: 'Based on inconsistent or limited-quality evidence' },
-  { id: EVIDENCE_LEVEL.C, label: 'Based on consensus, usual practice, opinion.' },
+  {
+    id: EVIDENCE_LEVEL.GOOD,
+    label: 'Good',
+    title: 'Based on consistent and good quality evidence',
+  },
+  {
+    id: EVIDENCE_LEVEL.MEDIUM,
+    label: 'Medium',
+    title: 'Based on inconsistent or limited-quality evidence',
+  },
+  { id: EVIDENCE_LEVEL.LOW, label: 'Low', title: 'Based on consensus, usual practice, opinion.' },
 ];
 
 export const availabilityOptions = [
@@ -312,19 +461,39 @@ export const technologyForm = (
       className: 'col s4',
     },
     {
+      id: 'desc',
+      label: 'Description',
+      type: 'textarea',
+      className: 'col s12',
+    },
+    {
+      id: 'keywords',
+      label: 'Synonyms and keywords',
+      type: 'tags',
+      className: 'col s12',
+    },
+    {
       id: 'owner',
       label: 'Owner',
       type: 'select',
       options: users.map((u) => ({ id: u.id, label: u.name })),
-      className: 'col s4 m3',
+      className: 'col s4',
     },
+    // {
+    //   id: 'reviewer',
+    //   label: 'Reviewer',
+    //   type: 'select',
+    //   multiple: true,
+    //   options: users.map((u) => ({ id: u.id, label: u.name })),
+    //   className: 'col s4',
+    // },
     {
-      id: 'reviewer',
-      label: 'Reviewer',
+      id: 'merge',
+      label: 'Merge with',
       type: 'select',
       multiple: true,
-      options: users.map((u) => ({ id: u.id, label: u.name })),
-      className: 'col s8 m9',
+      options: technologyOptions,
+      className: 'col s8',
     },
     {
       id: 'application',
@@ -365,12 +534,6 @@ export const technologyForm = (
       type: 'select',
       multiple: true,
       options: specificCapabilityOptions,
-      className: 'col s12',
-    },
-    {
-      id: 'synonyms',
-      label: 'Synonyms and keywords',
-      type: 'tags',
       className: 'col s12',
     },
     {
@@ -489,7 +652,20 @@ export const technologyForm = (
     //   className: 'col s12',
     //   options: evidenceLevelOptions,
     // },
-    { id: 'url', label: 'Link to image', type: 'url', className: 'col s12' },
+
+    {
+      id: 'url',
+      label: 'Use default image',
+      type: 'select',
+      className: 'col s3',
+      options: [
+        { id: 'nutrition', label: 'Nutrition' },
+        { id: 'pharma', label: 'Pharma' },
+        { id: 'supplement', label: 'Supplement' },
+        { id: 'upload', label: 'Upload' },
+      ],
+    },
+    { id: 'img', label: 'Upload image', type: 'base64', className: 'col s9', show: 'url=upload' },
     {
       id: 'literature',
       label: 'Literature',
