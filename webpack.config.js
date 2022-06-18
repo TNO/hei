@@ -8,7 +8,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 module.exports = (env) => {
   const isProduction = env.production;
   const outputPath = path.resolve(__dirname, isProduction ? 'docs' : 'dist');
-  const publicPath = isProduction ? 'https://erikvullings.github.io/hpet/' : '/';
+  const publicPath = isProduction ? 'https://tno.github.io/hei/' : '/';
 
   console.log(
     `Running in ${
@@ -48,7 +48,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:url',
-              content: 'https://erikvullings.github.io/hpet',
+              content: 'https://tno.github.io/hei',
             },
           },
           {
@@ -61,7 +61,7 @@ module.exports = (env) => {
             attributes: { property: 'og:locale', content: 'en_UK' },
           },
           {
-            attributes: { property: 'og:site_name', content: 'HPET' },
+            attributes: { property: 'og:site_name', content: 'HEI' },
           },
           {
             attributes: {

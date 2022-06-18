@@ -1,7 +1,7 @@
 {
-  "name": "memory-trainer",
-  "version": "0.0.1",
-  "description": "Memory Trainer.",
+  "name": "hei",
+  "version": "0.1.0",
+  "description": "Web application to display Human Enhancement Interventions Technologies.",
   "scripts": {
     "clean": "rimraf ./public ./.parcel-cache ./.cache ./dist",
     "cleanup": "npm run clean",
@@ -12,22 +12,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/erikvullings/memory-trainer.git"
+    "url": "https://github.com/TNO/hei.git"
   },
   "bugs": {
-    "url": "https://github.com/erikvullings/memory-trainer/issues"
+    "url": "https://github.com/TNO/hei/issues"
   },
-  "homepage": "https://github.com/erikvullings/memory-trainer#readme",
+  "homepage": "https://github.com/TNO/hei#readme",
   "author": "Erik Vullings <erik.vullings@tno.nl> (http://www.tno.nl)",
   "keywords": [
-    "card",
-    "memory",
-    "trainer",
-    "language",
-    "chemistry"
+    "database",
+    "single page application",
+    "SPA",
+    "human enhancement interventions"
   ],
   "license": "MIT",
-  "app": "src/index.html",
+  "app": "docs/index.html",
   "target": "web",
   "dependencies": {
     "lz-string": "^1.4.4",
@@ -53,7 +52,7 @@
     "rimraf": "^3.0.2",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.0",
-    "typescript": "^4.7.3",
+    "typescript": "^4.7.4",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.2"
