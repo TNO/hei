@@ -72,14 +72,17 @@ export const getTextColorFromBackground = (backgroundColor?: string) => {
 
 export const getOptionsLabel = <T>(
   options: Array<{ id: T; label: string; title?: string }>,
-  id?: T
+  id?: T,
+  showTitle = true
 ) => {
   if (!id) {
     return '';
   }
   const found = options.filter((o) => o.id === id).shift();
   return found
-    ? `${found.label}${found.title ? ` (${found.title.replace(/\.\s*$/, '')})` : ''}`
+    ? showTitle
+      ? `${found.label}${found.title ? ` (${found.title.replace(/\.\s*$/, '')})` : ''}`
+      : found.label
     : '';
 };
 
@@ -443,14 +446,7 @@ export const technologyForm = (
       id: 'technology',
       label: 'Technology title',
       type: 'text',
-      className: 'col s8 m6',
-    },
-    {
-      id: 'status',
-      label: 'Status',
-      type: 'select',
-      options: statusOptions,
-      className: 'col s12 m2',
+      className: 'col s6 m8',
     },
     {
       id: 'category',
@@ -458,7 +454,7 @@ export const technologyForm = (
       type: 'select',
       multiple: true,
       options: technologyCategoryOptions,
-      className: 'col s4',
+      className: 'col s6 m4',
     },
     {
       id: 'desc',
@@ -477,6 +473,13 @@ export const technologyForm = (
       label: 'Owner',
       type: 'select',
       options: users.map((u) => ({ id: u.id, label: u.name })),
+      className: 'col s8',
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      type: 'select',
+      options: statusOptions,
       className: 'col s4',
     },
     // {
@@ -487,14 +490,6 @@ export const technologyForm = (
     //   options: users.map((u) => ({ id: u.id, label: u.name })),
     //   className: 'col s4',
     // },
-    {
-      id: 'merge',
-      label: 'Merge with',
-      type: 'select',
-      multiple: true,
-      options: technologyOptions,
-      className: 'col s8',
-    },
     {
       id: 'application',
       label: 'Specific application',

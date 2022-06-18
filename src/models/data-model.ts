@@ -214,8 +214,6 @@ export type Technology = {
   /** Epoch time when last updated */
   updated: number;
   // reviewer: ID[];
-  /** Merge or combine the technology with others */
-  merge: ID[];
   status: STATUS;
   technology: string;
   desc?: string;

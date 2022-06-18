@@ -35,7 +35,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     { id: 2, label: 'No' },
   ];
 
-  const toTechnologies = (allTech: Technology[], isAdmin: boolean) =>
+  const toTechnologies = (allTech: Technology[]) =>
     Object.values(
       allTech.reduce((acc, cur) => {
         const {
@@ -54,7 +54,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           maturity,
           specificCap,
         } = cur;
-        const key = isAdmin ? id : technology;
+        const key = technology;
         if (acc.hasOwnProperty(key)) {
           acc[key].mechanism.push(mechanism);
           desc && acc[key].desc.push(desc);
@@ -121,12 +121,12 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
   return {
     oninit: ({
       attrs: {
-        state: { model, curUser },
+        state: { model },
         actions: { setPage },
       },
     }) => {
       const { technologies: allTech = [] } = model;
-      technologies = toTechnologies(allTech, curUser === 'admin');
+      technologies = toTechnologies(allTech);
       console.log(technologies);
       setPage(Dashboards.TECHNOLOGIES);
     },
@@ -138,10 +138,8 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     }) => {
       if (technologies.length === 0) {
         const { technologies: allTech } = model;
-        technologies = toTechnologies(allTech, curUser === 'admin');
+        technologies = toTechnologies(allTech);
       }
-
-      // const technologies = curUser === 'admin' ? allTechnologies : allTechnologies.filter(t);
 
       const searchRegex = searchFilter ? new RegExp(searchFilter, 'i') : undefined;
       const filteredTechnologies = technologies.filter((t) => {
@@ -185,7 +183,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           m(
             '.col.s12',
             m(
-              '.row',
+              '.row.search-filters',
               m(
                 '.col.s6.m3.xl2',
                 {
