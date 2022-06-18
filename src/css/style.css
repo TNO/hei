@@ -1,3 +1,48 @@
+/* print styles */
+@media print {
+  html,
+  body {
+    font-size: 14px;
+  }
+  body {
+    margin: 0;
+    color: #000;
+    background-color: #fff;
+  }
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+  }
+  .leaflet-container,
+  img,
+  pre,
+  blockquote {
+    page-break-inside: avoid;
+    page-break-before: auto; /* 'always,' 'avoid,' 'left,' 'inherit,' or 'right' */
+    page-break-after: auto; /* 'always,' 'avoid,' 'left,' 'inherit,' or 'right' */
+    page-break-inside: avoid; /* or 'auto' */
+  }
+  main::after {
+    content: 'Copyright TNO';
+    display: block;
+    text-align: center;
+  }
+  header,
+  footer,
+  aside,
+  nav,
+  form,
+  iframe,
+  .menu,
+  .hero,
+  .adslot {
+    display: none;
+  }
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}
+
 @media only screen and (min-width: 601px) {
   .container {
     width: 95%;
@@ -100,48 +145,6 @@ a {
 }
 .buttons a {
   margin: 5px;
-}
-
-/* print styles */
-@media print {
-  html,
-  body {
-    font-size: 14px;
-  }
-  body {
-    margin: 0;
-    color: #000;
-    background-color: #fff;
-  }
-  a[href^='http']::after {
-    content: ' (' attr(href) ')';
-  }
-  .leaflet-container,
-  img,
-  pre,
-  blockquote {
-    page-break-inside: avoid;
-    page-break-before: auto; /* 'always,' 'avoid,' 'left,' 'inherit,' or 'right' */
-    page-break-after: auto; /* 'always,' 'avoid,' 'left,' 'inherit,' or 'right' */
-    page-break-inside: avoid; /* or 'auto' */
-  }
-  main::after {
-    content: 'Copyright TNO';
-    display: block;
-    text-align: center;
-  }
-  .do-not-print,
-  header,
-  footer,
-  aside,
-  nav,
-  form,
-  iframe,
-  .menu,
-  .hero,
-  .adslot {
-    display: none;
-  }
 }
 
 .margin-top7 {
@@ -620,6 +623,7 @@ ul.projects > li > span.project-id {
   margin-bottom: 0;
 }
 h5.separator {
+  margin-top: 0;
   padding: 5px;
 }
 
@@ -632,4 +636,7 @@ p.overflow {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+.button-row > a {
+  margin: auto 10px;
 }
