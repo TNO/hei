@@ -35,6 +35,7 @@ export const TechnologyPage: MeiosisComponent = () => {
   let isEditting = false;
   let form: UIForm = [];
   let allTechnologies = [] as Technology[];
+  let isBookmarked = false;
 
   return {
     oninit: ({
@@ -57,8 +58,8 @@ export const TechnologyPage: MeiosisComponent = () => {
     },
     view: ({
       attrs: {
-        state: { curTech = {} as Technology, model = defaultModel, curUser },
-        actions: { saveModel, changePage, setTechnology },
+        state: { curTech = {} as Technology, bookmarks, model = defaultModel, curUser },
+        actions: { saveModel, changePage, setTechnology, bookmark },
       },
     }) => {
       const { users, technologies } = model;
@@ -71,6 +72,7 @@ export const TechnologyPage: MeiosisComponent = () => {
         }
         return;
       }
+      isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
       const ownerId = curTech.owner;
       const updated = curTech.updated ? new Date(curTech.updated) : undefined;
       const owner = users.filter((u) => u.id === ownerId).shift();
@@ -123,7 +125,19 @@ export const TechnologyPage: MeiosisComponent = () => {
                 })
               )
             : [
-                m('h3', curTech.technology),
+                m('h3', [
+                  curTech.technology,
+                  m(
+                    'a.btn-flat.btn-large.clean',
+                    {
+                      onclick: () => bookmark(curTech.id),
+                    },
+                    m(Icon, {
+                      iconName: isBookmarked ? 'star' : 'star_border',
+                      className: 'amber-text white',
+                    })
+                  ),
+                ]),
                 curTech.application && m('h4', md(curTech.application)),
                 m(
                   '.col.s12.m6',
@@ -151,16 +165,18 @@ export const TechnologyPage: MeiosisComponent = () => {
                           m('span.bold', 'Category: '),
                           getOptionsLabel(technologyCategoryOptions, curTech.category),
                         ]),
-                      curTech.hpeClassification &&
-                        m('p', [
-                          m('span.bold', 'HPE classification: '),
-                          getOptionsLabel(hpeClassificationOptions, curTech.hpeClassification) +
-                            '.',
-                        ]),
                       curTech.mainCap &&
                         m('p', [
                           m('span.bold', 'Main capability: '),
-                          getOptionsLabel(mainCapabilityOptions, curTech.mainCap) + '.',
+                          `${getOptionsLabel(
+                            mainCapabilityOptions,
+                            curTech.mainCap,
+                            false
+                          )} ${getOptionsLabel(
+                            hpeClassificationOptions,
+                            curTech.hpeClassification,
+                            false
+                          )}`,
                         ]),
                       curTech.specificCap &&
                         m('p', [

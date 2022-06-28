@@ -1,9 +1,11 @@
 import m from 'mithril';
-import { FlatButton, Icon, Select, Switch, uniqueId } from 'mithril-materialized';
+import { FlatButton, Icon, ModalPanel, Switch, uniqueId } from 'mithril-materialized';
+import { LayoutForm, UIForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import {
   AVAILABILITY,
   Dashboards,
+  HPE_CLASSIFICATION,
   INVASIVENESS_OBTRUSIVENESS,
   MAIN_CAPABILITY,
   MATURITY,
@@ -14,21 +16,34 @@ import {
 import { MeiosisComponent, routingSvc } from '../services';
 import {
   availabilityOptions,
+  evidenceDirOptions,
+  evidenceLevelOptions,
   getOptionsLabel,
+  hpeClassificationOptions,
   invasivenessOptions,
   isUnique,
   mainCapabilityOptions,
   maturityOptions,
+  NoYesUnknown,
   technologyCategoryOptions,
 } from '../utils';
 import { TextInputWithClear } from './ui';
 
 export const TechnologyOverviewPage: MeiosisComponent = () => {
-  const mainCapOptions = [{ id: 0, label: '-', title: '' }, ...mainCapabilityOptions];
-  const techCatOptions = [{ id: 0, label: '-', title: '' }, ...technologyCategoryOptions];
-  const invasivenessOpt = [{ id: 0, label: '-', title: '' }, ...invasivenessOptions];
-  const maturityOpt = [{ id: 0, label: '-', title: '' }, ...maturityOptions];
-  const availabilityOpt = [{ id: 0, label: '-', title: '' }, ...availabilityOptions];
+  const toOptions = (opt: Array<{ id: number; label: string; title?: string }>) =>
+    [{ id: 0, label: '-', title: '' }, ...opt] as unknown as Array<{
+      id: string;
+      label: string;
+      title?: string;
+    }>;
+  const mainCapOpt = toOptions(mainCapabilityOptions);
+  const techCatOpt = toOptions(technologyCategoryOptions);
+  const invasivenessOpt = toOptions(invasivenessOptions);
+  const maturityOpt = toOptions(maturityOptions);
+  const availabilityOpt = toOptions(availabilityOptions);
+  const ethicalOpt = toOptions(NoYesUnknown);
+  const evidenceDirOpt = toOptions(evidenceDirOptions);
+  const evidenceQualityOpt = toOptions(evidenceLevelOptions);
   const boosterOpt = [
     { id: 0, label: '-' },
     { id: 1, label: 'Yes' },
@@ -48,6 +63,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           keywords,
           booster,
           mainCap,
+          hpeClassification,
           category,
           invasive,
           availability,
@@ -56,11 +72,13 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         } = cur;
         const key = technology;
         if (acc.hasOwnProperty(key)) {
+          acc[key].id.push(id);
           acc[key].mechanism.push(mechanism);
           desc && acc[key].desc.push(desc);
           keywords && acc[key].desc.push(...keywords);
           acc[key].booster.push(booster);
           acc[key].mainCap.push(mainCap);
+          acc[key].hpeClassification.push(hpeClassification);
           acc[key].category.push(category);
           acc[key].invasive.push(invasive);
           acc[key].availability.push(availability);
@@ -69,7 +87,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         } else {
           acc[key] = {
             curTech: cur,
-            id: id,
+            id: [id],
             technology,
             img,
             url,
@@ -78,6 +96,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             keywords: keywords && keywords.length ? [...keywords] : [],
             booster: [booster],
             mainCap: [mainCap],
+            hpeClassification: [hpeClassification],
             category: [category],
             invasive: [invasive],
             availability: [availability],
@@ -89,18 +108,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
       }, {} as Record<string, TECHNOLOGY_COMBINATION>)
     );
 
-  let searchFilter = '';
-  let mainCapFilter = 0;
-  let categoryFilter = 0;
-  let invasivenessFilter = 0;
-  let maturityFilter = 0;
-  let availabilityFilter = 0;
-  let boosterFilter = 0;
-  let bookmarked = false;
-
   type TECHNOLOGY_COMBINATION = {
     curTech: Technology;
-    id: string;
+    id: string[];
     technology: string;
     url: string;
     img: string;
@@ -109,6 +119,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     keywords: string[];
     booster: boolean[];
     mainCap: MAIN_CAPABILITY[];
+    hpeClassification: HPE_CLASSIFICATION[];
     category: TECHNOLOGY_CATEGORY[];
     invasive: INVASIVENESS_OBTRUSIVENESS[];
     maturity: MATURITY[];
@@ -132,14 +143,27 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     },
     view: ({
       attrs: {
-        state: { model, curUser, bookmarks = [] },
-        actions: { setTechnology, saveModel, changePage, bookmark },
+        state: { model, curUser, bookmarks = [], searchFilters },
+        actions: { setTechnology, saveModel, changePage, bookmark, setSearchFilters },
       },
     }) => {
       if (technologies.length === 0) {
         const { technologies: allTech } = model;
         technologies = toTechnologies(allTech);
       }
+      const {
+        searchFilter,
+        mainCapFilter,
+        categoryFilter,
+        invasivenessFilter,
+        maturityFilter,
+        availabilityFilter,
+        boosterFilter,
+        ethicalFilter,
+        evidenceDirFilter,
+        evidenceQualityFilter,
+        bookmarked,
+      } = searchFilters;
 
       const searchRegex = searchFilter ? new RegExp(searchFilter, 'i') : undefined;
       const filteredTechnologies = technologies.filter((t) => {
@@ -177,6 +201,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         }
         return true;
       });
+      const hasFilters = true; // Object.keys(searchFilters).some((f) => !f);
 
       return [
         m('.row.technology-overview-page', { style: 'height: 95vh' }, [
@@ -194,77 +219,24 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   iconName: 'search',
                   className: 'bottom-margin0',
                   oninput: (s) => {
-                    searchFilter = s || '';
-                    m.redraw();
+                    searchFilters.searchFilter = s || '';
+                    setSearchFilters(searchFilters);
+                    // m.redraw();
                   },
                 })
               ),
               m(
                 '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Main capability',
-                  options: mainCapOptions,
-                  initialValue: mainCapFilter,
-                  helperText: mainCapFilter
-                    ? mainCapOptions.filter((o) => o.id === mainCapFilter).shift()?.title
-                    : undefined,
-                  onchange: (c) => (mainCapFilter = +c),
-                })
-              ),
-              m(
-                '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Category',
-                  options: techCatOptions,
-                  helperText: categoryFilter
-                    ? techCatOptions.filter((o) => o.id === categoryFilter).shift()?.title
-                    : undefined,
-                  onchange: (c) => (categoryFilter = +c),
-                })
-              ),
-              m(
-                '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Invasiveness',
-                  options: invasivenessOpt,
-                  helperText: invasivenessFilter
-                    ? invasivenessOpt.filter((o) => o.id === invasivenessFilter).shift()?.title
-                    : undefined,
-                  onchange: (c) => (invasivenessFilter = +c),
-                })
-              ),
-              m(
-                '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Maturity',
-                  options: maturityOpt,
-                  helperText: maturityFilter
-                    ? maturityOpt.filter((o) => o.id === maturityFilter).shift()?.title
-                    : undefined,
-                  onchange: (c) => (maturityFilter = +c),
-                })
-              ),
-              m(
-                '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Availability',
-                  options: availabilityOpt,
-                  onchange: (c) => (availabilityFilter = +c),
-                })
-              ),
-              m(
-                '.col.s6.m3.xl2',
-                m(Select, {
-                  label: 'Booster',
-                  options: boosterOpt,
-                  onchange: (c) => (boosterFilter = +c),
-                })
+                m(FlatButton, { modalId: 'search', label: 'Specify search parameters' })
               ),
               m('.col.s6.m3.xl2', [
                 m(Switch, {
                   label: 'Bookmarked?',
                   right: 'Yes',
-                  onchange: (v) => (bookmarked = v),
+                  onchange: (v) => {
+                    searchFilters.bookmarked = v;
+                    setSearchFilters(searchFilters);
+                  },
                 }),
               ]),
               curUser &&
@@ -285,8 +257,70 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 )
             )
           ),
+          hasFilters &&
+            m('.col.s12.filters', [
+              mainCapFilter > 0 &&
+                m('.chip', [
+                  `Capability: ${getOptionsLabel(mainCapabilityOptions, mainCapFilter, false)}`,
+                  m(
+                    'i.close.material-icons',
+                    { onclick: () => setSearchFilters({ ...searchFilters, mainCapFilter: 0 }) },
+                    'close'
+                  ),
+                ]),
+              categoryFilter > 0 &&
+                m('.chip', [
+                  `Category: ${getOptionsLabel(technologyCategoryOptions, categoryFilter, false)}`,
+                  m(
+                    'i.close.material-icons',
+                    { onclick: () => setSearchFilters({ ...searchFilters, categoryFilter: 0 }) },
+                    'close'
+                  ),
+                ]),
+              invasivenessFilter > 0 &&
+                m('.chip', [
+                  `Invasiveness: ${getOptionsLabel(
+                    invasivenessOptions,
+                    invasivenessFilter,
+                    false
+                  )}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, invasivenessFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+              maturityFilter > 0 &&
+                m('.chip', [
+                  `Maturity: ${getOptionsLabel(maturityOptions, maturityFilter, false)}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, maturityFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+              availabilityFilter > 0 &&
+                m('.chip', [
+                  `Availability: ${getOptionsLabel(
+                    availabilityOptions,
+                    availabilityFilter,
+                    false
+                  )}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, availabilityFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+            ]),
           filteredTechnologies.map((t) => {
-            const isBookmarked = bookmarks.indexOf(t.id) >= 0;
+            const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
             return m(
               '.col.s12.m6.l3.xl2',
               m('.card.medium', [
@@ -294,7 +328,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'a',
                     {
-                      href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${t.id}`),
+                      href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${t.id[0]}`),
                     },
                     [
                       m('img', { src: resolveImg(t.url, t.img), alt: t.technology }),
@@ -309,9 +343,15 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 m('.card-content', [
                   m(
                     'span.bold',
-                    t.category
+                    t.mainCap
+                      .map((c, i) =>
+                        `${getOptionsLabel(mainCapabilityOptions, c, false)} ${getOptionsLabel(
+                          hpeClassificationOptions,
+                          t.hpeClassification[i],
+                          false
+                        )}`.toUpperCase()
+                      )
                       .filter(isUnique)
-                      .map((c) => getOptionsLabel(technologyCategoryOptions, c).toUpperCase())
                       .join(', ')
                   ),
                   m('p.overflow', t.desc),
@@ -321,7 +361,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'a',
                     {
-                      href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${t.id}`),
+                      href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${t.id[0]}`),
                       onclick: () => setTechnology(t.curTech),
                     },
                     m(Icon, { iconName: 'visibility' })
@@ -330,7 +370,15 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                     'a',
                     {
                       href: routingSvc.href(Dashboards.TECHNOLOGIES),
-                      onclick: () => bookmark(t.id),
+                      onclick: () => {
+                        if (isBookmarked) {
+                          t.id.forEach((id) => {
+                            if (bookmarks.indexOf(id) >= 0) bookmark(id);
+                          });
+                        } else {
+                          bookmark(t.id[0]);
+                        }
+                      },
                     },
                     m(Icon, {
                       iconName: isBookmarked ? 'star' : 'star_border',
@@ -341,6 +389,104 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             );
           }),
         ]),
+        m(ModalPanel, {
+          id: 'search',
+          title: 'Specify search parameters',
+          description: m(
+            '.row',
+            m(LayoutForm, {
+              form: [
+                {
+                  id: 'mainCapFilter',
+                  label: 'Main capability',
+                  className: 'col s12 m6',
+                  options: mainCapOpt,
+                  description: mainCapFilter
+                    ? mainCapOpt.filter((o) => +o.id === mainCapFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'categoryFilter',
+                  label: 'Category',
+                  className: 'col s12 m6',
+                  options: techCatOpt,
+                  description: categoryFilter
+                    ? techCatOpt.filter((o) => +o.id === categoryFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'invasivenessFilter',
+                  label: 'Invasiveness',
+                  className: 'col s12 m6',
+                  options: invasivenessOpt,
+                  description: invasivenessFilter
+                    ? invasivenessOpt.filter((o) => +o.id === invasivenessFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'maturityFilter',
+                  label: 'Maturity',
+                  className: 'col s12 m6',
+                  options: maturityOpt,
+                  description: maturityFilter
+                    ? maturityOpt.filter((o) => +o.id === maturityFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'availabilityFilter',
+                  label: 'Availability',
+                  className: 'col s12 m6',
+                  options: availabilityOpt,
+                  // description: availabilityFilter
+                  //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
+                  //   : undefined,
+                },
+                {
+                  id: 'boosterFilter',
+                  label: 'Booster',
+                  className: 'col s12 m6',
+                  options: boosterOpt,
+                  // description: boosterFilter
+                  //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
+                  //   : undefined,
+                },
+                {
+                  id: 'ethicalFilter',
+                  label: 'Ethical considerations',
+                  className: 'col s12 m6',
+                  options: ethicalOpt,
+                  description: ethicalFilter
+                    ? ethicalOpt.filter((o) => +o.id === ethicalFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'evidenceDirFilter',
+                  label: 'Evidence direction',
+                  className: 'col s12 m6',
+                  options: evidenceDirOpt,
+                  description: evidenceDirFilter
+                    ? evidenceDirOpt.filter((o) => +o.id === evidenceDirFilter).shift()?.title
+                    : undefined,
+                },
+                {
+                  id: 'evidenceQualityFilter',
+                  label: 'Evidence quality',
+                  className: 'col s12 m6',
+                  options: evidenceQualityOpt,
+                  description: evidenceQualityFilter
+                    ? evidenceQualityOpt.filter((o) => +o.id === evidenceQualityFilter).shift()
+                        ?.title
+                    : undefined,
+                },
+              ] as UIForm,
+              obj: searchFilters,
+              onchange: () => setSearchFilters(searchFilters),
+            })
+          ),
+          bottomSheet: true,
+          fixedFooter: true,
+          buttons: [{ label: 'DONE' }],
+        }),
       ];
     },
   };

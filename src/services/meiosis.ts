@@ -1,7 +1,7 @@
 import m, { FactoryComponent } from 'mithril';
 import setup, { MeiosisCell, Update } from 'meiosis-setup/mergerino';
 import { routingSvc } from '.';
-import { Dashboards, DataModel, defaultModel, ID, Technology } from '../models';
+import { Dashboards, DataModel, defaultModel, ID, SearchFilter, Technology } from '../models';
 import { ldb } from '../utils/local-ldb';
 
 const MODEL_KEY = 'HPET_MODEL';
@@ -14,6 +14,7 @@ export interface State {
   curUser?: string;
   curTech?: Technology;
   bookmarks: ID[];
+  searchFilters: SearchFilter;
 }
 
 export interface Actions {
@@ -27,6 +28,7 @@ export interface Actions {
   saveCurUser: (ds: string) => void;
   setTechnology: (curTech: Technology) => void;
   bookmark: (id: string) => void;
+  setSearchFilters: (sf: SearchFilter) => void;
 }
 
 export type MeiosisComponent<T extends { [key: string]: any } = {}> = FactoryComponent<{
@@ -70,6 +72,7 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
         return newBookmarks;
       },
     }),
+  setSearchFilters: (searchFilters: SearchFilter) => update({ searchFilters }),
 });
 
 const initialize = async (update: Update<State>) => {
@@ -88,6 +91,7 @@ const app = {
     curTech: undefined,
     bookmarks: [],
     curUser: 'mod',
+    searchFilters: {} as SearchFilter,
   } as State,
 };
 export const cells = setup<State>({ app });

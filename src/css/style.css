@@ -640,3 +640,9 @@ p.overflow {
 .button-row > a {
   margin: auto 10px;
 }
+
+a.clean.btn:hover,
+a.clean.btn-large:hover,
+a.clean.btn-small:hover {
+  background-color: white;
+}

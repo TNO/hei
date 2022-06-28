@@ -37,7 +37,7 @@ npm run build:domain
 	- Evidence quality/score
 	- Availability
 - [ ] Add bookmark to technology page (so you can bookmark it from there too)
-- [ ] Combine main capability with HPE category, e.g. MENTAL ENHANCEMENT
+- [x] Combine main capability with HPE category, e.g. MENTAL ENHANCEMENT
 - [ ] Add search filters
   - [x] Zoekbox die keywords zoekt in alles wat nu in tabblad Technologies staat, Technology title, specific capability, examples in practice en mechanism (verander ‘Filter’ in ‘Search’)
   - [x] Main capability
