@@ -16415,6 +16415,17 @@ exports.AllWordsPage = AllWordsPage;
 
 "use strict";
 
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -16431,17 +16442,24 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TechnologyOverviewPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(756);
+var mithril_ui_form_1 = __webpack_require__(255);
 var images_1 = __webpack_require__(6691);
 var models_1 = __webpack_require__(333);
 var services_1 = __webpack_require__(3524);
 var utils_1 = __webpack_require__(3809);
 var ui_1 = __webpack_require__(6561);
 var TechnologyOverviewPage = function () {
-    var mainCapOptions = __spreadArray([{ id: 0, label: '-', title: '' }], utils_1.mainCapabilityOptions, true);
-    var techCatOptions = __spreadArray([{ id: 0, label: '-', title: '' }], utils_1.technologyCategoryOptions, true);
-    var invasivenessOpt = __spreadArray([{ id: 0, label: '-', title: '' }], utils_1.invasivenessOptions, true);
-    var maturityOpt = __spreadArray([{ id: 0, label: '-', title: '' }], utils_1.maturityOptions, true);
-    var availabilityOpt = __spreadArray([{ id: 0, label: '-', title: '' }], utils_1.availabilityOptions, true);
+    var toOptions = function (opt) {
+        return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
+    };
+    var mainCapOpt = toOptions(utils_1.mainCapabilityOptions);
+    var techCatOpt = toOptions(utils_1.technologyCategoryOptions);
+    var invasivenessOpt = toOptions(utils_1.invasivenessOptions);
+    var maturityOpt = toOptions(utils_1.maturityOptions);
+    var availabilityOpt = toOptions(utils_1.availabilityOptions);
+    var ethicalOpt = toOptions(utils_1.NoYesUnknown);
+    var evidenceDirOpt = toOptions(utils_1.evidenceDirOptions);
+    var evidenceQualityOpt = toOptions(utils_1.evidenceLevelOptions);
     var boosterOpt = [
         { id: 0, label: '-' },
         { id: 1, label: 'Yes' },
@@ -16450,14 +16468,16 @@ var TechnologyOverviewPage = function () {
     var toTechnologies = function (allTech) {
         return Object.values(allTech.reduce(function (acc, cur) {
             var _a;
-            var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, specificCap = cur.specificCap;
+            var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, specificCap = cur.specificCap;
             var key = technology;
             if (acc.hasOwnProperty(key)) {
+                acc[key].id.push(id);
                 acc[key].mechanism.push(mechanism);
                 desc && acc[key].desc.push(desc);
                 keywords && (_a = acc[key].desc).push.apply(_a, keywords);
                 acc[key].booster.push(booster);
                 acc[key].mainCap.push(mainCap);
+                acc[key].hpeClassification.push(hpeClassification);
                 acc[key].category.push(category);
                 acc[key].invasive.push(invasive);
                 acc[key].availability.push(availability);
@@ -16467,7 +16487,7 @@ var TechnologyOverviewPage = function () {
             else {
                 acc[key] = {
                     curTech: cur,
-                    id: id,
+                    id: [id],
                     technology: technology,
                     img: img,
                     url: url,
@@ -16476,6 +16496,7 @@ var TechnologyOverviewPage = function () {
                     keywords: keywords && keywords.length ? __spreadArray([], keywords, true) : [],
                     booster: [booster],
                     mainCap: [mainCap],
+                    hpeClassification: [hpeClassification],
                     category: [category],
                     invasive: [invasive],
                     availability: [availability],
@@ -16486,14 +16507,6 @@ var TechnologyOverviewPage = function () {
             return acc;
         }, {}));
     };
-    var searchFilter = '';
-    var mainCapFilter = 0;
-    var categoryFilter = 0;
-    var invasivenessFilter = 0;
-    var maturityFilter = 0;
-    var availabilityFilter = 0;
-    var boosterFilter = 0;
-    var bookmarked = false;
     var technologies = [];
     return {
         oninit: function (_a) {
@@ -16504,12 +16517,13 @@ var TechnologyOverviewPage = function () {
             setPage(models_1.Dashboards.TECHNOLOGIES);
         },
         view: function (_a) {
-            var _b, _c, _d, _e;
-            var _f = _a.attrs, _g = _f.state, model = _g.model, curUser = _g.curUser, _h = _g.bookmarks, bookmarks = _h === void 0 ? [] : _h, _j = _f.actions, setTechnology = _j.setTechnology, saveModel = _j.saveModel, changePage = _j.changePage, bookmark = _j.bookmark;
+            var _b, _c, _d, _e, _f, _g, _h;
+            var _j = _a.attrs, _k = _j.state, model = _k.model, curUser = _k.curUser, _l = _k.bookmarks, bookmarks = _l === void 0 ? [] : _l, searchFilters = _k.searchFilters, _m = _j.actions, setTechnology = _m.setTechnology, saveModel = _m.saveModel, changePage = _m.changePage, bookmark = _m.bookmark, setSearchFilters = _m.setSearchFilters;
             if (technologies.length === 0) {
                 var allTech = model.technologies;
                 technologies = toTechnologies(allTech);
             }
+            var searchFilter = searchFilters.searchFilter, mainCapFilter = searchFilters.mainCapFilter, categoryFilter = searchFilters.categoryFilter, invasivenessFilter = searchFilters.invasivenessFilter, maturityFilter = searchFilters.maturityFilter, availabilityFilter = searchFilters.availabilityFilter, boosterFilter = searchFilters.boosterFilter, ethicalFilter = searchFilters.ethicalFilter, evidenceDirFilter = searchFilters.evidenceDirFilter, evidenceQualityFilter = searchFilters.evidenceQualityFilter, bookmarked = searchFilters.bookmarked;
             var searchRegex = searchFilter ? new RegExp(searchFilter, 'i') : undefined;
             var filteredTechnologies = technologies.filter(function (t) {
                 if (searchRegex &&
@@ -16541,6 +16555,7 @@ var TechnologyOverviewPage = function () {
                 }
                 return true;
             });
+            var hasFilters = true; // Object.keys(searchFilters).some((f) => !f);
             return [
                 (0, mithril_1.default)('.row.technology-overview-page', { style: 'height: 95vh' }, [
                     (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s6.m3.xl2', {
@@ -16550,51 +16565,18 @@ var TechnologyOverviewPage = function () {
                         iconName: 'search',
                         className: 'bottom-margin0',
                         oninput: function (s) {
-                            searchFilter = s || '';
-                            mithril_1.default.redraw();
+                            searchFilters.searchFilter = s || '';
+                            setSearchFilters(searchFilters);
+                            // m.redraw();
                         },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Main capability',
-                        options: mainCapOptions,
-                        initialValue: mainCapFilter,
-                        helperText: mainCapFilter
-                            ? (_b = mainCapOptions.filter(function (o) { return o.id === mainCapFilter; }).shift()) === null || _b === void 0 ? void 0 : _b.title
-                            : undefined,
-                        onchange: function (c) { return (mainCapFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Category',
-                        options: techCatOptions,
-                        helperText: categoryFilter
-                            ? (_c = techCatOptions.filter(function (o) { return o.id === categoryFilter; }).shift()) === null || _c === void 0 ? void 0 : _c.title
-                            : undefined,
-                        onchange: function (c) { return (categoryFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Invasiveness',
-                        options: invasivenessOpt,
-                        helperText: invasivenessFilter
-                            ? (_d = invasivenessOpt.filter(function (o) { return o.id === invasivenessFilter; }).shift()) === null || _d === void 0 ? void 0 : _d.title
-                            : undefined,
-                        onchange: function (c) { return (invasivenessFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Maturity',
-                        options: maturityOpt,
-                        helperText: maturityFilter
-                            ? (_e = maturityOpt.filter(function (o) { return o.id === maturityFilter; }).shift()) === null || _e === void 0 ? void 0 : _e.title
-                            : undefined,
-                        onchange: function (c) { return (maturityFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Availability',
-                        options: availabilityOpt,
-                        onchange: function (c) { return (availabilityFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.Select, {
-                        label: 'Booster',
-                        options: boosterOpt,
-                        onchange: function (c) { return (boosterFilter = +c); },
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', [
+                    })), (0, mithril_1.default)('.col.s6.m3.xl2', (0, mithril_1.default)(mithril_materialized_1.FlatButton, { modalId: 'search', label: 'Specify search parameters' })), (0, mithril_1.default)('.col.s6.m3.xl2', [
                         (0, mithril_1.default)(mithril_materialized_1.Switch, {
                             label: 'Bookmarked?',
                             right: 'Yes',
-                            onchange: function (v) { return (bookmarked = v); },
+                            onchange: function (v) {
+                                searchFilters.bookmarked = v;
+                                setSearchFilters(searchFilters);
+                            },
                         }),
                     ]), curUser &&
                         curUser === 'admin' &&
@@ -16609,36 +16591,176 @@ var TechnologyOverviewPage = function () {
                                 changePage(models_1.Dashboards.TECHNOLOGY, { id: newTech.id, edit: 'true' });
                             },
                         })))),
+                    hasFilters &&
+                        (0, mithril_1.default)('.col.s12.filters', [
+                            mainCapFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Capability: ".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCapFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { mainCapFilter: 0 })); } }, 'close'),
+                                ]),
+                            categoryFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Category: ".concat((0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, categoryFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { categoryFilter: 0 })); } }, 'close'),
+                                ]),
+                            invasivenessFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Invasiveness: ".concat((0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, invasivenessFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { invasivenessFilter: 0 })); },
+                                    }, 'close'),
+                                ]),
+                            maturityFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Maturity: ".concat((0, utils_1.getOptionsLabel)(utils_1.maturityOptions, maturityFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { maturityFilter: 0 })); },
+                                    }, 'close'),
+                                ]),
+                            availabilityFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Availability: ".concat((0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, availabilityFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { availabilityFilter: 0 })); },
+                                    }, 'close'),
+                                ]),
+                        ]),
                     filteredTechnologies.map(function (t) {
-                        var isBookmarked = bookmarks.indexOf(t.id) >= 0;
+                        var isBookmarked = t.id.some(function (id) { return bookmarks.indexOf(id) >= 0; });
                         return (0, mithril_1.default)('.col.s12.m6.l3.xl2', (0, mithril_1.default)('.card.medium', [
                             (0, mithril_1.default)('.card-image', [
                                 (0, mithril_1.default)('a', {
-                                    href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id)),
+                                    href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
                                 }, [
                                     (0, mithril_1.default)('img', { src: (0, images_1.resolveImg)(t.url, t.img), alt: t.technology }),
                                     (0, mithril_1.default)('span.card-title.bold.sharpen', { className: isBookmarked ? 'amber-text' : 'black-text' }, t.technology),
                                 ]),
                             ]),
                             (0, mithril_1.default)('.card-content', [
-                                (0, mithril_1.default)('span.bold', t.category
+                                (0, mithril_1.default)('span.bold', t.mainCap
+                                    .map(function (c, i) {
+                                    return "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, c, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, t.hpeClassification[i], false)).toUpperCase();
+                                })
                                     .filter(utils_1.isUnique)
-                                    .map(function (c) { return (0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, c).toUpperCase(); })
                                     .join(', ')),
                                 (0, mithril_1.default)('p.overflow', t.desc),
                             ]),
                             (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a', {
-                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id)),
+                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
                                 onclick: function () { return setTechnology(t.curTech); },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' })), (0, mithril_1.default)('a', {
                                 href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGIES),
-                                onclick: function () { return bookmark(t.id); },
+                                onclick: function () {
+                                    if (isBookmarked) {
+                                        t.id.forEach(function (id) {
+                                            if (bookmarks.indexOf(id) >= 0)
+                                                bookmark(id);
+                                        });
+                                    }
+                                    else {
+                                        bookmark(t.id[0]);
+                                    }
+                                },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
                                 iconName: isBookmarked ? 'star' : 'star_border',
                             }))),
                         ]));
                     }),
                 ]),
+                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
+                    id: 'search',
+                    title: 'Specify search parameters',
+                    description: (0, mithril_1.default)('.row', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                        form: [
+                            {
+                                id: 'mainCapFilter',
+                                label: 'Main capability',
+                                className: 'col s12 m6',
+                                options: mainCapOpt,
+                                description: mainCapFilter
+                                    ? (_b = mainCapOpt.filter(function (o) { return +o.id === mainCapFilter; }).shift()) === null || _b === void 0 ? void 0 : _b.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'categoryFilter',
+                                label: 'Category',
+                                className: 'col s12 m6',
+                                options: techCatOpt,
+                                description: categoryFilter
+                                    ? (_c = techCatOpt.filter(function (o) { return +o.id === categoryFilter; }).shift()) === null || _c === void 0 ? void 0 : _c.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'invasivenessFilter',
+                                label: 'Invasiveness',
+                                className: 'col s12 m6',
+                                options: invasivenessOpt,
+                                description: invasivenessFilter
+                                    ? (_d = invasivenessOpt.filter(function (o) { return +o.id === invasivenessFilter; }).shift()) === null || _d === void 0 ? void 0 : _d.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'maturityFilter',
+                                label: 'Maturity',
+                                className: 'col s12 m6',
+                                options: maturityOpt,
+                                description: maturityFilter
+                                    ? (_e = maturityOpt.filter(function (o) { return +o.id === maturityFilter; }).shift()) === null || _e === void 0 ? void 0 : _e.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'availabilityFilter',
+                                label: 'Availability',
+                                className: 'col s12 m6',
+                                options: availabilityOpt,
+                                // description: availabilityFilter
+                                //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
+                                //   : undefined,
+                            },
+                            {
+                                id: 'boosterFilter',
+                                label: 'Booster',
+                                className: 'col s12 m6',
+                                options: boosterOpt,
+                                // description: boosterFilter
+                                //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
+                                //   : undefined,
+                            },
+                            {
+                                id: 'ethicalFilter',
+                                label: 'Ethical considerations',
+                                className: 'col s12 m6',
+                                options: ethicalOpt,
+                                description: ethicalFilter
+                                    ? (_f = ethicalOpt.filter(function (o) { return +o.id === ethicalFilter; }).shift()) === null || _f === void 0 ? void 0 : _f.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'evidenceDirFilter',
+                                label: 'Evidence direction',
+                                className: 'col s12 m6',
+                                options: evidenceDirOpt,
+                                description: evidenceDirFilter
+                                    ? (_g = evidenceDirOpt.filter(function (o) { return +o.id === evidenceDirFilter; }).shift()) === null || _g === void 0 ? void 0 : _g.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'evidenceQualityFilter',
+                                label: 'Evidence quality',
+                                className: 'col s12 m6',
+                                options: evidenceQualityOpt,
+                                description: evidenceQualityFilter
+                                    ? (_h = evidenceQualityOpt.filter(function (o) { return +o.id === evidenceQualityFilter; }).shift()) === null || _h === void 0 ? void 0 : _h.title
+                                    : undefined,
+                            },
+                        ],
+                        obj: searchFilters,
+                        onchange: function () { return setSearchFilters(searchFilters); },
+                    })),
+                    bottomSheet: true,
+                    fixedFooter: true,
+                    buttons: [{ label: 'DONE' }],
+                }),
             ];
         },
     };
@@ -16685,6 +16807,7 @@ var TechnologyPage = function () {
     var isEditting = false;
     var form = [];
     var allTechnologies = [];
+    var isBookmarked = false;
     return {
         oninit: function (_a) {
             var _b = _a.attrs, _c = _b.state, model = _c.model, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, _e = _b.actions, setPage = _e.setPage, setTechnology = _e.setTechnology;
@@ -16701,7 +16824,7 @@ var TechnologyPage = function () {
                 setTechnology(found);
         },
         view: function (_a) {
-            var _b = _a.attrs, _c = _b.state, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, _e = _c.model, model = _e === void 0 ? models_1.defaultModel : _e, curUser = _c.curUser, _f = _b.actions, saveModel = _f.saveModel, changePage = _f.changePage, setTechnology = _f.setTechnology;
+            var _b = _a.attrs, _c = _b.state, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.model, model = _e === void 0 ? models_1.defaultModel : _e, curUser = _c.curUser, _f = _b.actions, saveModel = _f.saveModel, changePage = _f.changePage, setTechnology = _f.setTechnology, bookmark = _f.bookmark;
             var users = model.users, technologies = model.technologies;
             if (!curTech.id) {
                 form = initTechForm(technologies, id, users);
@@ -16712,6 +16835,7 @@ var TechnologyPage = function () {
                 }
                 return;
             }
+            isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
             var ownerId = curTech.owner;
             var updated = curTech.updated ? new Date(curTech.updated) : undefined;
             var owner = users.filter(function (u) { return u.id === ownerId; }).shift();
@@ -16753,7 +16877,15 @@ var TechnologyPage = function () {
                         },
                     }))
                     : [
-                        (0, mithril_1.default)('h3', curTech.technology),
+                        (0, mithril_1.default)('h3', [
+                            curTech.technology,
+                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
+                                onclick: function () { return bookmark(curTech.id); },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: isBookmarked ? 'star' : 'star_border',
+                                className: 'amber-text white',
+                            })),
+                        ]),
                         curTech.application && (0, mithril_1.default)('h4', md(curTech.application)),
                         (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin0', allTechnologies.length === 1
                             ? (0, mithril_1.default)('h5.orange.separator', 'Description')
@@ -16773,16 +16905,10 @@ var TechnologyPage = function () {
                                     (0, mithril_1.default)('span.bold', 'Category: '),
                                     (0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, curTech.category),
                                 ]),
-                            curTech.hpeClassification &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'HPE classification: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, curTech.hpeClassification) +
-                                        '.',
-                                ]),
                             curTech.mainCap &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold', 'Main capability: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, curTech.mainCap) + '.',
+                                    "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, curTech.mainCap, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, curTech.hpeClassification, false)),
                                 ]),
                             curTech.specificCap &&
                                 (0, mithril_1.default)('p', [
@@ -17303,6 +17429,17 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(9977), exports);
 __exportStar(__webpack_require__(7613), exports);
+__exportStar(__webpack_require__(3847), exports);
+
+
+/***/ }),
+
+/***/ 3847:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
@@ -17427,6 +17564,7 @@ var appActions = function (_a) {
                 },
             });
         },
+        setSearchFilters: function (searchFilters) { return update({ searchFilters: searchFilters }); },
     });
 };
 exports.appActions = appActions;
@@ -17457,6 +17595,7 @@ var app = {
         curTech: undefined,
         bookmarks: [],
         curUser: 'mod',
+        searchFilters: {},
     },
 };
 exports.cells = (0, mergerino_1.default)({ app: app });
