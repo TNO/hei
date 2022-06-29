@@ -16130,7 +16130,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Layout = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(756);
-var logo_svg_1 = __importDefault(__webpack_require__(9574));
+var tno_svg_1 = __importDefault(__webpack_require__(1555));
 var models_1 = __webpack_require__(333);
 var routing_service_1 = __webpack_require__(4181);
 var Layout = function () { return ({
@@ -16140,7 +16140,7 @@ var Layout = function () { return ({
         return (0, mithril_1.default)('.main', { style: 'overflow-x: hidden' }, [
             (0, mithril_1.default)('.navbar-fixed', { style: 'z-index: 1001' }, (0, mithril_1.default)('nav', (0, mithril_1.default)('.nav-wrapper', [
                 (0, mithril_1.default)('a.brand-logo[href=#].hide-on-small', { style: 'margin-left: 20px' }, [
-                    (0, mithril_1.default)("img[width=50][height=50][src=".concat(logo_svg_1.default, "]"), {
+                    (0, mithril_1.default)("img[width=60][height=60][src=".concat(tno_svg_1.default, "]"), {
                         style: 'margin-top: 5px; margin-left: -5px;',
                     }),
                     // m(
@@ -16533,7 +16533,7 @@ var TechnologyOverviewPage = function () {
                         t.keywords.some(function (kw) { return searchRegex.test(kw); }))) {
                     return false;
                 }
-                if (bookmarked && bookmarks.indexOf(t.technology) < 0)
+                if (bookmarked && t.id.every(function (id) { return bookmarks.indexOf(id) < 0; }))
                     return false;
                 if ((boosterFilter && boosterFilter === 1 && !t.booster) ||
                     (boosterFilter === 2 && t.booster))
@@ -16888,8 +16888,8 @@ var TechnologyPage = function () {
                         ]),
                         curTech.application && (0, mithril_1.default)('h4', md(curTech.application)),
                         (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin0', allTechnologies.length === 1
-                            ? (0, mithril_1.default)('h5.orange.separator', 'Description')
-                            : (0, mithril_1.default)('h5.orange.separator.button-row', __spreadArray([
+                            ? (0, mithril_1.default)('h5.separator', 'Description')
+                            : (0, mithril_1.default)('h5.separator.button-row', __spreadArray([
                                 'Description'
                             ], allTechnologies.map(function (t, i) {
                                 return (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
@@ -16937,7 +16937,7 @@ var TechnologyPage = function () {
                                 alt: curTech.technology,
                             })),
                         (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.bottom-margin0', [
-                            (0, mithril_1.default)('h5.orange.separator', 'How it works'),
+                            (0, mithril_1.default)('h5.separator', 'How it works'),
                             curTech.mechanism &&
                                 (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Mechanism: '), md(curTech.mechanism)]),
                             curTech.examples &&
@@ -16946,7 +16946,7 @@ var TechnologyPage = function () {
                                 (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Incubation: '), md(curTech.incubation)]),
                             curTech.effectDuration &&
                                 (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Effect duration: '), md(curTech.effectDuration)]),
-                            (0, mithril_1.default)('h5.orange.separator', 'Keep in mind'),
+                            (0, mithril_1.default)('h5.separator', 'Keep in mind'),
                             curTech.practical &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold[title=This information is not medical advice, please read the disclaimer!]', mithril_1.default.trust('Practical execution<sup class="red-text">*</sup>: ')),
@@ -16988,7 +16988,7 @@ var TechnologyPage = function () {
                                     (0, mithril_1.default)('span.bold', 'Availability: '),
                                     (0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, curTech.availability) + '.',
                                 ]),
-                            (0, mithril_1.default)('h5.orange.separator', 'References'),
+                            (0, mithril_1.default)('h5.separator', 'References'),
                         ])),
                         (0, mithril_1.default)('.col.s6.m8', (0, mithril_1.default)('.row', [
                             usedLiterature && [
@@ -17539,9 +17539,9 @@ var appActions = function (_a) {
             model.lastUpdate = Date.now();
             model.version = model.version ? ++model.version : 1;
             if (model.technologies)
-                model.technologies.sort(function (a, b) { return a.technology.localeCompare(b.technology); });
+                model.technologies.sort(function (a, b) { return (a.technology || '').localeCompare(b.technology || ''); });
             local_ldb_1.ldb.set(MODEL_KEY, JSON.stringify(model));
-            console.log(JSON.stringify(model, null, 2));
+            // console.log(JSON.stringify(model, null, 2));
             update({ model: function () { return model; } });
         },
         saveCurUser: function (curUser) {
@@ -18671,14 +18671,6 @@ module.exports = __webpack_require__.p + "682f370b71a2168f21f2.jpg";
 
 /***/ }),
 
-/***/ 9574:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-module.exports = __webpack_require__.p + "bcdcd2724cc8e9f700e1.svg";
-
-/***/ }),
-
 /***/ 1972:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
@@ -18700,6 +18692,14 @@ module.exports = __webpack_require__.p + "b08b9fdad985ae5003ec.webp";
 
 "use strict";
 module.exports = __webpack_require__.p + "49b108a6d14b6bad0e6d.webp";
+
+/***/ }),
+
+/***/ 1555:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 
 /***/ })
 
