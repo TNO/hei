@@ -1,6 +1,6 @@
 import m from 'mithril';
 import { Icon } from 'mithril-materialized';
-import logo from '../assets/logo.svg';
+import logo from '../assets/tno.svg';
 import { Dashboards, IDashboard } from '../models';
 import { routingSvc } from '../services/routing-service';
 import { MeiosisComponent } from '../services';
@@ -23,7 +23,7 @@ export const Layout: MeiosisComponent = () => ({
           'nav',
           m('.nav-wrapper', [
             m('a.brand-logo[href=#].hide-on-small', { style: 'margin-left: 20px' }, [
-              m(`img[width=50][height=50][src=${logo}]`, {
+              m(`img[width=60][height=60][src=${logo}]`, {
                 style: 'margin-top: 5px; margin-left: -5px;',
               }),
               // m(

@@ -178,7 +178,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         ) {
           return false;
         }
-        if (bookmarked && bookmarks.indexOf(t.technology) < 0) return false;
+        if (bookmarked && t.id.every((id) => bookmarks.indexOf(id) < 0)) return false;
         if (
           (boosterFilter && boosterFilter === 1 && !t.booster) ||
           (boosterFilter === 2 && t.booster)

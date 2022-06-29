@@ -50,9 +50,9 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
     model.lastUpdate = Date.now();
     model.version = model.version ? ++model.version : 1;
     if (model.technologies)
-      model.technologies.sort((a, b) => a.technology.localeCompare(b.technology));
+      model.technologies.sort((a, b) => (a.technology || '').localeCompare(b.technology || ''));
     ldb.set(MODEL_KEY, JSON.stringify(model));
-    console.log(JSON.stringify(model, null, 2));
+    // console.log(JSON.stringify(model, null, 2));
     update({ model: () => model });
   },
   saveCurUser: (curUser: string) => {

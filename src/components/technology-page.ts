@@ -144,8 +144,8 @@ export const TechnologyPage: MeiosisComponent = () => {
                   m(
                     '.row.bottom-margin0',
                     allTechnologies.length === 1
-                      ? m('h5.orange.separator', 'Description')
-                      : m('h5.orange.separator.button-row', [
+                      ? m('h5.separator', 'Description')
+                      : m('h5.separator.button-row', [
                           'Description',
                           ...allTechnologies.map((t, i) =>
                             m(FlatButton, {
@@ -214,7 +214,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                 m(
                   '.col.s12',
                   m('.row.bottom-margin0', [
-                    m('h5.orange.separator', 'How it works'),
+                    m('h5.separator', 'How it works'),
                     curTech.mechanism &&
                       m('p', [m('span.bold', 'Mechanism: '), md(curTech.mechanism)]),
                     curTech.examples &&
@@ -223,7 +223,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       m('p', [m('span.bold', 'Incubation: '), md(curTech.incubation)]),
                     curTech.effectDuration &&
                       m('p', [m('span.bold', 'Effect duration: '), md(curTech.effectDuration)]),
-                    m('h5.orange.separator', 'Keep in mind'),
+                    m('h5.separator', 'Keep in mind'),
                     curTech.practical &&
                       m('p', [
                         m(
@@ -279,7 +279,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                         m('span.bold', 'Availability: '),
                         getOptionsLabel(availabilityOptions, curTech.availability) + '.',
                       ]),
-                    m('h5.orange.separator', 'References'),
+                    m('h5.separator', 'References'),
                   ])
                 ),
                 m(

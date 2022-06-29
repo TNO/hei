@@ -646,3 +646,7 @@ a.clean.btn-large:hover,
 a.clean.btn-small:hover {
   background-color: white;
 }
+.separator {
+  background-color: #7aaed5;
+  color: white;
+}
