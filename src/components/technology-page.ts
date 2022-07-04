@@ -271,7 +271,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       ]),
                     curTech.evidenceScore &&
                       m('p', [
-                        m('span.bold', 'Evidence score: '),
+                        m('span.bold', 'Quality of evidence: '),
                         getOptionsLabel(evidenceLevelOptions, curTech.evidenceScore) + '.',
                       ]),
                     curTech.availability &&

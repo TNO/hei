@@ -4,7 +4,10 @@ import { LayoutForm, UIForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import {
   AVAILABILITY,
+  CHOICE,
   Dashboards,
+  EVIDENCE_DIRECTION,
+  EVIDENCE_LEVEL,
   HPE_CLASSIFICATION,
   INVASIVENESS_OBTRUSIVENESS,
   MAIN_CAPABILITY,
@@ -12,10 +15,12 @@ import {
   SPECIFIC_CAPABILITY,
   Technology,
   TECHNOLOGY_CATEGORY,
+  YES_NO,
 } from '../models';
 import { MeiosisComponent, routingSvc } from '../services';
 import {
   availabilityOptions,
+  boosterOptions,
   evidenceDirOptions,
   evidenceLevelOptions,
   getOptionsLabel,
@@ -44,11 +49,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
   const ethicalOpt = toOptions(NoYesUnknown);
   const evidenceDirOpt = toOptions(evidenceDirOptions);
   const evidenceQualityOpt = toOptions(evidenceLevelOptions);
-  const boosterOpt = [
-    { id: 0, label: '-' },
-    { id: 1, label: 'Yes' },
-    { id: 2, label: 'No' },
-  ];
+  const boosterOpt = toOptions(boosterOptions);
 
   const toTechnologies = (allTech: Technology[]) =>
     Object.values(
@@ -69,6 +70,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           availability,
           maturity,
           specificCap,
+          hasEthical,
+          evidenceDir,
+          evidenceScore,
         } = cur;
         const key = technology;
         if (acc.hasOwnProperty(key)) {
@@ -84,6 +88,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           acc[key].availability.push(availability);
           acc[key].maturity.push(maturity);
           acc[key].capabilities.push(specificCap);
+          acc[key].ethicalConsiderations.push(hasEthical);
+          acc[key].evidenceDir.push(evidenceDir);
+          acc[key].evidenceScore.push(evidenceScore);
         } else {
           acc[key] = {
             curTech: cur,
@@ -102,6 +109,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             availability: [availability],
             maturity: [maturity],
             capabilities: [specificCap],
+            ethicalConsiderations: [],
+            evidenceDir: [],
+            evidenceScore: [],
           };
         }
         return acc;
@@ -125,6 +135,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     maturity: MATURITY[];
     availability: AVAILABILITY[];
     capabilities: SPECIFIC_CAPABILITY[];
+    ethicalConsiderations: CHOICE[];
+    evidenceDir: EVIDENCE_DIRECTION[];
+    evidenceScore: EVIDENCE_LEVEL[];
   };
 
   let technologies = [] as TECHNOLOGY_COMBINATION[];
@@ -199,6 +212,23 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         if (availabilityFilter && !t.availability.some((c) => c === availabilityFilter)) {
           return false;
         }
+        if (
+          boosterFilter &&
+          !t.booster.some(
+            (c) => (boosterFilter === YES_NO.YES && c) || (boosterFilter === YES_NO.NO && !c)
+          )
+        ) {
+          return false;
+        }
+        if (ethicalFilter && !t.ethicalConsiderations.some((c) => c === ethicalFilter)) {
+          return false;
+        }
+        if (evidenceDirFilter && !t.evidenceDir.some((c) => c === evidenceDirFilter)) {
+          return false;
+        }
+        if (evidenceQualityFilter && !t.evidenceScore.some((c) => c === evidenceQualityFilter)) {
+          return false;
+        }
         return true;
       });
       const hasFilters = true; // Object.keys(searchFilters).some((f) => !f);
@@ -218,6 +248,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   label: 'Search',
                   iconName: 'search',
                   className: 'bottom-margin0',
+                  initialValue: searchFilter,
                   oninput: (s) => {
                     searchFilters.searchFilter = s || '';
                     setSearchFilters(searchFilters);
@@ -314,6 +345,28 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                     'i.close.material-icons',
                     {
                       onclick: () => setSearchFilters({ ...searchFilters, availabilityFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+              boosterFilter > 0 &&
+                m('.chip', [
+                  `Booster: ${getOptionsLabel(boosterOptions, boosterFilter, false)}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, boosterFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+              ethicalFilter > 0 &&
+                m('.chip', [
+                  `Booster: ${getOptionsLabel(ethicalOpt, ethicalFilter, false)}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, ethicalFilter: 0 }),
                     },
                     'close'
                   ),
@@ -461,7 +514,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 },
                 {
                   id: 'evidenceDirFilter',
-                  label: 'Evidence direction',
+                  label: 'Evidence indication',
                   className: 'col s12 m6',
                   options: evidenceDirOpt,
                   description: evidenceDirFilter

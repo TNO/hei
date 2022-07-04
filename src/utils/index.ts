@@ -169,134 +169,280 @@ export const mainCapabilityOptions = [
     id: MAIN_CAPABILITY.COGNITION,
     label: 'Cognition',
     title:
-      'The capability to perform intellectual functions and activities such as thinking, planning, maintaining situation awareness, vigilance, perception and memory.',
+      'The capability to perform intellectual functions and activities such as thinking, planning, maintaining situation awareness, vigilance, perception and memory',
   },
   {
     id: MAIN_CAPABILITY.PHYSICAL,
     label: 'Physical',
     title:
-      'The capability to perform body movements at, for instance, high speed, accuracy, strength or with long endurance. ',
+      'The capability to perform body movements at, for instance, high speed, accuracy, strength or with long endurance',
   },
   {
     id: MAIN_CAPABILITY.MENTAL,
     label: 'Mental',
     title:
-      'The capability to achieve an optimal emotional and motivational state, for instance through self-confidence or mental thoughness.',
+      'The capability to achieve an optimal emotional and motivational state, for instance through self-confidence or mental thoughness',
   },
   {
     id: MAIN_CAPABILITY.SOCIAL,
     label: 'Social',
     title:
-      'The capability to achieve goals with others, for instance through leadership, team situational awareness, or connectedness.',
+      'The capability to achieve goals with others, for instance through leadership, team situational awareness, or connectedness',
   },
   {
     id: MAIN_CAPABILITY.PERSONALITY,
     label: 'Personality',
     title:
-      'Having an optimal, long-term, style of thinking, feeling and behaving. Examples include dispositional optimism, internal locus of control, self-regulation, and anxiety sensitivity.',
+      'Having an optimal, long-term, style of thinking, feeling and behaving. Examples include dispositional optimism, internal locus of control, self-regulation, and anxiety sensitivity',
   },
 ];
 
 export const specificCapabilityOptions = [
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.SITUATION_AWARENESS,
-    label: 'Situation awareness',
+    label: 'Improved situation awareness',
     title:
-      'The perception of environmental elements and events with respect to time or space, the comprehension of their meaning, and the projection of their future status.',
+      'The perception of environmental elements and events with respect to time or space, the comprehension of their meaning, and the projection of their future status',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.EXECUTIVE_FUNCTIONS,
-    label: 'Executive functions',
+    label: 'Improved executive functions',
     title:
-      'Executive functions (collectively referred to as executive function and cognitive control) are a set of cognitive processes that are necessary for the cognitive control of behavior: selecting and successfully monitoring behaviors that facilitate the attainment of chosen goals. Executive functions include basic cognitive processes such as attentional control, cognitive inhibition, inhibitory control, working memory, and cognitive flexibility.',
+      'Executive functions (collectively referred to as executive function and cognitive control) are a set of cognitive processes that are necessary for the cognitive control of behavior: selecting and successfully monitoring behaviors that facilitate the attainment of chosen goals. Executive functions include basic cognitive processes such as attentional control, cognitive inhibition, inhibitory control, working memory, and cognitive flexibility',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.LONG_TERM_MEMORY,
-    label: 'Long term memory',
+    label: 'Increased long-term memory',
     title:
-      'Long-term memory allows us to store information for long periods of time. This information may be retrieved consciously (explicit memory) or unconsciously (implicit memory).',
+      'Long-term memory allows us to store information for long periods of time. This information may be retrieved consciously (explicit memory) or unconsciously (implicit memory)',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.SHORT_TERM_MEMORY,
-    label: 'Short term memory',
+    label: 'Increased short-term memory',
     title:
-      'Short-term memory refers to the information processed by the individual in a short period of time. Working memory performs this processing.',
+      'Short-term memory refers to the information processed by the individual in a short period of time. Working memory performs this processing',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.DECLARATIVE_MEMORY,
-    label: 'Declarative memory',
+    label: 'Increased declarative memory',
     title:
-      'What defines declarative memory is the ability to consciously recollect the situation in which you learned something new. ',
+      'What defines declarative memory is the ability to consciously recollect the situation in which you learned something new',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.VIGILANCE,
-    label: 'Vigilance',
-    title: 'Vigilance is devoted attentiveness or watchfulness.',
+    label: 'Increased vigilance',
+    title: 'Vigilance is devoted attentiveness or watchfulness',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.PSYCHOMOTOR,
-    label: 'Psychomotor',
+    label: 'Increased psychomotor ability',
     title:
-      'any ability (e.g., handwriting, drawing, driving a car) whose performance draws on a combined and coordinated set of cognitive and motor processes',
+      'Any ability (e.g., handwriting, drawing, driving a car) whose performance draws on a combined and coordinated set of cognitive and motor processes',
   },
   {
+    mc: MAIN_CAPABILITY.COGNITION,
+    id: SPECIFIC_CAPABILITY.ATTENTION,
+    label: 'Increased attention',
+    title:
+      'Attention is the ability to focus and maintain interest in a given task or idea while avoiding distractions',
+  },
+  {
+    mc: MAIN_CAPABILITY.COGNITION,
+    id: SPECIFIC_CAPABILITY.SPEECH,
+    label: 'Improved speech',
+    title: 'The delivery of language through the mouth',
+  },
+  {
+    mc: MAIN_CAPABILITY.COGNITION,
+    id: SPECIFIC_CAPABILITY.LEARNING,
+    label: 'Increased learning',
+    title: 'The acquisition of knowledge or skills through study, experience, or being taught',
+  },
+  {
+    mc: MAIN_CAPABILITY.COGNITION,
+    id: SPECIFIC_CAPABILITY.ARITHMETIC,
+    label: 'Increased arithmetic ability',
+    title:
+      'The branch of mathematics concerned with numerical calculations, such as addition, subtraction, multiplication, and division',
+  },
+  {
+    mc: MAIN_CAPABILITY.COGNITION,
+    id: SPECIFIC_CAPABILITY.WORKING_MEMORY,
+    label: 'Increased working memory',
+    title: 'Memory as it is used to plan and carry out behavior',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.STRENGTH,
+    label: 'Increased strength',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.ENDURANCE,
+    label: 'Increased endurance',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.RECOVERY,
+    label: 'Increased recovery',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.STRUCTURAL_TOUGHNESS,
+    label: 'Increased structural toughness',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.THERMO_REGULATION,
+    label: 'Increased thermoregulation',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.BLOOD_PRESSURE_REGULATION,
+    label: 'Improved blood pressure regulation',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.IMMUNITY,
+    label: 'Inreased immunity',
+    title: '',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.PAIN,
+    label: 'Decreased pain',
+    title:
+      'Potentially damaging mechanical, thermal, and chemical stimuli are detected by nerve endings called nociceptors, which are found in the skin, on internal surfaces such as the periosteum, joint surfaces, and in some internal organs',
+  },
+  {
+    mc: MAIN_CAPABILITY.PHYSICAL,
     id: SPECIFIC_CAPABILITY.VISUAL_PERCEPTION,
-    label: 'Visual perception',
+    label: 'Increased visual perception',
     title:
       'Visual perception is the ability to perceive our surroundings through the light that enters our eyes',
   },
   {
+    mc: MAIN_CAPABILITY.PHYSICAL,
     id: SPECIFIC_CAPABILITY.AUDITORY_PERCEPTION,
-    label: 'Auditory perception',
+    label: 'Increased auditory perception',
     title:
       'Auditory perception could be defined as the ability to receive and interpret information that reached the ears through audible frequency waves transmitted through the air or other means.',
   },
   {
+    mc: MAIN_CAPABILITY.PHYSICAL,
     id: SPECIFIC_CAPABILITY.TACTILE_PERCEPTION,
-    label: 'Tactile perception',
-    title: 'the ability to perceive objects or judge sensations through the sense of touch.',
+    label: 'Increased tactile perception',
+    title: 'The ability to perceive objects or judge sensations through the sense of touch.',
   },
   {
-    id: SPECIFIC_CAPABILITY.PAIN,
-    label: 'Pain',
-    title:
-      'Potentially damaging mechanical, thermal, and chemical stimuli are detected by nerve endings called nociceptors, which are found in the skin, on internal surfaces such as the periosteum, joint surfaces, and in some internal organs. ',
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.EMOTION_REGULATION,
+    label: 'Improved emotion regulation',
   },
   {
-    id: SPECIFIC_CAPABILITY.ATTENTION,
-    label: 'Attention',
-    title:
-      'attention is the ability to focus and maintain interest in a given task or idea while avoiding distractions.',
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.STRESS,
+    label: 'Decreased stress',
   },
   {
-    id: SPECIFIC_CAPABILITY.SPEECH,
-    label: 'Speech',
-    title: 'The delivering of language through the mouth',
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.RESILIENCE,
+    label: 'Improved resilience',
   },
   {
-    id: SPECIFIC_CAPABILITY.LEARNING,
-    label: 'Learning',
-    title: 'the acquisition of knowledge or skills through study, experience, or being taught.',
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.MOTIVATION,
+    label: 'Increased motivation',
   },
   {
-    id: SPECIFIC_CAPABILITY.ARITHMETIC,
-    label: 'Arithmetic',
-    title:
-      'the branch of mathematics concerned with numerical calculations, such as addition, subtraction, multiplication, and division',
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.SELF_ESTEEM,
+    label: 'Increased self-esteem',
   },
   {
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.SENSE_OF_FATIGUE,
+    label: 'Decreased sense of fatigue',
+  },
+  {
+    mc: MAIN_CAPABILITY.SOCIAL,
+    id: SPECIFIC_CAPABILITY.COLLABORATION,
+    label: 'Increased collaboration',
+  },
+  {
+    mc: MAIN_CAPABILITY.SOCIAL,
+    id: SPECIFIC_CAPABILITY.COMMUNICATION,
+    label: 'Improved communication',
+  },
+  {
+    mc: MAIN_CAPABILITY.SOCIAL,
+    id: SPECIFIC_CAPABILITY.SOCIAL_INTELLIGENCE,
+    label: 'Improved social intelligence',
+  },
+  {
+    mc: MAIN_CAPABILITY.SOCIAL,
     id: SPECIFIC_CAPABILITY.SOCIAL_INTERACTION,
     label: 'Social interaction',
-    title:
-      'A social skill is any competence facilitating interaction and communication with others where social rules and relations are created, communicated, and changed in verbal and nonverbal ways',
   },
-  { id: SPECIFIC_CAPABILITY.RECOVERY, label: 'Recovery', title: '' },
   {
-    id: SPECIFIC_CAPABILITY.WORKING_MEMORY,
-    label: 'Working memory',
-    title: 'memory as it is used to plan and carry out behavior.',
+    mc: MAIN_CAPABILITY.SOCIAL,
+    id: SPECIFIC_CAPABILITY.EMPATHY,
+    label: 'Increased empathy',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.LEADERSHIP,
+    label: 'Improved leadership',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.OBEDIENCE,
+    label: 'Increased obedience',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.RISK_TAKING,
+    label: 'Increased risk-taking',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.PERSISTANCE,
+    label: 'Increased persistance',
   },
 ];
+
+export const specificCognitiveCapabilityOptions = specificCapabilityOptions.filter(
+  ({ mc }) => mc === MAIN_CAPABILITY.COGNITION
+);
+
+export const specificPhysicalCapabilityOptions = specificCapabilityOptions.filter(
+  ({ mc }) => mc === MAIN_CAPABILITY.PHYSICAL
+);
+
+export const specificMentalCapabilityOptions = specificCapabilityOptions.filter(
+  ({ mc }) => mc === MAIN_CAPABILITY.MENTAL
+);
+
+export const specificSocialCapabilityOptions = specificCapabilityOptions.filter(
+  ({ mc }) => mc === MAIN_CAPABILITY.SOCIAL
+);
+
+export const specificPersonalityCapabilityOptions = specificCapabilityOptions.filter(
+  ({ mc }) => mc === MAIN_CAPABILITY.PERSONALITY
+);
 
 export const invasivenessOptions = [
   {
@@ -307,12 +453,12 @@ export const invasivenessOptions = [
   {
     id: INVASIVENESS_OBTRUSIVENESS.MEDIUM,
     label: 'Medium',
-    title: 'Supplements, heavy training, interventions with low risk',
+    title: 'Supplement, heavy training, intervention with low risk',
   },
   {
     id: INVASIVENESS_OBTRUSIVENESS.HIGH,
     label: 'High',
-    title: 'High-impact pharma, implants, body modifications, interventions with high risk or pain',
+    title: 'High-impact pharma, implant, body modification, intervention with high risk or pain',
   },
 ];
 
@@ -341,7 +487,7 @@ export const effectDirectionOptions = [
   {
     id: EFFECT_DIRECTION.NEGATIVE,
     label: 'Negative',
-    title: 'The technology descreases a subjects capability level',
+    title: 'The technology decreases a subjects capability level',
   },
   {
     id: EFFECT_DIRECTION.POSITIVE,
@@ -353,33 +499,34 @@ export const effectDirectionOptions = [
 export const evidenceDirOptions = [
   {
     id: EVIDENCE_DIRECTION.GENERALLY_IN_FAVOR,
-    label: '(Generally) in favor',
+    label: 'Effect present',
     title: 'Evidence generally indicates the presence of an effect',
   },
   {
     id: EVIDENCE_DIRECTION.GENERALLY_AGAINST,
-    label: '(Generally) against',
-    title: 'Evidence generally indicates the absence of an effect (evidence is very mixed)',
+    label: 'Effect absent',
+    title: 'Evidence generally indicates the absence of an effect',
   },
   {
     id: EVIDENCE_DIRECTION.UNDECIDED,
     label: 'Undecided',
-    title: 'Not enough evidence to suggest the presence or absence of an effect',
+    title: 'Evidence indicates neither presence nor absence of an effect',
   },
 ];
 
 export const evidenceLevelOptions = [
   {
     id: EVIDENCE_LEVEL.GOOD,
-    label: 'Good',
-    title: 'Based on consistent and good quality evidence',
+    label: 'High',
+    title:
+      'Based on good quality research: meta-analyses, large sample sizes, randomized controlled trials, controlled environments, peer-reviewed',
   },
   {
     id: EVIDENCE_LEVEL.MEDIUM,
     label: 'Medium',
-    title: 'Based on inconsistent or limited-quality evidence',
+    title: 'Based on limited-quality research: smaller sample sizes, explorative studies, pilots',
   },
-  { id: EVIDENCE_LEVEL.LOW, label: 'Low', title: 'Based on consensus, usual practice, opinion.' },
+  { id: EVIDENCE_LEVEL.LOW, label: 'Low', title: 'Based on consensus, usual practice, opinion' },
 ];
 
 export const availabilityOptions = [
@@ -391,6 +538,11 @@ export const availabilityOptions = [
   { id: AVAILABILITY.YES_OUTSIDE_THE_EU, label: 'Yes, outside the EU' },
   { id: AVAILABILITY.NO, label: 'No' },
   { id: AVAILABILITY.UNKNOWN, label: 'Unknown' },
+];
+
+export const boosterOptions = [
+  { id: 1, label: 'Yes', title: 'The technology can be applied quickly (approx. < 1 hour)' },
+  { id: 2, label: 'No', title: 'The technology can not be applied quickly (approx. < 1 hour)' },
 ];
 
 const literatureTypeOptions = [
@@ -525,11 +677,53 @@ export const technologyForm = (
     },
     {
       id: 'specificCap',
-      label: 'Specific capability',
-      type: 'select',
+      label: 'Specific cognitive capabilities',
+      type: 'options',
       multiple: true,
-      options: specificCapabilityOptions,
+      options: specificCognitiveCapabilityOptions,
       className: 'col s12',
+      checkboxClass: 'col s4',
+      show: 'mainCap = 1',
+    },
+    {
+      id: 'specificCap',
+      label: 'Specific physical capabilities',
+      type: 'options',
+      multiple: true,
+      options: specificPhysicalCapabilityOptions,
+      className: 'col s12',
+      checkboxClass: 'col s4',
+      show: 'mainCap = 2',
+    },
+    {
+      id: 'specificCap',
+      label: 'Specific mental capabilities',
+      type: 'options',
+      multiple: true,
+      options: specificMentalCapabilityOptions,
+      className: 'col s12',
+      checkboxClass: 'col s4',
+      show: 'mainCap = 3',
+    },
+    {
+      id: 'specificCap',
+      label: 'Specific social capabilities',
+      type: 'options',
+      multiple: true,
+      options: specificSocialCapabilityOptions,
+      className: 'col s12',
+      checkboxClass: 'col s4',
+      show: 'mainCap = 4',
+    },
+    {
+      id: 'specificCap',
+      label: 'Specific personality capabilities',
+      type: 'options',
+      multiple: true,
+      options: specificPersonalityCapabilityOptions,
+      className: 'col s12',
+      checkboxClass: 'col s4',
+      show: 'mainCap = 5',
     },
     {
       id: 'similar',
@@ -627,7 +821,7 @@ export const technologyForm = (
     },
     {
       id: 'evidenceDir',
-      label: 'Evidence direction',
+      label: 'Evidence indication',
       type: 'select',
       className: 'col s12 m2',
       options: evidenceDirOptions,
@@ -641,7 +835,7 @@ export const technologyForm = (
     },
     // {
     //   id: 'evidenceScore',
-    //   label: 'Evidence score',
+    //   label: 'Quality of evidence',
     //   type: 'radio',
     //   checkboxClass: 'col s4',
     //   className: 'col s12',
