@@ -30,6 +30,12 @@ import {
   mainCapabilityOptions,
   maturityOptions,
   NoYesUnknown,
+  specificCapabilityOptions,
+  specificCognitiveCapabilityOptions,
+  specificMentalCapabilityOptions,
+  specificPersonalityCapabilityOptions,
+  specificPhysicalCapabilityOptions,
+  specificSocialCapabilityOptions,
   technologyCategoryOptions,
 } from '../utils';
 import { TextInputWithClear } from './ui';
@@ -82,6 +88,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           keywords && acc[key].desc.push(...keywords);
           acc[key].booster.push(booster);
           acc[key].mainCap.push(mainCap);
+          acc[key].specificCap.push(specificCap);
           acc[key].hpeClassification.push(hpeClassification);
           acc[key].category.push(category);
           acc[key].invasive.push(invasive);
@@ -103,6 +110,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             keywords: keywords && keywords.length ? [...keywords] : [],
             booster: [booster],
             mainCap: [mainCap],
+            specificCap: [specificCap],
             hpeClassification: [hpeClassification],
             category: [category],
             invasive: [invasive],
@@ -129,6 +137,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     keywords: string[];
     booster: boolean[];
     mainCap: MAIN_CAPABILITY[];
+    specificCap: SPECIFIC_CAPABILITY[];
     hpeClassification: HPE_CLASSIFICATION[];
     category: TECHNOLOGY_CATEGORY[];
     invasive: INVASIVENESS_OBTRUSIVENESS[];
@@ -151,7 +160,6 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     }) => {
       const { technologies: allTech = [] } = model;
       technologies = toTechnologies(allTech);
-      console.log(technologies);
       setPage(Dashboards.TECHNOLOGIES);
     },
     view: ({
@@ -167,6 +175,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
       const {
         searchFilter,
         mainCapFilter,
+        specificCapFilter,
         categoryFilter,
         invasivenessFilter,
         maturityFilter,
@@ -198,6 +207,9 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         )
           return false;
         if (mainCapFilter && !t.mainCap.some((c) => c === mainCapFilter)) {
+          return false;
+        }
+        if (specificCapFilter && !t.specificCap.some((c) => c === specificCapFilter)) {
           return false;
         }
         if (categoryFilter && !t.category.some((c) => c === categoryFilter)) {
@@ -240,7 +252,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             m(
               '.row.search-filters',
               m(
-                '.col.s6.m3.xl2',
+                '.col.s6.m4.xl3',
                 {
                   style: 'height: 81px',
                 },
@@ -257,8 +269,15 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 })
               ),
               m(
-                '.col.s6.m3.xl2',
-                m(FlatButton, { modalId: 'search', label: 'Specify search parameters' })
+                '.col.s6.m2.xl1',
+                {
+                  style: 'height: 81px',
+                },
+                m(FlatButton, {
+                  modalId: 'search',
+                  iconName: 'manage_search',
+                  label: 'Adv. search',
+                })
               ),
               m('.col.s6.m3.xl2', [
                 m(Switch, {
@@ -296,6 +315,19 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     { onclick: () => setSearchFilters({ ...searchFilters, mainCapFilter: 0 }) },
+                    'close'
+                  ),
+                ]),
+              specificCapFilter > 0 &&
+                m('.chip', [
+                  `Spec.cap.: ${getOptionsLabel(
+                    specificCapabilityOptions,
+                    specificCapFilter,
+                    false
+                  )}`,
+                  m(
+                    'i.close.material-icons',
+                    { onclick: () => setSearchFilters({ ...searchFilters, specificCapFilter: 0 }) },
                     'close'
                   ),
                 ]),
@@ -362,7 +394,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 ]),
               ethicalFilter > 0 &&
                 m('.chip', [
-                  `Booster: ${getOptionsLabel(ethicalOpt, ethicalFilter, false)}`,
+                  `Ethical: ${getOptionsLabel(NoYesUnknown, ethicalFilter, false)}`,
                   m(
                     'i.close.material-icons',
                     {
@@ -371,11 +403,42 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                     'close'
                   ),
                 ]),
+              evidenceDirFilter > 0 &&
+                m('.chip', [
+                  `Evidence indication: ${getOptionsLabel(
+                    evidenceDirOptions,
+                    evidenceDirFilter,
+                    false
+                  )}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () => setSearchFilters({ ...searchFilters, evidenceDirFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
+              evidenceQualityFilter > 0 &&
+                m('.chip', [
+                  `Evidence quality: ${getOptionsLabel(
+                    evidenceLevelOptions,
+                    evidenceQualityFilter,
+                    false
+                  )}`,
+                  m(
+                    'i.close.material-icons',
+                    {
+                      onclick: () =>
+                        setSearchFilters({ ...searchFilters, evidenceQualityFilter: 0 }),
+                    },
+                    'close'
+                  ),
+                ]),
             ]),
           filteredTechnologies.map((t) => {
             const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
             return m(
-              '.col.s12.m6.l3.xl2',
+              '.col.s12.m6.l4.xl3',
               m('.card.medium', [
                 m('.card-image', [
                   m(
@@ -452,16 +515,64 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'mainCapFilter',
                   label: 'Main capability',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: mainCapOpt,
                   description: mainCapFilter
                     ? mainCapOpt.filter((o) => +o.id === mainCapFilter).shift()?.title
                     : undefined,
                 },
                 {
+                  id: 'specificCapFilter',
+                  label: 'Specific capabilities',
+                  type: 'select',
+                  options: specificCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  disable: !(mainCapFilter > 0),
+                },
+                {
+                  id: 'specificCapFilter',
+                  label: 'Specific cognitive capabilities',
+                  type: 'select',
+                  options: specificCognitiveCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  show: 'mainCapFilter = 1',
+                },
+                {
+                  id: 'specificCapFilter',
+                  label: 'Specific physical capabilities',
+                  type: 'select',
+                  options: specificPhysicalCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  show: 'mainCapFilter = 2',
+                },
+                {
+                  id: 'specificCapFilter',
+                  label: 'Specific mental capabilities',
+                  type: 'select',
+                  options: specificMentalCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  show: 'mainCapFilter = 3',
+                },
+                {
+                  id: 'specificCapFilter',
+                  label: 'Specific social capabilities',
+                  type: 'select',
+                  options: specificSocialCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  show: 'mainCapFilter = 4',
+                },
+                {
+                  id: 'specificCapFilter',
+                  label: 'Specific personality capabilities',
+                  type: 'select',
+                  options: specificPersonalityCapabilityOptions,
+                  className: 'col s12 m6 l3',
+                  show: 'mainCapFilter = 5',
+                },
+                {
                   id: 'categoryFilter',
                   label: 'Category',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: techCatOpt,
                   description: categoryFilter
                     ? techCatOpt.filter((o) => +o.id === categoryFilter).shift()?.title
@@ -470,7 +581,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'invasivenessFilter',
                   label: 'Invasiveness',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: invasivenessOpt,
                   description: invasivenessFilter
                     ? invasivenessOpt.filter((o) => +o.id === invasivenessFilter).shift()?.title
@@ -479,7 +590,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'maturityFilter',
                   label: 'Maturity',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: maturityOpt,
                   description: maturityFilter
                     ? maturityOpt.filter((o) => +o.id === maturityFilter).shift()?.title
@@ -488,7 +599,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'availabilityFilter',
                   label: 'Availability',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: availabilityOpt,
                   // description: availabilityFilter
                   //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
@@ -497,7 +608,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'boosterFilter',
                   label: 'Booster',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: boosterOpt,
                   // description: boosterFilter
                   //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
@@ -506,7 +617,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'ethicalFilter',
                   label: 'Ethical considerations',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: ethicalOpt,
                   description: ethicalFilter
                     ? ethicalOpt.filter((o) => +o.id === ethicalFilter).shift()?.title
@@ -515,7 +626,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'evidenceDirFilter',
                   label: 'Evidence indication',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: evidenceDirOpt,
                   description: evidenceDirFilter
                     ? evidenceDirOpt.filter((o) => +o.id === evidenceDirFilter).shift()?.title
@@ -524,7 +635,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'evidenceQualityFilter',
                   label: 'Evidence quality',
-                  className: 'col s12 m6',
+                  className: 'col s12 m6 l3',
                   options: evidenceQualityOpt,
                   description: evidenceQualityFilter
                     ? evidenceQualityOpt.filter((o) => +o.id === evidenceQualityFilter).shift()

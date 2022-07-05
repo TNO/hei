@@ -1,6 +1,7 @@
 export type SearchFilter = {
   searchFilter: string;
   mainCapFilter: number;
+  specificCapFilter: number;
   categoryFilter: number;
   invasivenessFilter: number;
   maturityFilter: number;

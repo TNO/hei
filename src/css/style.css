@@ -650,3 +650,12 @@ a.clean.btn-small:hover {
   background-color: #7aaed5;
   color: white;
 }
+
+#search .dropdown-content {
+  overflow: visible;
+}
+
+#search,
+#search .modal-content {
+  overflow-y: visible;
+}
