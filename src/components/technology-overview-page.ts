@@ -527,7 +527,8 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   type: 'select',
                   options: specificCapabilityOptions,
                   className: 'col s12 m6 l3',
-                  disable: !(mainCapFilter > 0),
+                  disabled: true,
+                  show: ['mainCapFilter = 0', '!mainCapFilter'],
                 },
                 {
                   id: 'specificCapFilter',
