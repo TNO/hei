@@ -15874,6 +15874,176 @@ exports.AboutPage = AboutPage;
 
 /***/ }),
 
+/***/ 3744:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ComparisonPage = void 0;
+var mithril_1 = __importDefault(__webpack_require__(9402));
+var models_1 = __webpack_require__(7396);
+var mithril_materialized_1 = __webpack_require__(6777);
+var utils_1 = __webpack_require__(6679);
+var mithril_ui_form_1 = __webpack_require__(7248);
+var ComparisonPage = function () {
+    var isInitialized = false;
+    var technologyLookup = {};
+    var autocompleteData = {};
+    var toName = function (t) {
+        return "".concat(t.technology, ": ").concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false));
+    };
+    var initialize = function (model) {
+        var technologies = model.technologies;
+        if (technologies.length === 0)
+            return;
+        technologies.forEach(function (cur) {
+            var counter = 1;
+            var name = toName(cur);
+            while (technologyLookup[name]) {
+                name = "".concat(toName(cur), " (").concat(counter++, ")");
+            }
+            technologyLookup[cur.id] = { name: name, technology: cur };
+            technologyLookup[name] = { name: cur.id };
+            autocompleteData[name] = null;
+        });
+        isInitialized = true;
+    };
+    return {
+        oninit: function (_a) {
+            var setPage = _a.attrs.actions.setPage;
+            setPage(models_1.Dashboards.COMPARE);
+        },
+        view: function (_a) {
+            var _b = _a.attrs, _c = _b.state, _d = _c.compareList, compareList = _d === void 0 ? [] : _d, model = _c.model, setCompareList = _b.actions.setCompareList;
+            if (!isInitialized)
+                initialize(model);
+            var selectedTechnologies = compareList.map(function (c) { return technologyLookup[c].technology; });
+            return (0, mithril_1.default)('.row.compare', { style: 'height: 92vh' }, [
+                (0, mithril_1.default)('.col.s12', [
+                    (0, mithril_1.default)(mithril_materialized_1.Chips, {
+                        label: 'Selected for comparison',
+                        secondaryPlaceholder: 'Add a technology',
+                        autocompleteOptions: {
+                            data: autocompleteData,
+                            minLength: 3,
+                        },
+                        data: compareList.map(function (id) { return ({ tag: technologyLookup[id].name }); }),
+                        onchange: function (chips) {
+                            console.log(chips);
+                            var ids = chips.filter(function (c) { return c.tag; }).map(function (c) { return technologyLookup[c.tag].name; });
+                            if (ids.length !== compareList.length)
+                                setCompareList(ids);
+                        },
+                    }),
+                ]),
+                compareList.length > 0 &&
+                    (0, mithril_1.default)('table', [
+                        (0, mithril_1.default)('tr', __spreadArray([(0, mithril_1.default)('th', 'Aspect')], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('th', t.technology); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Category'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, t.category, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Capability'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, t.hpeClassification, false)));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Specific cap.'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(t.specificCap, utils_1.specificCapabilityOptions)));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Description'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.desc); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Invasive'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, t.invasive, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Maturity'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.maturityOptions, t.maturity, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Booster'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.booster ? 'Yes' : 'No'); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Side effects'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', { className: t.hasSideEffects === models_1.CHOICE.YES && t.sideEffects ? 'tooltip' : '' }, [
+                                (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasSideEffects, false),
+                                t.sideEffects && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.sideEffects, true)),
+                            ]);
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Ind. diff.'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', { className: t.hasIndDiff === models_1.CHOICE.YES && t.diff ? 'tooltip' : '' }, [
+                                (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasIndDiff, false),
+                                t.diff && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.diff, true)),
+                            ]);
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Ethical'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', { className: t.hasEthical === models_1.CHOICE.YES && t.ethical ? 'tooltip' : '' }, [
+                                (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasEthical, false),
+                                t.ethical && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.ethical, true)),
+                            ]);
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Evidence indication'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, t.evidenceDir, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Quality of evidence'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, t.evidenceScore, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Availability'))
+                        ], selectedTechnologies.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, t.availability, false));
+                        }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Incubation'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.incubation); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Effect duration'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.effectDuration); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Examples'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.examples); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Practical'))
+                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.practical); }), true)),
+                    ]),
+            ]);
+        },
+    };
+};
+exports.ComparisonPage = ComparisonPage;
+
+
+/***/ }),
+
 /***/ 7097:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -16110,6 +16280,7 @@ __exportStar(__webpack_require__(1475), exports);
 __exportStar(__webpack_require__(4039), exports);
 __exportStar(__webpack_require__(6399), exports);
 __exportStar(__webpack_require__(1478), exports);
+__exportStar(__webpack_require__(3744), exports);
 __exportStar(__webpack_require__(9885), exports);
 
 
@@ -16487,7 +16658,7 @@ var TechnologyOverviewPage = function () {
     var boosterOpt = toOptions(utils_1.boosterOptions);
     var toTechnologies = function (allTech) {
         return Object.values(allTech.reduce(function (acc, cur) {
-            var _a;
+            var _a, _b;
             var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, specificCap = cur.specificCap, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore;
             var key = technology;
             if (acc.hasOwnProperty(key)) {
@@ -16497,13 +16668,12 @@ var TechnologyOverviewPage = function () {
                 keywords && (_a = acc[key].desc).push.apply(_a, keywords);
                 acc[key].booster.push(booster);
                 acc[key].mainCap.push(mainCap);
-                acc[key].specificCap.push(specificCap);
+                (_b = acc[key].specificCap).push.apply(_b, specificCap);
                 acc[key].hpeClassification.push(hpeClassification);
                 acc[key].category.push(category);
                 acc[key].invasive.push(invasive);
                 acc[key].availability.push(availability);
                 acc[key].maturity.push(maturity);
-                acc[key].capabilities.push(specificCap);
                 acc[key].ethicalConsiderations.push(hasEthical);
                 acc[key].evidenceDir.push(evidenceDir);
                 acc[key].evidenceScore.push(evidenceScore);
@@ -16520,13 +16690,12 @@ var TechnologyOverviewPage = function () {
                     keywords: keywords && keywords.length ? __spreadArray([], keywords, true) : [],
                     booster: [booster],
                     mainCap: [mainCap],
-                    specificCap: [specificCap],
+                    specificCap: specificCap,
                     hpeClassification: [hpeClassification],
                     category: [category],
                     invasive: [invasive],
                     availability: [availability],
                     maturity: [maturity],
-                    capabilities: [specificCap],
                     ethicalConsiderations: [],
                     evidenceDir: [],
                     evidenceScore: [],
@@ -16543,9 +16712,13 @@ var TechnologyOverviewPage = function () {
             technologies = toTechnologies(allTech);
             setPage(models_1.Dashboards.TECHNOLOGIES);
         },
+        // onupdate: () => {
+        //   const elems = document.querySelectorAll('.tooltipped');
+        //   M.Tooltip.init(elems);
+        // },
         view: function (_a) {
             var _b, _c, _d, _e, _f, _g, _h;
-            var _j = _a.attrs, _k = _j.state, model = _k.model, curUser = _k.curUser, _l = _k.bookmarks, bookmarks = _l === void 0 ? [] : _l, searchFilters = _k.searchFilters, _m = _j.actions, setTechnology = _m.setTechnology, saveModel = _m.saveModel, changePage = _m.changePage, bookmark = _m.bookmark, setSearchFilters = _m.setSearchFilters;
+            var _j = _a.attrs, _k = _j.state, model = _k.model, curUser = _k.curUser, _l = _k.bookmarks, bookmarks = _l === void 0 ? [] : _l, _m = _k.compareList, compareList = _m === void 0 ? [] : _m, searchFilters = _k.searchFilters, _o = _j.actions, setTechnology = _o.setTechnology, saveModel = _o.saveModel, changePage = _o.changePage, bookmark = _o.bookmark, compare = _o.compare, setSearchFilters = _o.setSearchFilters;
             if (technologies.length === 0) {
                 var allTech = model.technologies;
                 technologies = toTechnologies(allTech);
@@ -16712,13 +16885,16 @@ var TechnologyOverviewPage = function () {
                         ]),
                     filteredTechnologies.map(function (t) {
                         var isBookmarked = t.id.some(function (id) { return bookmarks.indexOf(id) >= 0; });
+                        var selectedForComparison = t.id.some(function (id) { return compareList.indexOf(id) >= 0; });
                         return (0, mithril_1.default)('.col.s12.m6.l4.xl3', (0, mithril_1.default)('.card.medium', [
                             (0, mithril_1.default)('.card-image', [
                                 (0, mithril_1.default)('a', {
                                     href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
                                 }, [
                                     (0, mithril_1.default)('img', { src: (0, images_1.resolveImg)(t.url, t.img), alt: t.technology }),
-                                    (0, mithril_1.default)('span.card-title.bold.sharpen', { className: isBookmarked ? 'amber-text' : 'black-text' }, t.technology),
+                                    (0, mithril_1.default)('span.card-title.bold.sharpen', { className: 'black-text' }, 
+                                    // { className: isBookmarked ? 'amber-text' : 'black-text' },
+                                    t.technology),
                                 ]),
                             ]),
                             (0, mithril_1.default)('.card-content', [
@@ -16730,10 +16906,14 @@ var TechnologyOverviewPage = function () {
                                     .join(', ')),
                                 (0, mithril_1.default)('p.overflow', t.desc),
                             ]),
-                            (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a', {
+                            (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
+                            {
                                 href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
                                 onclick: function () { return setTechnology(t.curTech); },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' })), (0, mithril_1.default)('a', {
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' }), (0, mithril_1.default)('span.tooltiptext', 'SHOW')), (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
+                            {
                                 href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGIES),
                                 onclick: function () {
                                     if (isBookmarked) {
@@ -16748,7 +16928,26 @@ var TechnologyOverviewPage = function () {
                                 },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
                                 iconName: isBookmarked ? 'star' : 'star_border',
-                            }))),
+                                className: isBookmarked ? 'amber-text' : '',
+                            }), (0, mithril_1.default)('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')), (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=COMPARE]',
+                            {
+                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGIES),
+                                onclick: function () {
+                                    if (selectedForComparison) {
+                                        t.id.forEach(function (id) {
+                                            if (compareList.indexOf(id) >= 0)
+                                                compare(id);
+                                        });
+                                    }
+                                    else {
+                                        compare(t.id[0]);
+                                    }
+                                },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: 'compare',
+                                className: selectedForComparison ? 'amber-text' : '',
+                            }), (0, mithril_1.default)('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE'))),
                         ]));
                     }),
                 ]),
@@ -16958,7 +17157,7 @@ var TechnologyPage = function () {
                 setTechnology(found);
         },
         view: function (_a) {
-            var _b = _a.attrs, _c = _b.state, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.model, model = _e === void 0 ? models_1.defaultModel : _e, curUser = _c.curUser, _f = _b.actions, saveModel = _f.saveModel, changePage = _f.changePage, setTechnology = _f.setTechnology, bookmark = _f.bookmark;
+            var _b = _a.attrs, _c = _b.state, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.compareList, compareList = _e === void 0 ? [] : _e, _f = _c.model, model = _f === void 0 ? models_1.defaultModel : _f, curUser = _c.curUser, _g = _b.actions, saveModel = _g.saveModel, changePage = _g.changePage, setTechnology = _g.setTechnology, bookmark = _g.bookmark, compare = _g.compare;
             var users = model.users, technologies = model.technologies;
             if (!curTech.id) {
                 form = initTechForm(technologies, id, users);
@@ -16970,6 +17169,7 @@ var TechnologyPage = function () {
                 return;
             }
             isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
+            var selectedForComparison = compareList.indexOf(curTech.id) >= 0;
             var ownerId = curTech.owner;
             var updated = curTech.updated ? new Date(curTech.updated) : undefined;
             var owner = users.filter(function (u) { return u.id === ownerId; }).shift();
@@ -17014,10 +17214,18 @@ var TechnologyPage = function () {
                         (0, mithril_1.default)('h3', [
                             curTech.technology,
                             (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
+                                style: 'padding: 0 5px',
                                 onclick: function () { return bookmark(curTech.id); },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
                                 iconName: isBookmarked ? 'star' : 'star_border',
-                                className: 'amber-text white',
+                                className: isBookmarked ? 'amber-text white' : 'white',
+                            })),
+                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
+                                style: 'padding: 0 5px',
+                                onclick: function () { return compare(curTech.id); },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: 'compare',
+                                className: selectedForComparison ? 'amber-text white' : 'white',
                             })),
                         ]),
                         curTech.application && (0, mithril_1.default)('h4', md(curTech.application)),
@@ -17338,6 +17546,7 @@ var Dashboards;
     Dashboards["ABOUT"] = "ABOUT";
     Dashboards["SETTINGS"] = "SETTINGS";
     Dashboards["OVERVIEW"] = "OVERVIEW";
+    Dashboards["COMPARE"] = "COMPARE";
     Dashboards["HELP"] = "HELP";
 })(Dashboards = exports.Dashboards || (exports.Dashboards = {}));
 
@@ -17682,6 +17891,7 @@ var local_ldb_1 = __webpack_require__(8544);
 var MODEL_KEY = 'HPET_MODEL';
 var CUR_USER_KEY = 'HPET_CUR_USER';
 var BOOKMARKS_KEY = 'HPET_BOOKMARK';
+var COMPARE_LIST_KEY = 'HPET_COMPARE_LIST_KEY';
 var appActions = function (_a) {
     var update = _a.update;
     return ({
@@ -17722,12 +17932,30 @@ var appActions = function (_a) {
                 },
             });
         },
+        compare: function (id) {
+            return update({
+                compareList: function (compareList) {
+                    if (compareList === void 0) { compareList = []; }
+                    var newCompareList = (function () {
+                        if (compareList.indexOf(id) >= 0)
+                            return compareList.filter(function (b) { return b !== id; });
+                        compareList.push(id);
+                        return compareList;
+                    })();
+                    local_ldb_1.ldb.set(COMPARE_LIST_KEY, JSON.stringify(newCompareList));
+                    return newCompareList;
+                },
+            });
+        },
+        setCompareList: function (ids) {
+            update({ compareList: function () { return ids; } });
+        },
         setSearchFilters: function (searchFilters) { return update({ searchFilters: searchFilters }); },
     });
 };
 exports.appActions = appActions;
 var initialize = function (update) { return __awaiter(void 0, void 0, void 0, function () {
-    var ds, model, b, bookmarks, curUser;
+    var ds, model, b, bookmarks, c, compareList, curUser;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, local_ldb_1.ldb.get(MODEL_KEY)];
@@ -17738,10 +17966,19 @@ var initialize = function (update) { return __awaiter(void 0, void 0, void 0, fu
             case 2:
                 b = _a.sent();
                 bookmarks = b ? JSON.parse(b) : [];
-                return [4 /*yield*/, local_ldb_1.ldb.get(CUR_USER_KEY)];
+                return [4 /*yield*/, local_ldb_1.ldb.get(COMPARE_LIST_KEY)];
             case 3:
+                c = _a.sent();
+                compareList = c ? JSON.parse(c) : [];
+                return [4 /*yield*/, local_ldb_1.ldb.get(CUR_USER_KEY)];
+            case 4:
                 curUser = (_a.sent()) || '';
-                update({ model: function () { return model; }, bookmarks: function () { return bookmarks; }, curUser: curUser });
+                update({
+                    model: function () { return model; },
+                    bookmarks: function () { return bookmarks; },
+                    compareList: function () { return compareList; },
+                    curUser: curUser,
+                });
                 return [2 /*return*/];
         }
     });
@@ -17752,6 +17989,7 @@ var app = {
         model: models_1.defaultModel,
         curTech: undefined,
         bookmarks: [],
+        compareList: [],
         curUser: 'mod',
         searchFilters: {},
     },
@@ -17885,6 +18123,14 @@ exports.routingSvc = new RoutingService([
         component: components_1.TechnologyPage,
     },
     {
+        id: models_1.Dashboards.COMPARE,
+        title: 'Compare',
+        icon: 'compare',
+        route: '/compare',
+        visible: true,
+        component: components_1.ComparisonPage,
+    },
+    {
         id: models_1.Dashboards.SETTINGS,
         title: 'Settings',
         icon: 'settings',
@@ -18013,7 +18259,10 @@ var joinListWithAnd = function (arr, and, prefix) {
         : prefix +
             (arr.length === 1
                 ? arr[0]
-                : "".concat(arr.slice(0, arr.length - 1).join(', '), " ").concat(and, " ").concat(arr[arr.length - 1]));
+                : "".concat(arr
+                    .slice(0, arr.length - 1)
+                    .map(function (t, i) { return (i === 0 ? t : t.toLowerCase()); })
+                    .join(', '), " ").concat(and, " ").concat(arr[arr.length - 1].toLowerCase()));
 };
 exports.joinListWithAnd = joinListWithAnd;
 /** Convert a list of options to text (label + title?) */
