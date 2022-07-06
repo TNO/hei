@@ -88,13 +88,12 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           keywords && acc[key].desc.push(...keywords);
           acc[key].booster.push(booster);
           acc[key].mainCap.push(mainCap);
-          acc[key].specificCap.push(specificCap);
+          acc[key].specificCap.push(...specificCap);
           acc[key].hpeClassification.push(hpeClassification);
           acc[key].category.push(category);
           acc[key].invasive.push(invasive);
           acc[key].availability.push(availability);
           acc[key].maturity.push(maturity);
-          acc[key].capabilities.push(specificCap);
           acc[key].ethicalConsiderations.push(hasEthical);
           acc[key].evidenceDir.push(evidenceDir);
           acc[key].evidenceScore.push(evidenceScore);
@@ -110,13 +109,12 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             keywords: keywords && keywords.length ? [...keywords] : [],
             booster: [booster],
             mainCap: [mainCap],
-            specificCap: [specificCap],
+            specificCap: specificCap,
             hpeClassification: [hpeClassification],
             category: [category],
             invasive: [invasive],
             availability: [availability],
             maturity: [maturity],
-            capabilities: [specificCap],
             ethicalConsiderations: [],
             evidenceDir: [],
             evidenceScore: [],
@@ -143,7 +141,6 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
     invasive: INVASIVENESS_OBTRUSIVENESS[];
     maturity: MATURITY[];
     availability: AVAILABILITY[];
-    capabilities: SPECIFIC_CAPABILITY[];
     ethicalConsiderations: CHOICE[];
     evidenceDir: EVIDENCE_DIRECTION[];
     evidenceScore: EVIDENCE_LEVEL[];
@@ -162,10 +159,14 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
       technologies = toTechnologies(allTech);
       setPage(Dashboards.TECHNOLOGIES);
     },
+    // onupdate: () => {
+    //   const elems = document.querySelectorAll('.tooltipped');
+    //   M.Tooltip.init(elems);
+    // },
     view: ({
       attrs: {
-        state: { model, curUser, bookmarks = [], searchFilters },
-        actions: { setTechnology, saveModel, changePage, bookmark, setSearchFilters },
+        state: { model, curUser, bookmarks = [], compareList = [], searchFilters },
+        actions: { setTechnology, saveModel, changePage, bookmark, compare, setSearchFilters },
       },
     }) => {
       if (technologies.length === 0) {
@@ -437,6 +438,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             ]),
           filteredTechnologies.map((t) => {
             const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
+            const selectedForComparison = t.id.some((id) => compareList.indexOf(id) >= 0);
             return m(
               '.col.s12.m6.l4.xl3',
               m('.card.medium', [
@@ -450,7 +452,8 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                       m('img', { src: resolveImg(t.url, t.img), alt: t.technology }),
                       m(
                         'span.card-title.bold.sharpen',
-                        { className: isBookmarked ? 'amber-text' : 'black-text' },
+                        { className: 'black-text' },
+                        // { className: isBookmarked ? 'amber-text' : 'black-text' },
                         t.technology
                       ),
                     ]
@@ -475,15 +478,18 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 m(
                   '.card-action',
                   m(
-                    'a',
+                    'a.tooltip',
+                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
                     {
                       href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${t.id[0]}`),
                       onclick: () => setTechnology(t.curTech),
                     },
-                    m(Icon, { iconName: 'visibility' })
+                    m(Icon, { iconName: 'visibility' }),
+                    m('span.tooltiptext', 'SHOW')
                   ),
                   m(
-                    'a',
+                    'a.tooltip',
+                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
                     {
                       href: routingSvc.href(Dashboards.TECHNOLOGIES),
                       onclick: () => {
@@ -498,7 +504,30 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                     },
                     m(Icon, {
                       iconName: isBookmarked ? 'star' : 'star_border',
-                    })
+                      className: isBookmarked ? 'amber-text' : '',
+                    }),
+                    m('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')
+                  ),
+                  m(
+                    'a.tooltip',
+                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=COMPARE]',
+                    {
+                      href: routingSvc.href(Dashboards.TECHNOLOGIES),
+                      onclick: () => {
+                        if (selectedForComparison) {
+                          t.id.forEach((id) => {
+                            if (compareList.indexOf(id) >= 0) compare(id);
+                          });
+                        } else {
+                          compare(t.id[0]);
+                        }
+                      },
+                    },
+                    m(Icon, {
+                      iconName: 'compare',
+                      className: selectedForComparison ? 'amber-text' : '',
+                    }),
+                    m('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE')
                   )
                 ),
               ])

@@ -7,6 +7,7 @@ import { ldb } from '../utils/local-ldb';
 const MODEL_KEY = 'HPET_MODEL';
 const CUR_USER_KEY = 'HPET_CUR_USER';
 const BOOKMARKS_KEY = 'HPET_BOOKMARK';
+const COMPARE_LIST_KEY = 'HPET_COMPARE_LIST_KEY';
 
 export interface State {
   page: Dashboards;
@@ -14,6 +15,7 @@ export interface State {
   curUser?: string;
   curTech?: Technology;
   bookmarks: ID[];
+  compareList: ID[];
   searchFilters: SearchFilter;
 }
 
@@ -28,6 +30,7 @@ export interface Actions {
   saveCurUser: (ds: string) => void;
   setTechnology: (curTech: Technology) => void;
   bookmark: (id: string) => void;
+  compare: (id: string) => void;
   setSearchFilters: (sf: SearchFilter) => void;
 }
 
@@ -72,6 +75,18 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
         return newBookmarks;
       },
     }),
+  compare: (id: ID) =>
+    update({
+      compareList: (compareList = []) => {
+        const newCompareList = (() => {
+          if (compareList.indexOf(id) >= 0) return compareList.filter((b) => b !== id);
+          compareList.push(id);
+          return compareList;
+        })();
+        ldb.set(COMPARE_LIST_KEY, JSON.stringify(newCompareList));
+        return newCompareList;
+      },
+    }),
   setSearchFilters: (searchFilters: SearchFilter) => update({ searchFilters }),
 });
 
@@ -80,8 +95,15 @@ const initialize = async (update: Update<State>) => {
   const model = ds ? JSON.parse(ds) : defaultModel;
   const b = await ldb.get(BOOKMARKS_KEY);
   const bookmarks = b ? JSON.parse(b) : [];
+  const c = await ldb.get(COMPARE_LIST_KEY);
+  const compareList = c ? JSON.parse(c) : [];
   const curUser = (await ldb.get(CUR_USER_KEY)) || '';
-  update({ model: () => model, bookmarks: () => bookmarks, curUser });
+  update({
+    model: () => model,
+    bookmarks: () => bookmarks,
+    compareList: () => compareList,
+    curUser,
+  });
 };
 
 const app = {
@@ -90,6 +112,7 @@ const app = {
     model: defaultModel,
     curTech: undefined,
     bookmarks: [],
+    compareList: [],
     curUser: 'mod',
     searchFilters: {} as SearchFilter,
   } as State,
