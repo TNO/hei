@@ -2,7 +2,14 @@ import m, { RouteDefs } from 'mithril';
 import { Dashboards, IDashboard } from '../models';
 import { appActions, cells } from './meiosis';
 import { Layout } from '../components/layout';
-import { AboutPage, HomePage, TechnologyPage, SettingsPage, AllWordsPage } from '../components';
+import {
+  AboutPage,
+  HomePage,
+  TechnologyPage,
+  SettingsPage,
+  AllWordsPage,
+  ComparisonPage,
+} from '../components';
 import { TechnologyOverviewPage } from '../components/technology-overview-page';
 
 class RoutingService {
@@ -108,6 +115,14 @@ export const routingSvc: RoutingService = new RoutingService([
     route: '/technology',
     visible: true,
     component: TechnologyPage,
+  },
+  {
+    id: Dashboards.COMPARE,
+    title: 'Compare',
+    icon: 'compare',
+    route: '/compare',
+    visible: true,
+    component: ComparisonPage,
   },
   {
     id: Dashboards.SETTINGS,

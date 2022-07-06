@@ -29,8 +29,9 @@ export interface Actions {
   saveModel: (ds: DataModel) => void;
   saveCurUser: (ds: string) => void;
   setTechnology: (curTech: Technology) => void;
-  bookmark: (id: string) => void;
-  compare: (id: string) => void;
+  bookmark: (id: ID) => void;
+  compare: (id: ID) => void;
+  setCompareList: (ids: ID[]) => void;
   setSearchFilters: (sf: SearchFilter) => void;
 }
 
@@ -87,6 +88,9 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
         return newCompareList;
       },
     }),
+  setCompareList: (ids: ID[]) => {
+    update({ compareList: () => ids });
+  },
   setSearchFilters: (searchFilters: SearchFilter) => update({ searchFilters }),
 });
 

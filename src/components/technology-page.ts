@@ -58,8 +58,14 @@ export const TechnologyPage: MeiosisComponent = () => {
     },
     view: ({
       attrs: {
-        state: { curTech = {} as Technology, bookmarks, model = defaultModel, curUser },
-        actions: { saveModel, changePage, setTechnology, bookmark },
+        state: {
+          curTech = {} as Technology,
+          bookmarks,
+          compareList = [],
+          model = defaultModel,
+          curUser,
+        },
+        actions: { saveModel, changePage, setTechnology, bookmark, compare },
       },
     }) => {
       const { users, technologies } = model;
@@ -73,6 +79,7 @@ export const TechnologyPage: MeiosisComponent = () => {
         return;
       }
       isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
+      const selectedForComparison = compareList.indexOf(curTech.id) >= 0;
       const ownerId = curTech.owner;
       const updated = curTech.updated ? new Date(curTech.updated) : undefined;
       const owner = users.filter((u) => u.id === ownerId).shift();
@@ -130,11 +137,23 @@ export const TechnologyPage: MeiosisComponent = () => {
                   m(
                     'a.btn-flat.btn-large.clean',
                     {
+                      style: 'padding: 0 5px',
                       onclick: () => bookmark(curTech.id),
                     },
                     m(Icon, {
                       iconName: isBookmarked ? 'star' : 'star_border',
-                      className: 'amber-text white',
+                      className: isBookmarked ? 'amber-text white' : 'white',
+                    })
+                  ),
+                  m(
+                    'a.btn-flat.btn-large.clean',
+                    {
+                      style: 'padding: 0 5px',
+                      onclick: () => compare(curTech.id),
+                    },
+                    m(Icon, {
+                      iconName: 'compare',
+                      className: selectedForComparison ? 'amber-text white' : 'white',
                     })
                   ),
                 ]),

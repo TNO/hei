@@ -93,7 +93,10 @@ export const joinListWithAnd = (arr: string[] = [], and = 'and', prefix = '') =>
     : prefix +
       (arr.length === 1
         ? arr[0]
-        : `${arr.slice(0, arr.length - 1).join(', ')} ${and} ${arr[arr.length - 1]}`);
+        : `${arr
+            .slice(0, arr.length - 1)
+            .map((t, i) => (i === 0 ? t : t.toLowerCase()))
+            .join(', ')} ${and} ${arr[arr.length - 1].toLowerCase()}`);
 
 /** Convert a list of options to text (label + title?) */
 export const optionsToTxt = <T extends string | number>(
