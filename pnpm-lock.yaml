@@ -6,13 +6,13 @@ specifiers:
   '@types/mithril': ^2.0.11
   css-loader: ^6.7.1
   css-minimizer-webpack-plugin: ^4.0.0
-  dotenv-webpack: ^7.1.1
+  dotenv-webpack: ^8.0.0
   html-webpack-plugin: ^5.5.0
   html-webpack-tags-plugin: ^3.0.2
   lz-string: ^1.4.4
-  material-icons: ^1.11.4
+  material-icons: ^1.11.5
   materialize-css: ^1.0.0
-  meiosis-setup: ^6.0.0-beta.19
+  meiosis-setup: ^6.0.0-beta.21
   mini-css-extract-plugin: ^2.6.1
   mithril: ^2.2.2
   mithril-materialized: ^1.0.1
@@ -29,9 +29,9 @@ specifiers:
 
 dependencies:
   lz-string: 1.4.4
-  material-icons: 1.11.4
+  material-icons: 1.11.5
   materialize-css: 1.0.0
-  meiosis-setup: 6.0.0-beta.19
+  meiosis-setup: 6.0.0-beta.21
   mithril: 2.2.2
   mithril-materialized: 1.0.1
   mithril-ui-form: 1.5.12
@@ -44,7 +44,7 @@ devDependencies:
   '@types/mithril': 2.0.11
   css-loader: 6.7.1_webpack@5.73.0
   css-minimizer-webpack-plugin: 4.0.0_webpack@5.73.0
-  dotenv-webpack: 7.1.1_webpack@5.73.0
+  dotenv-webpack: 8.0.0_webpack@5.73.0
   html-webpack-plugin: 5.5.0_webpack@5.73.0
   html-webpack-tags-plugin: 3.0.2_vaqkluxv57wdoiytlozrwxzyse
   mini-css-extract-plugin: 2.6.1_webpack@5.73.0
@@ -1016,8 +1016,8 @@ packages:
       dotenv: 8.6.0
     dev: true
 
-  /dotenv-webpack/7.1.1_webpack@5.73.0:
-    resolution: {integrity: sha512-xw/19VqHDkXALtBOJAnnrSU/AZDIQRXczAmJyp0lZv6SH2aBLzUTl96W1MVryJZ7okZ+djZS4Gj4KlZ0xP7deA==}
+  /dotenv-webpack/8.0.0_webpack@5.73.0:
+    resolution: {integrity: sha512-vsWj11yWbIxLUPcQDbifCGW1+Mp03XfApFHJTC+/Ag9g3D/AnxoaVZcp76LpuBmReRwIJ+YO1fVdhmpzh+LL1A==}
     engines: {node: '>=10'}
     peerDependencies:
       webpack: ^4 || ^5
@@ -1647,8 +1647,8 @@ packages:
     hasBin: true
     dev: false
 
-  /material-icons/1.11.4:
-    resolution: {integrity: sha512-si/VqvWo6LNINE0aemZlWulV5E7NJKmWOOD8rMoDyFTTF3bUzs6bkRZJAKWa5j/VnGMhdoNB1kyMm537lh4SYA==}
+  /material-icons/1.11.5:
+    resolution: {integrity: sha512-JTf+IwOcKV6Y6JhUBqAnRKHgQFGROtoewHKwORscI2xLK9R3rJOTzzLZwxFgsa7SRfB2geghgfOD6DuVnQLx6A==}
     dev: false
 
   /materialize-css/1.0.0:
@@ -1664,8 +1664,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /meiosis-setup/6.0.0-beta.19:
-    resolution: {integrity: sha512-nhWOGmy9cJkncCvx89MV0COm3AplOkaWXxGwh7fErUZz4r7HmnJS006MBdnWjzRjvXjLgPYTq/O+lFgAuxRSmQ==}
+  /meiosis-setup/6.0.0-beta.21:
+    resolution: {integrity: sha512-kFQbjarVmhICp6hpRV43rU4gThlr2CMnVwCE2zI1KqKjR9rjKgBkriv/0m2PjQxH07aypbKGk1eGL1ACkCJJkA==}
     dependencies:
       mergerino: 0.4.0
     dev: false

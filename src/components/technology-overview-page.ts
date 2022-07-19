@@ -75,7 +75,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           invasive,
           availability,
           maturity,
-          specificCap,
+          specificCap = [],
           hasEthical,
           evidenceDir,
           evidenceScore,
@@ -83,20 +83,20 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         const key = technology;
         if (acc.hasOwnProperty(key)) {
           acc[key].id.push(id);
-          acc[key].mechanism.push(mechanism);
+          mechanism && acc[key].mechanism.push(mechanism);
           desc && acc[key].desc.push(desc);
           keywords && acc[key].desc.push(...keywords);
-          acc[key].booster.push(booster);
-          acc[key].mainCap.push(mainCap);
-          acc[key].specificCap.push(...specificCap);
-          acc[key].hpeClassification.push(hpeClassification);
-          acc[key].category.push(category);
-          acc[key].invasive.push(invasive);
-          acc[key].availability.push(availability);
-          acc[key].maturity.push(maturity);
-          acc[key].ethicalConsiderations.push(hasEthical);
-          acc[key].evidenceDir.push(evidenceDir);
-          acc[key].evidenceScore.push(evidenceScore);
+          booster && acc[key].booster.push(booster);
+          mainCap && acc[key].mainCap.push(mainCap);
+          specificCap && specificCap.length && acc[key].specificCap.push(...specificCap);
+          hpeClassification && acc[key].hpeClassification.push(hpeClassification);
+          category && acc[key].category.push(category);
+          invasive && acc[key].invasive.push(invasive);
+          availability && acc[key].availability.push(availability);
+          maturity && acc[key].maturity.push(maturity);
+          hasEthical && acc[key].ethicalConsiderations.push(hasEthical);
+          evidenceDir && acc[key].evidenceDir.push(evidenceDir);
+          evidenceScore && acc[key].evidenceScore.push(evidenceScore);
         } else {
           acc[key] = {
             curTech: cur,

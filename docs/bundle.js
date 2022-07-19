@@ -12885,7 +12885,7 @@ $jscomp.polyfill = function (e, r, p, m) {
 
 /***/ }),
 
-/***/ 6850:
+/***/ 3807:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -12915,18 +12915,28 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.nestSetup = exports.commonGetServices = exports.updateFloatValueIntoPath = exports.updateIntValueIntoPath = exports.updateStringValueIntoPath = void 0;
-const simple_stream_1 = __importStar(__webpack_require__(7033));
-const util_1 = __webpack_require__(832);
+const simple_stream_1 = __importStar(__webpack_require__(7269));
+const util_1 = __webpack_require__(7636);
+const toPath = (pathOrProp) => Array.isArray(pathOrProp) ? pathOrProp : [pathOrProp];
 const updateParseValue = (intoPath, parseFn, cell, path) => (evt) => {
     const value = parseFn(evt.target.value);
     if (!isNaN(value)) {
-        cell.update(intoPath(path, value));
+        cell.update(intoPath(toPath(path), value));
     }
 };
-const updateStringValueIntoPath = (intoPath, cell, path, fn) => (evt) => cell.update(intoPath(path, fn(evt.target.value)));
+/**
+ * Internal use only.
+ */
+const updateStringValueIntoPath = (intoPath, cell, path, fn) => (evt) => cell.update(intoPath(toPath(path), fn(evt.target.value)));
 exports.updateStringValueIntoPath = updateStringValueIntoPath;
+/**
+ * Internal use only.
+ */
 const updateIntValueIntoPath = (intoPath, cell, path) => (evt) => updateParseValue(intoPath, parseInt, cell, path)(evt);
 exports.updateIntValueIntoPath = updateIntValueIntoPath;
+/**
+ * Internal use only.
+ */
 const updateFloatValueIntoPath = (intoPath, cell, path) => (evt) => updateParseValue(intoPath, parseFloat, cell, path)(evt);
 exports.updateFloatValueIntoPath = updateFloatValueIntoPath;
 const assembleInitialState = (nestedComponents) => nestedComponents
@@ -12996,7 +13006,8 @@ const nestSetup = ({ accumulator, getServices, nestCell, stream = simple_stream_
         app
     });
     const nest = nestCell(states, update, view);
-    const getCell = (state) => ({ state, update, nest, nested: view });
+    const getState = () => states();
+    const getCell = (state) => ({ state, getState, update, nest, nested: view });
     const dropRepeats = (0, simple_stream_1.createDropRepeats)(stream);
     if (app) {
         getServices(app).forEach((service) => {
@@ -13011,7 +13022,7 @@ exports.nestSetup = nestSetup;
 
 /***/ }),
 
-/***/ 4266:
+/***/ 1162:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -13022,8 +13033,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.setup = exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormValue = exports.combinePatches = void 0;
 const mergerino_1 = __importDefault(__webpack_require__(8474));
-const common_1 = __webpack_require__(6850);
-const util_1 = __webpack_require__(832);
+const common_1 = __webpack_require__(3807);
+const util_1 = __webpack_require__(7636);
 const nestPatch = (patch, prop) => ({ [prop]: patch });
 const nestUpdate = (parentUpdate, prop) => (patch) => parentUpdate(nestPatch(patch, prop));
 const nestCell = (getState, parentUpdate, components) => (prop) => {
@@ -13032,6 +13043,7 @@ const nestCell = (getState, parentUpdate, components) => (prop) => {
     const nestedComponents = (0, util_1.get)(components, [prop, 'nested']);
     return {
         state: getNestedState(),
+        getState: getNestedState,
         update: nestedUpdate,
         nest: nestCell(getNestedState, nestedUpdate, nestedComponents),
         nested: nestedComponents
@@ -13048,31 +13060,82 @@ exports.combinePatches = combinePatches;
 const intoPath = (path, value) => ({
     [path[0]]: path.length === 1 ? value : intoPath(path.slice(1), value)
 });
+/**
+ * Convenience function to update a form value. Pass the Meiosis cell and the state property (such
+ * as `'firstName'`) or path (such as `['person', 'firstName']`) into which to update the value.
+ * Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput`
+ * (Preact, React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormValue(cell, 'firstName') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormValue(cell, ['person', 'firstName'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ * @param fn (optional) a function to modify the value before updating it.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
 const updateFormValue = (cell, path, fn = (value) => value) => (0, common_1.updateStringValueIntoPath)(intoPath, cell, path, fn);
 exports.updateFormValue = updateFormValue;
+/**
+ * Convenience function to update a form value with an Integer value. If the user input does not
+ * return a number with `parseInt`, no state change occurs. Pass the Meiosis cell and the state
+ * property (such as `'counter'`) or path (such as `['book', 'counter']`) into which to update the
+ * value. Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or
+ * `onInput` (Preact, React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormIntValue(cell, 'counter') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormIntValue(cell, ['book', 'counter'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
 const updateFormIntValue = (cell, path) => (0, common_1.updateIntValueIntoPath)(intoPath, cell, path);
 exports.updateFormIntValue = updateFormIntValue;
+/**
+ * Convenience function to update a form value with a Float value. If the user input does not return
+ * a number with `parseFloat`, no state change occurs. Pass the Meiosis cell and the state property
+ * (such as `'pH'`) or path (such as `['water', 'pH']`) into which to update the value. Returns a
+ * function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput` (Preact,
+ * React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormFloatValue(cell, 'pH') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormFloatValue(cell, ['water', 'pH'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
 const updateFormFloatValue = (cell, path) => (0, common_1.updateFloatValueIntoPath)(intoPath, cell, path);
 exports.updateFormFloatValue = updateFormFloatValue;
+// Services
 const getServices = (component) => (0, common_1.commonGetServices)(component);
-/**
- * Helper to setup the Meiosis pattern with function patches.
- *
- * @template S the State type.
- *
- * @param {MeiosisConfig<S>} config the Meiosis config for use with function patches.
-
-const getServices = <S>(component: MeiosisComponent<S>): Service<S>[] =>
-  commonGetServices(component);
-
 /**
  * Helper to setup the Meiosis pattern with [Mergerino](https://github.com/fuzetsu/mergerino).
  *
  * @template S the State type.
  *
- * @param {MeiosisConfig<S>} config the Meiosis config for use with Mergerino
+ * @param config the Meiosis config for use with Mergerino
  *
- * @returns {Meiosis<S, Patch<S>>} `{ cells }`.
+ * @returns a stream of Meiosis cells.
  */
 const setup = (config) => (0, common_1.nestSetup)({
     accumulator: mergerino_1.default,
@@ -13087,7 +13150,7 @@ exports["default"] = exports.setup;
 
 /***/ }),
 
-/***/ 7033:
+/***/ 7269:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -13112,7 +13175,8 @@ const stream = (initial) => {
             for (const i in mapFunctions) {
                 // credit @cmnstmntmn for discovering this bug.
                 // Make sure to send the latest value.
-                // Otherwise, if f1 triggers another update, f2 will be called with value2 then value1 (old value).
+                // Otherwise, if f1 triggers another update, f2 will be called with value2 and
+                // then value1 (old value).
                 mapFunctions[i](latestValue);
             }
         }
@@ -13197,7 +13261,7 @@ exports.dropRepeats = (0, exports.createDropRepeats)();
 
 /***/ }),
 
-/***/ 832:
+/***/ 7636:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -13255,7 +13319,7 @@ const e=Object.assign||((e,t)=>(t&&Object.keys(t).forEach(o=>e[o]=t[o]),e)),t=(e
 
 /***/ }),
 
-/***/ 3813:
+/***/ 3934:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15776,7 +15840,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var mithril_1 = __importDefault(__webpack_require__(9402));
-__webpack_require__(3813);
+__webpack_require__(3934);
 __webpack_require__(3856);
 __webpack_require__(3302);
 var routing_service_1 = __webpack_require__(6632);
@@ -16659,24 +16723,24 @@ var TechnologyOverviewPage = function () {
     var toTechnologies = function (allTech) {
         return Object.values(allTech.reduce(function (acc, cur) {
             var _a, _b;
-            var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, specificCap = cur.specificCap, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore;
+            var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, _c = cur.specificCap, specificCap = _c === void 0 ? [] : _c, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore;
             var key = technology;
             if (acc.hasOwnProperty(key)) {
                 acc[key].id.push(id);
-                acc[key].mechanism.push(mechanism);
+                mechanism && acc[key].mechanism.push(mechanism);
                 desc && acc[key].desc.push(desc);
                 keywords && (_a = acc[key].desc).push.apply(_a, keywords);
-                acc[key].booster.push(booster);
-                acc[key].mainCap.push(mainCap);
-                (_b = acc[key].specificCap).push.apply(_b, specificCap);
-                acc[key].hpeClassification.push(hpeClassification);
-                acc[key].category.push(category);
-                acc[key].invasive.push(invasive);
-                acc[key].availability.push(availability);
-                acc[key].maturity.push(maturity);
-                acc[key].ethicalConsiderations.push(hasEthical);
-                acc[key].evidenceDir.push(evidenceDir);
-                acc[key].evidenceScore.push(evidenceScore);
+                booster && acc[key].booster.push(booster);
+                mainCap && acc[key].mainCap.push(mainCap);
+                specificCap && specificCap.length && (_b = acc[key].specificCap).push.apply(_b, specificCap);
+                hpeClassification && acc[key].hpeClassification.push(hpeClassification);
+                category && acc[key].category.push(category);
+                invasive && acc[key].invasive.push(invasive);
+                availability && acc[key].availability.push(availability);
+                maturity && acc[key].maturity.push(maturity);
+                hasEthical && acc[key].ethicalConsiderations.push(hasEthical);
+                evidenceDir && acc[key].evidenceDir.push(evidenceDir);
+                evidenceScore && acc[key].evidenceScore.push(evidenceScore);
             }
             else {
                 acc[key] = {
@@ -17884,7 +17948,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cells = exports.appActions = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var mergerino_1 = __importDefault(__webpack_require__(4266));
+var mergerino_1 = __importDefault(__webpack_require__(1162));
 var _1 = __webpack_require__(2855);
 var models_1 = __webpack_require__(7396);
 var local_ldb_1 = __webpack_require__(8544);
