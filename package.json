@@ -35,7 +35,7 @@
     "meiosis-setup": "^6.0.0-beta.23",
     "mithril": "^2.2.2",
     "mithril-materialized": "^1.0.1",
-    "mithril-ui-form": "^1.5.12",
+    "mithril-ui-form": "^1.5.14",
     "mithril-ui-form-plugin": "^0.3.11",
     "mithril-ui-form-rating-plugin": "^0.4.11"
   },

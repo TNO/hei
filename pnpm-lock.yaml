@@ -16,7 +16,7 @@ specifiers:
   mini-css-extract-plugin: ^2.6.1
   mithril: ^2.2.2
   mithril-materialized: ^1.0.1
-  mithril-ui-form: ^1.5.12
+  mithril-ui-form: ^1.5.14
   mithril-ui-form-plugin: ^0.3.11
   mithril-ui-form-rating-plugin: ^0.4.11
   rimraf: ^3.0.2
@@ -34,7 +34,7 @@ dependencies:
   meiosis-setup: 6.0.0-beta.23
   mithril: 2.2.2
   mithril-materialized: 1.0.1
-  mithril-ui-form: 1.5.12
+  mithril-ui-form: 1.5.14
   mithril-ui-form-plugin: 0.3.11
   mithril-ui-form-rating-plugin: 0.4.11
 
@@ -1769,8 +1769,8 @@ packages:
       mithril: 2.2.2
     dev: false
 
-  /mithril-ui-form/1.5.12:
-    resolution: {integrity: sha512-xJx7viqSG/7EC7DsaRYSN6rEl8trgqWBw0Y8PpI7Si04B1BhFsn0FODClMfsSQzVc5RN5uVsUoRSWu0GUMdfHA==}
+  /mithril-ui-form/1.5.14:
+    resolution: {integrity: sha512-KyGBV7plYNArllp06uP9miJkcvHH9YCr2RWtw5pIEYbI9ZuRfjG5tnOTJ2+s5M6rVZ6850uCK/FeoqHOwu3IJQ==}
     dependencies:
       mithril: 2.2.2
       mithril-materialized: 1.0.1
