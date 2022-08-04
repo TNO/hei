@@ -172,7 +172,7 @@ export const HomePage: MeiosisComponent = () => {
               m(
                 '.col.s12.m4',
                 m('.icon-block', [
-                  m('.center', m(Icon, { iconName: 'flash_on' })),
+                  m('.center', m(Icon, { iconName: 'lightbulb' })),
                   m('h5.center', 'Assess'),
                   m(
                     'p.light',
@@ -183,7 +183,7 @@ export const HomePage: MeiosisComponent = () => {
               m(
                 '.col.s12.m4',
                 m('.icon-block', [
-                  m('.center', m(Icon, { iconName: 'group' })),
+                  m('.center', m(Icon, { iconName: 'balance' })),
                   m('h5.center', 'Compare'),
                   m(
                     'p.light',
