@@ -111,7 +111,7 @@ export const routingSvc: RoutingService = new RoutingService([
   {
     id: Dashboards.TECHNOLOGY,
     title: 'TECHNOLOGY',
-    icon: 'military_tech',
+    icon: 'lightbulb',
     route: '/technology',
     visible: true,
     component: TechnologyPage,
@@ -119,7 +119,7 @@ export const routingSvc: RoutingService = new RoutingService([
   {
     id: Dashboards.COMPARE,
     title: 'Compare',
-    icon: 'compare',
+    icon: 'balance',
     route: '/compare',
     visible: true,
     component: ComparisonPage,

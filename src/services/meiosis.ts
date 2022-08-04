@@ -1,8 +1,9 @@
 import m, { FactoryComponent } from 'mithril';
-import setup, { MeiosisCell, Update } from 'meiosis-setup/mergerino';
+import { meiosisSetup } from 'meiosis-setup';
 import { routingSvc } from '.';
 import { Dashboards, DataModel, defaultModel, ID, SearchFilter, Technology } from '../models';
 import { ldb } from '../utils/local-ldb';
+import { MeiosisCell, Update } from 'meiosis-setup/types';
 
 const MODEL_KEY = 'HPET_MODEL';
 const CUR_USER_KEY = 'HPET_CUR_USER';
@@ -121,7 +122,7 @@ const app = {
     searchFilters: {} as SearchFilter,
   } as State,
 };
-export const cells = setup<State>({ app });
+export const cells = meiosisSetup<State>({ app });
 initialize(cells().update);
 
 cells.map(() => {

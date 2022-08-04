@@ -37,6 +37,10 @@ const lexicon = [
     a: 'Effect direction',
     b: 'Whether the technology increases or decreases a subjects capability level.',
   },
+  {
+    a: 'HCSE',
+    b: 'Human-Centered Software Engineering.',
+  },
 ].sort((a, b) => a.a.localeCompare(b.a)) as Array<{
   a: string;
   b: string;

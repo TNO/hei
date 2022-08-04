@@ -101,12 +101,13 @@ export const joinListWithAnd = (arr: string[] = [], and = 'and', prefix = '') =>
 /** Convert a list of options to text (label + title?) */
 export const optionsToTxt = <T extends string | number>(
   selectedIds: T | T[],
-  options: Array<{ id: T; label: string; title?: string }>
+  options: Array<{ id: T; label: string; title?: string }>,
+  showTitle = true
 ) => {
   if (!selectedIds || (selectedIds instanceof Array && selectedIds.length === 0)) return [''];
   const ids = selectedIds instanceof Array ? selectedIds : [selectedIds];
   const lookup = options.reduce((acc, cur) => {
-    acc[cur.id] = `${cur.label}${cur.title ? ` (${cur.title})` : ''}`;
+    acc[cur.id] = `${cur.label}${showTitle && cur.title ? ` (${cur.title})` : ''}`;
     return acc;
   }, {} as Record<T, string>);
   return ids.map((id) => lookup[id]);
@@ -628,15 +629,15 @@ export const technologyForm = (
       label: 'Owner',
       type: 'select',
       options: users.map((u) => ({ id: u.id, label: u.name })),
-      className: 'col s8',
+      className: 'col s12',
     },
-    {
-      id: 'status',
-      label: 'Status',
-      type: 'select',
-      options: statusOptions,
-      className: 'col s4',
-    },
+    // {
+    //   id: 'status',
+    //   label: 'Status',
+    //   type: 'select',
+    //   options: statusOptions,
+    //   className: 'col s4',
+    // },
     // {
     //   id: 'reviewer',
     //   label: 'Reviewer',
@@ -852,9 +853,9 @@ export const technologyForm = (
       className: 'col s3',
       options: [
         { id: 'nutrition', label: 'Nutrition' },
-        { id: 'pharma', label: 'Pharma' },
-        { id: 'supplement', label: 'Supplement' },
-        { id: 'upload', label: 'Upload' },
+        { id: 'pharma', label: 'Pharma/supplement' },
+        { id: 'beverage', label: 'Beverage' },
+        { id: 'upload', label: 'Upload your own' },
       ],
     },
     { id: 'img', label: 'Upload image', type: 'base64', className: 'col s9', show: 'url=upload' },

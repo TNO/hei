@@ -86,7 +86,7 @@ export const HomePage: MeiosisComponent = () => {
               dlAnchorElem.click();
             },
           }),
-          m('input#selectFiles[type=file]', { style: 'display:none' }),
+          m('input#selectFiles[type=file][accept=.json]', { style: 'display:none' }),
           readerAvailable &&
             m(Button, {
               iconName: 'upload',

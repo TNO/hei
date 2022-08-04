@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { FlatButton, Icon } from 'mithril-materialized';
+import { FlatButton, Icon, ModalPanel } from 'mithril-materialized';
 import { UIForm, LayoutForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import { Dashboards, defaultModel, Technology, User } from '../models';
@@ -14,7 +14,6 @@ import {
   joinListWithAnd,
   mainCapabilityOptions,
   maturityOptions,
-  statusOptions,
   technologyCategoryOptions,
   technologyForm,
   resolveRefs,
@@ -101,8 +100,8 @@ export const TechnologyPage: MeiosisComponent = () => {
             curUser === 'admin' && [
               m(FlatButton, {
                 className: 'right no-print',
-                label: isEditting ? 'Stop editting' : 'Edit',
-                iconName: 'edit',
+                label: isEditting ? 'Save' : 'Edit',
+                iconName: isEditting ? 'save' : 'edit',
                 onclick: () => (isEditting = !isEditting),
               }),
               isEditting &&
@@ -110,11 +109,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                   className: 'right',
                   label: 'Delete',
                   iconName: 'delete',
-                  onclick: () => {
-                    model.technologies = model.technologies.filter((t) => t.id !== curTech.id);
-                    saveModel(model);
-                    changePage(Dashboards.TECHNOLOGIES);
-                  },
+                  modalId: 'deleteTechnology',
                 }),
             ],
           isEditting
@@ -152,7 +147,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       onclick: () => compare(curTech.id),
                     },
                     m(Icon, {
-                      iconName: 'compare',
+                      iconName: 'balance',
                       className: selectedForComparison ? 'amber-text white' : 'white',
                     })
                   ),
@@ -201,7 +196,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                         m('p', [
                           m('span.bold', 'Specific capability: '),
                           joinListWithAnd(
-                            optionsToTxt(curTech.specificCap, specificCapabilityOptions)
+                            optionsToTxt(curTech.specificCap, specificCapabilityOptions, false)
                           ) + '.',
                         ]),
                       curTech.invasive &&
@@ -217,7 +212,11 @@ export const TechnologyPage: MeiosisComponent = () => {
                       typeof curTech.booster !== 'undefined' &&
                         m('p', [
                           m('span.bold', 'Can be used as booster: '),
-                          `${curTech.booster ? 'Yes' : 'No'}.`,
+                          `${
+                            curTech.booster
+                              ? 'Yes, the technology can be applied quickly (approx. < 1 hour)'
+                              : 'No, the technology can not be applied quickly (approx. < 1 hour)'
+                          }.`,
                         ]),
                     ])
                   )
@@ -253,7 +252,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       ]),
                     curTech.sideEffects &&
                       m('p', [
-                        m('span.bold', 'Side-effects: '),
+                        m('span.bold', 'Possible side-effects: '),
                         md(resolveChoice(curTech.hasSideEffects, curTech.sideEffects)),
                       ]),
                     curTech.diff &&
@@ -285,7 +284,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       ),
                     curTech.evidenceDir &&
                       m('p', [
-                        m('span.bold', 'Evidence direction: '),
+                        m('span.bold', 'Evidence indication: '),
                         getOptionsLabel(evidenceDirOptions, curTech.evidenceDir) + '.',
                       ]),
                     curTech.evidenceScore &&
@@ -328,62 +327,35 @@ export const TechnologyPage: MeiosisComponent = () => {
                 owner &&
                   m(
                     '.col.s6.m4',
-                    m('.card', [
-                      owner.url &&
-                        m('.card-image.waves-effect.waves-block.waves-light', [
-                          m(
-                            'a',
-                            owner &&
-                              owner.url &&
-                              m('img.activator', { src: owner.url, alt: owner.name })
-                          ),
-                        ]),
-                      m(
-                        '.card-content',
-                        m(
-                          'p',
-                          m(
-                            'span.card-title.activator',
-                            owner.name,
-                            m('i.material-icons.right', 'more_vert')
-                          ),
-                          m('ul', [
-                            owner.phone &&
-                              m('li', [
-                                m(Icon, {
-                                  iconName: 'phone',
-                                  className: 'tiny',
-                                }),
-                                m('a', { href: `tel:${owner.phone}` }, ' ' + owner.phone),
-                              ]),
-                            m('li', [
-                              m(Icon, {
-                                iconName: 'email',
-                                className: 'tiny',
-                              }),
-                              m('a', { href: mailtoLink }, ' ' + owner.email),
-                            ]),
-                          ])
-                        )
-                      ),
-                      m('.card-action', m('a', { href: mailtoLink }, 'Email')),
-                      m('.card-reveal', [
-                        m(
-                          'span.card-title.bold',
-                          owner.name,
-                          m(Icon, { iconName: 'close', className: 'right' })
-                        ),
-                        updated &&
-                          m('p', [m('span.bold', `Last update: ${updated.toDateString()}`)]),
-                        m('p', [
-                          m('span.bold', 'Status: '),
-                          getOptionsLabel(statusOptions, curTech.status) + '.',
-                        ]),
+                    m('p', [m('span.bold', 'Expert: '), owner.name + '.']),
+                    m('p', [m('span.bold', 'Email: '), m('a', { href: mailtoLink }, owner.email)]),
+                    owner.phone &&
+                      m('p', [
+                        m('span.bold', 'Phone: '),
+                        m('a', { href: `tel:${owner.phone}` }, owner.phone),
                       ]),
-                    ])
+                    updated &&
+                      m('p', [m('span.bold', 'Last update: '), updated.toDateString() + '.'])
                   ),
               ]
         ),
+        m(ModalPanel, {
+          id: 'deleteTechnology',
+          title: `Delete ${curTech.technology}?`,
+          description: `Are you sure that you want to delete ${curTech.technology}?`,
+          buttons: [
+            {
+              label: 'Yes',
+              iconName: 'delete',
+              onclick: () => {
+                model.technologies = model.technologies.filter((t) => t.id !== curTech.id);
+                saveModel(model);
+                changePage(Dashboards.TECHNOLOGIES);
+              },
+            },
+            { label: 'No', iconName: 'cancel' },
+          ],
+        }),
       ];
     },
   };

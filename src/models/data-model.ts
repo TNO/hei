@@ -250,7 +250,7 @@ export type Technology = {
   /** Main capability */
   mainCap: MAIN_CAPABILITY;
   /** Specific capability */
-  specificCap: SPECIFIC_CAPABILITY[];
+  specificCap: SPECIFIC_CAPABILITY | SPECIFIC_CAPABILITY[];
   /** Synonyms and keywords */
   keywords: string[];
   invasive: INVASIVENESS_OBTRUSIVENESS;

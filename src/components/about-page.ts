@@ -4,11 +4,29 @@ import { render } from 'mithril-ui-form';
 import { Dashboards } from '../models';
 import { MeiosisComponent } from '../services';
 
-const md = `#### Human Performance Enhancing Technologies
+const md = `#### About
+
+This website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all technologies.
 
 ##### Disclaimer
 
-The experts of TNO are paying attention to make the information as complete and accurate as possible, but are not responsible for medical correctness, completeness and actuality of the information presented on this platform. The information presented on this platform is explicitly intended for informative purposes. The content can therefore not replace professional medical advice in cases of complaints or prevention of complaints. The use and/or implementation of information presented on this platform is your own responsibility. TNO cannot be held accountable for any damage or consequences caused by the presented content on this platform. `;
+This platform is intended for informational purposes only and it does not provide medical advice. It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.
+
+##### How to use this platform
+
+###### Ministry of Defence employee
+
+If you work for the Ministry of Defence, you can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention. 
+
+By selecting ‘Compare’, recognizable by the <i class="material-icons">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE (Human-Centered Software Engineering) technologies, you can contact the expert that is listed at the bottom of each intervention page.
+
+##### TNO researcher
+
+If you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to Administrator. This allows you to add and change technologies. Remember that the changes will only be saved locally on your own PC. If you  want to implement your changes in the master file, do the following:
+
+1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder
+2. Implement you changes or additions to the platform
+3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.`;
 
 export const AboutPage: MeiosisComponent = () => {
   return {
@@ -33,8 +51,8 @@ export const AboutPage: MeiosisComponent = () => {
               initialValue: curUser,
               placeholder: 'Select user',
               options: [
-                { id: 'mod', label: 'Ministry of Defence employee' },
-                { id: 'admin', label: 'Administrator' },
+                { id: 'mod', label: 'Defence employee' },
+                { id: 'admin', label: 'TNO researcher' },
               ],
               // data: users.reduce((acc, cur) => {
               //   acc[cur.name] = cur.url || null;

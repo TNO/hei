@@ -88,7 +88,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
           keywords && acc[key].desc.push(...keywords);
           booster && acc[key].booster.push(booster);
           mainCap && acc[key].mainCap.push(mainCap);
-          specificCap && specificCap.length && acc[key].specificCap.push(...specificCap);
+          specificCap && specificCap instanceof Array && acc[key].specificCap.push(...specificCap);
           hpeClassification && acc[key].hpeClassification.push(hpeClassification);
           category && acc[key].category.push(category);
           invasive && acc[key].invasive.push(invasive);
@@ -109,7 +109,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             keywords: keywords && keywords.length ? [...keywords] : [],
             booster: [booster],
             mainCap: [mainCap],
-            specificCap: specificCap,
+            specificCap: specificCap instanceof Array ? specificCap : [specificCap],
             hpeClassification: [hpeClassification],
             category: [category],
             invasive: [invasive],
@@ -277,7 +277,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 m(FlatButton, {
                   modalId: 'search',
                   iconName: 'manage_search',
-                  label: 'Adv. search',
+                  label: 'Advanced search',
                 })
               ),
               m('.col.s6.m3.xl2', [
@@ -524,7 +524,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                       },
                     },
                     m(Icon, {
-                      iconName: 'compare',
+                      iconName: 'balance',
                       className: selectedForComparison ? 'amber-text' : '',
                     }),
                     m('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE')
