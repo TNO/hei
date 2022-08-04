@@ -12885,60 +12885,32 @@ $jscomp.polyfill = function (e, r, p, m) {
 
 /***/ }),
 
-/***/ 3807:
+/***/ 3527:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.meiosisSetup = void 0;
+var setup_1 = __webpack_require__(9274);
+Object.defineProperty(exports, "meiosisSetup", ({ enumerable: true, get: function () { return setup_1.meiosisSetup; } }));
+
+
+/***/ }),
+
+/***/ 9274:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.nestSetup = exports.commonGetServices = exports.updateFloatValueIntoPath = exports.updateIntValueIntoPath = exports.updateStringValueIntoPath = void 0;
-const simple_stream_1 = __importStar(__webpack_require__(7269));
-const util_1 = __webpack_require__(7636);
-const toPath = (pathOrProp) => Array.isArray(pathOrProp) ? pathOrProp : [pathOrProp];
-const updateParseValue = (intoPath, parseFn, cell, path) => (evt) => {
-    const value = parseFn(evt.target.value);
-    if (!isNaN(value)) {
-        cell.update(intoPath(toPath(path), value));
-    }
-};
-/**
- * Internal use only.
- */
-const updateStringValueIntoPath = (intoPath, cell, path, fn) => (evt) => cell.update(intoPath(toPath(path), fn(evt.target.value)));
-exports.updateStringValueIntoPath = updateStringValueIntoPath;
-/**
- * Internal use only.
- */
-const updateIntValueIntoPath = (intoPath, cell, path) => (evt) => updateParseValue(intoPath, parseInt, cell, path)(evt);
-exports.updateIntValueIntoPath = updateIntValueIntoPath;
-/**
- * Internal use only.
- */
-const updateFloatValueIntoPath = (intoPath, cell, path) => (evt) => updateParseValue(intoPath, parseFloat, cell, path)(evt);
-exports.updateFloatValueIntoPath = updateFloatValueIntoPath;
+exports.meiosisSetup = void 0;
+const simple_stream_1 = __webpack_require__(6044);
+const util_1 = __webpack_require__(419);
+const mergerino_1 = __importDefault(__webpack_require__(8474));
 const assembleInitialState = (nestedComponents) => nestedComponents
     ? Object.keys(nestedComponents).reduce((result, key) => (0, util_1.assoc)(key, Object.assign({}, nestedComponents[key].initial, assembleInitialState(nestedComponents[key].nested)), result), {})
     : {};
@@ -12969,72 +12941,24 @@ const assembleServices = (nestedComponents, getCell = (cell) => cell, getState =
         }))).concat(assembleServices(nestedApp.nested, nextGetCell, nextGetState));
     }, [])
     : [];
-/**
- * Internal use only.
- */
-const commonGetServices = (app) => (0, util_1.concatIfPresent)([], app.services).concat(assembleServices(app.nested));
-exports.commonGetServices = commonGetServices;
-const setup = ({ stream, accumulator, app }) => {
+const getServices = (app) => (0, util_1.concatIfPresent)([], app.services).concat(assembleServices(app.nested));
+const baseSetup = ({ stream, app }) => {
     if (!stream) {
-        stream = simple_stream_1.default;
-    }
-    if (!accumulator) {
-        throw new Error('No accumulator function was specified.');
+        stream = simple_stream_1.simpleStream;
     }
     const safeApp = app || {};
     const initial = getInitialState(safeApp);
     const view = getView(safeApp);
-    // falsy patches are ignored
-    const accumulatorFn = (state, patch) => (patch ? accumulator(state, patch) : state);
     const createStream = typeof stream === 'function' ? stream : stream.stream;
     const scan = stream.scan;
     const update = createStream();
-    const states = scan((state, patch) => accumulatorFn(state, patch), initial, update);
+    const states = scan((state, patch) => (0, mergerino_1.default)(state, patch), initial, update);
     return {
         states,
         update,
         view
     };
 };
-/**
- * Internal use only.
- */
-const nestSetup = ({ accumulator, getServices, nestCell, stream = simple_stream_1.default, app = {} }) => {
-    const { states, update, view } = setup({
-        stream,
-        accumulator,
-        app
-    });
-    const nest = nestCell(states, update, view);
-    const getState = () => states();
-    const getCell = (state) => ({ state, getState, update, nest, nested: view });
-    const dropRepeats = (0, simple_stream_1.createDropRepeats)(stream);
-    if (app) {
-        getServices(app).forEach((service) => {
-            dropRepeats(states, service.onchange).map((state) => service.run(getCell(state)));
-        });
-    }
-    const cells = dropRepeats(states).map(getCell);
-    return cells;
-};
-exports.nestSetup = nestSetup;
-
-
-/***/ }),
-
-/***/ 1162:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setup = exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormValue = exports.combinePatches = void 0;
-const mergerino_1 = __importDefault(__webpack_require__(8474));
-const common_1 = __webpack_require__(3807);
-const util_1 = __webpack_require__(7636);
 const nestPatch = (patch, prop) => ({ [prop]: patch });
 const nestUpdate = (parentUpdate, prop) => (patch) => parentUpdate(nestPatch(patch, prop));
 const nestCell = (getState, parentUpdate, components) => (prop) => {
@@ -13050,85 +12974,6 @@ const nestCell = (getState, parentUpdate, components) => (prop) => {
     };
 };
 /**
- * Combines an array of patches into a single patch.
- *
- * @template S the State type.
- */
-const combinePatches = (patches) => patches;
-exports.combinePatches = combinePatches;
-// helpers to update values from input
-const intoPath = (path, value) => ({
-    [path[0]]: path.length === 1 ? value : intoPath(path.slice(1), value)
-});
-/**
- * Convenience function to update a form value. Pass the Meiosis cell and the state property (such
- * as `'firstName'`) or path (such as `['person', 'firstName']`) into which to update the value.
- * Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput`
- * (Preact, React). For example:
- *
- * ```js
- * // Using Mithil
- * m('input[type=text]', { oninput: updateFormValue(cell, 'firstName') })
- *
- * // Using Preact/React
- * <input type="text" onInput={updateFormValue(cell, ['person', 'firstName'])}/>
- * ```
- *
- * @param cell the Meiosis cell.
- * @param path the property or path into which to update the value.
- * @param fn (optional) a function to modify the value before updating it.
- *
- * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
- */
-const updateFormValue = (cell, path, fn = (value) => value) => (0, common_1.updateStringValueIntoPath)(intoPath, cell, path, fn);
-exports.updateFormValue = updateFormValue;
-/**
- * Convenience function to update a form value with an Integer value. If the user input does not
- * return a number with `parseInt`, no state change occurs. Pass the Meiosis cell and the state
- * property (such as `'counter'`) or path (such as `['book', 'counter']`) into which to update the
- * value. Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or
- * `onInput` (Preact, React). For example:
- *
- * ```js
- * // Using Mithil
- * m('input[type=text]', { oninput: updateFormIntValue(cell, 'counter') })
- *
- * // Using Preact/React
- * <input type="text" onInput={updateFormIntValue(cell, ['book', 'counter'])}/>
- * ```
- *
- * @param cell the Meiosis cell.
- * @param path the property or path into which to update the value.
- *
- * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
- */
-const updateFormIntValue = (cell, path) => (0, common_1.updateIntValueIntoPath)(intoPath, cell, path);
-exports.updateFormIntValue = updateFormIntValue;
-/**
- * Convenience function to update a form value with a Float value. If the user input does not return
- * a number with `parseFloat`, no state change occurs. Pass the Meiosis cell and the state property
- * (such as `'pH'`) or path (such as `['water', 'pH']`) into which to update the value. Returns a
- * function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput` (Preact,
- * React). For example:
- *
- * ```js
- * // Using Mithil
- * m('input[type=text]', { oninput: updateFormFloatValue(cell, 'pH') })
- *
- * // Using Preact/React
- * <input type="text" onInput={updateFormFloatValue(cell, ['water', 'pH'])}/>
- * ```
- *
- * @param cell the Meiosis cell.
- * @param path the property or path into which to update the value.
- *
- * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
- */
-const updateFormFloatValue = (cell, path) => (0, common_1.updateFloatValueIntoPath)(intoPath, cell, path);
-exports.updateFormFloatValue = updateFormFloatValue;
-// Services
-const getServices = (component) => (0, common_1.commonGetServices)(component);
-/**
  * Helper to setup the Meiosis pattern with [Mergerino](https://github.com/fuzetsu/mergerino).
  *
  * @template S the State type.
@@ -13137,26 +12982,37 @@ const getServices = (component) => (0, common_1.commonGetServices)(component);
  *
  * @returns a stream of Meiosis cells.
  */
-const setup = (config) => (0, common_1.nestSetup)({
-    accumulator: mergerino_1.default,
-    getServices,
-    nestCell,
-    stream: config === null || config === void 0 ? void 0 : config.stream,
-    app: config === null || config === void 0 ? void 0 : config.app
-});
-exports.setup = setup;
-exports["default"] = exports.setup;
+const meiosisSetup = (config) => {
+    const stream = config === null || config === void 0 ? void 0 : config.stream;
+    const app = config === null || config === void 0 ? void 0 : config.app;
+    const { states, update, view } = baseSetup({
+        stream,
+        app
+    });
+    const nest = nestCell(states, update, view);
+    const getState = () => states();
+    const getCell = (state) => ({ state, getState, update, nest, nested: view });
+    const dropRepeats = (0, simple_stream_1.createDropRepeats)(stream);
+    if (app) {
+        getServices(app).forEach((service) => {
+            dropRepeats(states, service.onchange).map((state) => service.run(getCell(state)));
+        });
+    }
+    const cells = dropRepeats(states).map(getCell);
+    return cells;
+};
+exports.meiosisSetup = meiosisSetup;
 
 
 /***/ }),
 
-/***/ 7269:
+/***/ 6044:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.dropRepeats = exports.createDropRepeats = exports.scan = exports.stream = void 0;
+exports.dropRepeats = exports.createDropRepeats = exports.simpleStream = exports.scan = exports.stream = void 0;
 /**
  * Creates a stream.
  *
@@ -13219,11 +13075,10 @@ const scan = (accumulator, initial, sourceStream) => {
     return newStream;
 };
 exports.scan = scan;
-const simpleStream = {
+exports.simpleStream = {
     stream: exports.stream,
     scan: exports.scan
 };
-exports["default"] = simpleStream;
 /**
  * Credit: James Forbes (https://james-forbes.com/)
  *
@@ -13232,7 +13087,7 @@ exports["default"] = simpleStream;
  *
  * @param stream the stream library, defaults to simpleStream.
  */
-const createDropRepeats = (stream = simpleStream) => 
+const createDropRepeats = (stream = exports.simpleStream) => 
 /**
  * @param source the source stream.
  * @param onchange function that receives the current state of the source stream and returns the
@@ -13261,21 +13116,21 @@ exports.dropRepeats = (0, exports.createDropRepeats)();
 
 /***/ }),
 
-/***/ 7636:
+/***/ 419:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.concatIfPresent = exports.assoc = exports.get = void 0;
+exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormValue = exports.concatIfPresent = exports.assoc = exports.get = void 0;
 /**
  * Safely gets a property path from an object. The path is an array. If any property along the path
  * is `undefined`, the function returns `undefined`.
  *
- * @param {*} object the object on which to get the property.
- * @param {Array<string>} path the property path.
+ * @param object the object on which to get the property.
+ * @param path the property path.
  *
- * @returns {*} the property value, or `undefined` if any property along the path is `undefined`.
+ * @returns the property value, or `undefined` if any property along the path is `undefined`.
  */
 const get = (object, path) => path.reduce((obj, key) => (obj == undefined ? undefined : obj[key]), object);
 exports.get = get;
@@ -13285,6 +13140,7 @@ exports.get = get;
  * @param prop the property name
  * @param value the property value
  * @param result the target object
+ *
  * @returns the target object with the associated property
  */
 const assoc = (prop, value, target) => {
@@ -13297,11 +13153,88 @@ exports.assoc = assoc;
  *
  * @param target the target array
  * @param source the source array
+ *
  * @returns the target array with the source concatenated if the source is present, otherwise the
  * target array unchanged.
  */
 const concatIfPresent = (target, source) => source ? target.concat(source) : target;
 exports.concatIfPresent = concatIfPresent;
+const intoPath = (path, value) => ({
+    [path[0]]: path.length === 1 ? value : intoPath(path.slice(1), value)
+});
+const toPath = (pathOrProp) => Array.isArray(pathOrProp) ? pathOrProp : [pathOrProp];
+const updateParseValue = (parseFn, cell, path) => (evt) => {
+    const value = parseFn(evt.target.value);
+    if (!isNaN(value)) {
+        cell.update(intoPath(toPath(path), value));
+    }
+};
+/**
+ * Convenience function to update a form value. Pass the Meiosis cell and the state property (such
+ * as `'firstName'`) or path (such as `['person', 'firstName']`) into which to update the value.
+ * Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput`
+ * (Preact, React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormValue(cell, 'firstName') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormValue(cell, ['person', 'firstName'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ * @param fn (optional) a function to modify the value before updating it.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
+const updateFormValue = (cell, path, fn = (value) => value) => (evt) => cell.update(intoPath(toPath(path), fn(evt.target.value)));
+exports.updateFormValue = updateFormValue;
+/**
+ * Convenience function to update a form value with an Integer value. If the user input does not
+ * return a number with `parseInt`, no state change occurs. Pass the Meiosis cell and the state
+ * property (such as `'counter'`) or path (such as `['book', 'counter']`) into which to update the
+ * value. Returns a function that you can pass to a DOM handler, such as `oninput` (Mithril) or
+ * `onInput` (Preact, React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormIntValue(cell, 'counter') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormIntValue(cell, ['book', 'counter'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
+const updateFormIntValue = (cell, path) => (evt) => updateParseValue(parseInt, cell, path)(evt);
+exports.updateFormIntValue = updateFormIntValue;
+/**
+ * Convenience function to update a form value with a Float value. If the user input does not return
+ * a number with `parseFloat`, no state change occurs. Pass the Meiosis cell and the state property
+ * (such as `'pH'`) or path (such as `['water', 'pH']`) into which to update the value. Returns a
+ * function that you can pass to a DOM handler, such as `oninput` (Mithril) or `onInput` (Preact,
+ * React). For example:
+ *
+ * ```js
+ * // Using Mithil
+ * m('input[type=text]', { oninput: updateFormFloatValue(cell, 'pH') })
+ *
+ * // Using Preact/React
+ * <input type="text" onInput={updateFormFloatValue(cell, ['water', 'pH'])}/>
+ * ```
+ *
+ * @param cell the Meiosis cell.
+ * @param path the property or path into which to update the value.
+ *
+ * @returns a function that accepts a DOM event and updates the value on the Meiosis state.
+ */
+const updateFormFloatValue = (cell, path) => (evt) => updateParseValue(parseFloat, cell, path)(evt);
+exports.updateFormFloatValue = updateFormFloatValue;
 
 
 /***/ }),
@@ -13319,7 +13252,7 @@ const e=Object.assign||((e,t)=>(t&&Object.keys(t).forEach(o=>e[o]=t[o]),e)),t=(e
 
 /***/ }),
 
-/***/ 3934:
+/***/ 749:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13329,7 +13262,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 3856:
+/***/ 5277:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13339,7 +13272,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 3302:
+/***/ 5503:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13430,7 +13363,7 @@ const a=()=>"idxxxxxxxx".replace(/[x]/g,()=>(16*Math.random()|0).toString(16)),i
 
 /***/ }),
 
-/***/ 7248:
+/***/ 2771:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13457,7 +13390,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9402);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var mithril_materialized__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6777);
-function O(){return O=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},O.apply(this,arguments)}var D,N=[[/\r\n/g,"\n"],[/\n(#+)(.*)/g,function(e,t,n){void 0===n&&(n="");var r=t.length;return"<h"+r+">"+n.trim()+"</h"+r+">"}],[/!\[([^\[]+)\]\((?:javascript:)?([^\)]+)\)/g,'<img src="$2" alt="$1">'],[/\[([^\[]+)\]\((?:javascript:)?([^\)]+)\)/g,'<a href="$2">$1</a>'],[/(\*\*|__)(.*?)\1/g,"<strong>$2</strong>"],[/\\_/g,"&#95;"],[/(\*|_)(.*?)\1/g,"<em>$2</em>"],[/\~\~(.*?)\~\~/g,"<del>$1</del>"],[/\:\"(.*?)\"\:/g,"<q>$1</q>"],[/\~(.*?)\~/g,"<sub>$1</sub>"],[/\^(.*?)\^/g,"<sup>$1</sup>"],[/\n\s*```\n([^]*?)\n\s*```\s*\n/g,"\n<pre>$1</pre>"],[/`(.*?)`/g,function(e,t){return"<code>"+function(e){e=e.replace(/\&/g,"&amp;");for(var t="'#<>`*-~_=:\"![]()nt",n=t.length,r=0;r<n;r++)e=e.replace(RegExp("\\"+t[r],"g"),function(e){return"&#"+e.charCodeAt(0)+";"});return e}(t)+"</code>"}],[/\n(\*|\-|\+)(.*)/g,function(e,t,n){return void 0===n&&(n=""),"<ul>\n\t<li>"+n.trim()+"</li>\n</ul>"}],[/\n[0-9]+\.(.*)/g,function(e,t){return void 0===t&&(t=""),"<ol>\n\t<li>"+t.trim()+"</li>\n</ol>"}],[/\n(&gt;|\>)(.*)/g,function(e,t,n){return void 0===n&&(n=""),"\n<blockquote>"+n.trim()+"</blockquote>"}],[/\n-{5,}/g,"\n<hr />"],[/( *\|[^\n]+\|\r?\n)((?: *\|:?[ -]+:?)+ *\|)(\n(?: *\|[^\n]+\|\r?\n?)*)?/g,function(e,t,n,r){var i=n.split("|").filter(function(e,t,n){return t>0&&t<n.length-1}).map(function(e){return/:-+:/g.test(e)?"center":/-+:/g.test(e)?"right":/:-+/.test(e)?"left":""}),a=function(e){var t=i[e];return t?' align="'+t+'"':""};return"\n<table><tbody><tr>"+t.split("|").map(function(e){return e.trim()}).filter(function(e){return e&&e.length}).map(function(e,t){return"<th"+a(t)+">"+e+"</th>"}).join("")+"</tr>"+r.split("\n").map(function(e){return e.trim()}).filter(function(e){return e&&e.length}).map(function(e){return"<tr>"+e.split("|").filter(function(e,t,n){return t>0&&t<n.length-1}).map(function(e,t){return"<td"+a(t)+">"+e.trim()+"</td>"}).join("")+"</tr>"}).join("")+"</tbody></table>\n"}],[/\n([^\n]+)\n/g,function(e,t){var n=t.trim();return/^<\/?(ul|ol|li|h|p|bl|table|tr|td)/i.test(n)?"\n"+t+"\n":"\n<p>\n"+n+"\n</p>\n"}],[/\s?<\/ul>\s?<ul>/g,""],[/\s?<\/ol>\s?<ol>/g,""],[/<\/blockquote>\n<blockquote>/g,"<br>\n"],[/https?:\/\/[^"']*/g,function(e){return e.replace(/<\/?em>/g,"_")}],[/&#95;/g,"_"]],j=function(e,t,n){return void 0===t&&(t=!1),void 0===n&&(n=!1),e="\n"+e+"\n",N.forEach(function(t){e=e.replace(t[0],t[1])}),t?n?e.trim().replace(/^<p>([\s\S]*)<\/p>$/,"$1").replace(/<a href="/,'<a target="_blank" href="'):e.trim().replace(/^<p>([\s\S]*)<\/p>$/,"$1"):n?e.trim().replace(/<a href="/,'<a target="_blank" href="'):e.trim()},A=function(e,t){N.push([e,t])},S=function(e){return e.charAt(0).toUpperCase()+e.slice(1)},V=function(e){return"string"==typeof e},$=function e(t,n,r){return void 0===n&&(n=2),void 0===r&&(r="0"),t.toString().length>=n?t.toString():e(r+t,n,r)},C=function(e){return $(e.getHours())+":"+$(e.getMinutes())},L=function(e,t){for(var n=(t=(t=t.replace(/\[(\w+)\]/g,".$1")).replace(/^\./,"")).split("."),r=O({},e),i=0,a=n.length;i<a;++i){var o=n[i];if(o in r)r=r[o];else{if(!(r instanceof Array))return;var l=function(){var t=e[o]||o,n=/([A-Z]\w+)/.exec(o),i=n&&n[0][0].toLowerCase()+n[0].substr(1)||o,a=r.filter(function(e){return e[i]===t}).shift();if(!a)return{v:void 0};r=a}();if("object"==typeof l)return l.v}}return r},T=/([^ =><]*)\s*([=><]*)\s*(\S*)/i,P=/^\s*!\s*/,_=function(e,t){var n=e.split("&"),r=t.reduce(function(e,t){return[].concat(e,t instanceof Array?t:[t])},[]);return n.reduce(function(e,t){var n=P.test(t),i=n?t.replace(P,""):t;return e=e&&r.filter(Boolean).reduce(function(e,t){return e||function(e,t){if(!t||0===Object.keys(t).length)return!1;var n=T.exec(e);if(n){var r=n[0],i=n[2],a=n[3],o=L(t,n[1].trim()),l="boolean"==typeof o?o?"true":"false":o;if(void 0===l||"string"==typeof l&&0===l.length)return!1;if(!i||!a)return!0;var c=isNaN(+a)?"true"===a||"false"!==a&&a:+a;switch(i){case"=":return l instanceof Array?l.indexOf(c)>=0:l===c;case"<=":return l<=c;case">=":return l>=c;case"<":return l<c;case">":return l>c;default:return console.error("Unrecognized operand ("+i+") in expression: "+r),!1}}return!0}(i.trim(),t)},!1),n?!e:e},!0)},F=function(e){var t=arguments,n=e instanceof Array?e:[e];return 0===e.length||n.some(function(e){return _(e,[].slice.call(t,1))})},E=function(e,t){return L(t.filter(Boolean).reduceRight(function(e,t){return O({},t,e)}),e.trim())},M=function(e,t){return void 0!==E(e,t)},q=/{{\s*([^\s"'`:]*):?([^\s]*)\s*}}/g,H=function(e){var t,n=arguments;if(!q.test(e))return!0;q.lastIndex=0;var r=!0;do{(t=q.exec(e))&&(t.index===q.lastIndex&&q.lastIndex++,t.forEach(function(e,t,i){r=r&&M(i[1],[].slice.call(n,1))}))}while(r&&null!==t);return r},R=function e(t,n){if(void 0===t)return"";if(t instanceof Array)return t.map(function(t){return e(t,n)}).join(", ");if(!n)return t.toString();if("boolean"==typeof t){var r=n.indexOf(":");return t?n.substring(0,r):n.substring(r+1)}switch(n){default:return t.toString();case"date":return new Date(t).toLocaleDateString();case"time":return new Date(t).toLocaleTimeString();case"iso":return new Date(t).toISOString();case"utc":return new Date(t).toUTCString()}},U=function(e){var t,n=arguments;if(!q.test(e))return e;q.lastIndex=0;do{(t=q.exec(e))&&(t.index===q.lastIndex&&q.lastIndex++,t.forEach(function(t,r,i){var a=i[0],o=i[2],l=E(i[1],[].slice.call(n,1));!l||l instanceof Array||(e=e.replace(a,R(l,o)))}))}while(null!==t);return e},J=function e(t){if(null===t)return t;if(t instanceof Date)return new Date(t.getTime());if(t instanceof Array){var n=[];return t.forEach(function(e){n.push(e)}),n.map(function(t){return e(t)})}if("object"==typeof t&&t!=={}){var r=O({},t);return Object.keys(r).forEach(function(t){r[t]=e(r[t])}),r}return t},z=function(e){var t=function e(t,n){return void 0===n&&(n=""),t.filter(function(e){return"section"!==e.type&&"md"!==e.type}).reduce(function(t,r){var i=(n?n+".":"")+r.id,a=r.type||(r.options&&r.options.length>0?"select":"text");return"string"==typeof a?t[i]=r:t=O({},t,e(a,i)),t},{})}(e),n=function(e,n){if(!t.hasOwnProperty(e)||void 0===n)return n;var r=t[e],i=n instanceof Array?n.filter(function(e){return null!=e}):[n];switch(r.type||(r.options?"options":"none")){default:return n;case"radio":case"select":case"options":var a="string"==typeof r.options?E(r.options,[t]):r.options;return i.map(function(e){return a.filter(function(t){return t.id===e}).map(function(e){return e.label||S(e.id)}).shift()}).filter(function(e){return void 0!==e})}};return function e(t,r){if(void 0===r&&(r=""),t&&("object"!=typeof t||0!==Object.keys(t).length)){if(t instanceof Array)return t.map(function(t){return e(t,r)});var i={};return Object.keys(t).forEach(function(a){var o=r?r+"."+a:a,l=t[a];if("boolean"==typeof l)i[a]=l;else if("number"==typeof l||"string"==typeof l){var c=n(o,l);c&&(i[a]=c instanceof Array&&1===c.length?c[0]:c)}else if(l instanceof Array)if("string"==typeof l[0]||null===l[0]){var u=n(o,l);u&&(i[a]=u)}else i[a]=e(l,a);else"object"==typeof l&&(i[a]=l)}),i}}},W=function(e){return void 0===e&&(e=""),e.replace(/\s|,|\./g,"").toLowerCase()},B=function(e,t,n){void 0===n&&(n=1);for(var r=[],i=e;i<=t;i+=n)r.push(i);return r},Y=function(e){"string"!=typeof e&&(e=JSON.stringify(e));var t=0;if(0===e.length)return t;for(var n=0;n<e.length;n++)t=(t<<5)-t+e.charCodeAt(n),t&=t;return t},G=function(e,t,n){var r=Object.assign({},t,n);return e+"?"+Object.keys(r).map(function(e){return e+"="+r[e]}).join("&")},K=function(){return{view:function(t){var n=t.attrs,r=n.md,i=n.removeParagraphs,a=n.className;return r?mithril__WEBPACK_IMPORTED_MODULE_0___default()(".markdown "+(void 0===a?"":a),mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(r,void 0!==i&&i))):void 0}}},Z=function(){return{view:function(t){var n=t.attrs,r=n.label,i=n.initialValue,a=n.inline,o=void 0!==a&&a,l={className:n.props.className||"col s12"};if(i instanceof Array&&i.length>3)return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:"\n- "+i.join("\n- ")})]);if("string"==typeof i)return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:i})]);var c=i instanceof Array?i.join(", "):i;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[r&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),o?mithril__WEBPACK_IMPORTED_MODULE_0___default()("span",c?": "+c:mithril__WEBPACK_IMPORTED_MODULE_0___default().trust("&nbsp;")):mithril__WEBPACK_IMPORTED_MODULE_0___default()("p",c||mithril__WEBPACK_IMPORTED_MODULE_0___default().trust("&nbsp;"))])}}},Q=["label","className","dateTimeSeconds","twelveHour","format"],X=function(y,w){void 0===y&&(y={}),void 0===w&&(w={});var x=function(){var x={key:Date.now()};return{view:function(I){var k=I.attrs,D=k.field,N=k.obj,A=k.autofocus,V=k.onchange,$=k.context,L=k.containerId,T=k.disabled,P=D.id,_=void 0===P?"":P,M=D.type,q=D.disabled,R=void 0===q?T:q,J=D.readonly,z=void 0===J?k.readonly:J,W=D.value,B=D.required,Y=D.autogenerate,G=D.show,X=D.label,ee=D.description,te=D.i18n,ne=void 0===te?k.i18n||{}:te,re=D.checkAllOptions,ie=D.transform,oe=D.effect;if(!(G&&!F(G,N,$)||X&&!H(X,N,$)||ee&&!H(ee,N,$))){var le="string"==typeof D.options?E(D.options,[N].concat($)):D.options,ce=le&&le instanceof Array?le.filter(function(e){return void 0!==e.id&&(e.label||!/[0-9]/.test(e.id))&&(!e.show||F(e.show,N,$))}).map(function(e){return e.label?e:O({},e,{label:S(e.id)})}):[],ue="boolean"==typeof T&&T,se=function(e,t,r){void 0===t&&(t=!1),void 0===r&&(r=!1);var i=e.id,a=e.label,o=e.description,l=e.required,c=e.multiple,u=e.className,s=e.checkboxClass,d=e.icon,f=e.iconClass,p=e.placeholder,m=e.maxLength,g=e.minLength,v=e.max,h=e.min,b=e.step,y=e.dateTimeOutput,w=e.dateTimeSeconds,x=e.dateFormat,I=e.twelveHour,k={id:i+"-"+(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)(),label:a};return void 0===a&&i&&(k.label=S(i)),o&&(k.helperText=j(o,!0)),u&&(k.className=u),d&&(k.iconName=d),f&&(k.iconClass=f),s&&(k.checkboxClass=s),p&&(k.placeholder=p),l&&(k.isMandatory=!0),c&&(k.multiple=c),r&&(k.disabled=!0),t&&(k.autofocus=!0),void 0!==m&&(k.maxLength=m),void 0!==g&&(k.minLength=g),void 0!==v&&(k.max=v),void 0!==h&&(k.min=h),void 0!==b&&(k.step=b),y&&(k.dateTimeOutput=y),w&&(k.dateTimeSeconds=w),x&&(k.dateFormat=x),I&&(k.twelveHour=I),k}(D,A,"boolean"==typeof R||void 0===R?ue||R:ue||F(R,N,$));X&&(se.label=j(U(se.label||X,N,$),!0)),ee&&(se.description=j(U(se.description||ee,N,$),!0));var de=B?function(e){return e instanceof Array?e&&e.length>0:void 0!==typeof e}:void 0;if(N instanceof Array)console.warn("Only a repeat list can deal with arrays!");else{var fe=function(e){try{return void 0===e||"undefined"===e?(delete N[_],V(N),Promise.resolve()):(N[_]=ie?ie("to",e):e,oe?Promise.resolve(oe(N,N[_],$)).then(function(e){V(void 0!==e?e:N)}):Promise.resolve(V(N)))}catch(e){return Promise.reject(e)}};if(M instanceof Array)return _?(N.hasOwnProperty(_)||(N[_]={}),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".muf-form",{className:D.className},[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".muf-form-header",mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(se.label||S(_),!0))),se.description&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(se.description))),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,O({},se,{i18n:ne,readonly:z,form:M,obj:N[_],context:[N].concat($),onchange:function(){return V(N)},containerId:L})))])):void console.warn("Missing ID for type "+JSON.stringify(M));Y&&!N[_]&&(N[_]="guid"===Y?(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uuid4)():"id"===Y?(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)():Date.now());var pe=N.hasOwnProperty(_)&&void 0!==N[_]?ie?ie("from",N[_]):N[_]:W;_&&void 0!==W&&void 0!==pe&&(N[_]=ie?ie("to",pe):pe);var me=re?re.split("|"):["",""],ge=me[0],ve=me[1],he=se.className;if(z&&M&&["md","none"].indexOf(M)<0){if(w.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(w[M],{iv:pe,field:D,props:se,label:se.label,obj:N,context:$});if(M&&y.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(y[M],{iv:pe,field:D,props:se,label:se.label,onchange:fe,obj:N,context:$});switch(M){case"time":var be=pe||new Date,ye=C(be);return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:ye});case"date":var we="number"==typeof pe||"string"==typeof pe||pe instanceof Date?new Date(pe).toLocaleDateString():"";return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:we});case"checkbox":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe?"✔":"✘",inline:!0});case"tags":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe||[]});case"options":case"select":var xe=void 0!==pe?pe instanceof Array?pe:[pe]:[],Ie=ce.filter(function(e){return xe.indexOf(e.id)>=0}),ke=Ie&&0===Ie.length?"?":1===Ie.length?Ie[0].label:Ie.map(function(e){return e.label});return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:ke});case"radio":var Oe=pe,De=ce.filter(function(e){return e.id===Oe});return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,initialValue:De&&De.length?De[0].label:"?"});case"base64":var Ne=pe;return!(!Ne||!/data:image/i.test(Ne))&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",mithril__WEBPACK_IMPORTED_MODULE_0___default()("img.responsive-img",{src:Ne,alt:N.title||N.alt||N.name||"",style:"max-height: "+(D.max||50)+"px"}));case"file":return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",se,(pe instanceof Array?pe:[pe]).map(function(t){void 0===t&&(t="");var n=/data:image|.jpg$|.jpeg$|.png$|.gif$|.svg$|.bmp$|.tif$|.tiff$/i.test(t),r=""+new URL(D.url).origin+t;return mithril__WEBPACK_IMPORTED_MODULE_0___default()("a[target=_blank]",{href:r},n?mithril__WEBPACK_IMPORTED_MODULE_0___default()("img",{src:r,alt:r,style:"max-height: "+(D.max||50)}):mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:D.placeholder||"File",initialValue:t}))}));case"markdown":var je="string"==typeof pe&&pe?j(pe):"";return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:je});default:return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe})}}else{if(M&&y.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(y[M],{iv:pe,field:D,props:se,label:se.label,onchange:fe,obj:N,context:$});switch(M){case"colour":case"color":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ColorInput,O({},se,{initialValue:pe,onchange:fe}));case"time":var Ae=se.twelveHour,Se=void 0!==Ae&&Ae,Ve=pe?"number"==typeof pe||"string"==typeof pe?new Date(pe):pe:new Date,$e=C(Ve);return N[_]=ie?ie("to",Ve):Ve,mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TimePicker,O({},se,{twelveHour:Se,initialValue:$e,onchange:function(e){var t=e.split(":").map(function(e){return+e});Ve.setHours(t[0],t[1]),fe(Ve)},container:L}));case"date":var Ce=se.format,Le=void 0===Ce?"mmmm d, yyyy":Ce,Te="number"==typeof pe||"string"==typeof pe?new Date(pe):pe;N[_]=Te?ie?ie("to",Te.valueOf()):Te.valueOf():Te;var Pe=se.min,_e=se.max,Fe=Pe?!Te||Pe<Te.valueOf()?new Date(Pe):Te:void 0,Ee=_e?!Te||_e>Te.valueOf()?new Date(_e):Te:void 0;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.DatePicker,O({},se,{minDate:Fe,maxDate:Ee,setDefaultDate:!!Te,format:Le,initialValue:Te,onchange:function(e){fe(new Date(e))},container:L}));case"datetime":var Me=se.label,qe=se.className,He=void 0===qe?"col s12":qe,Re=se.dateTimeSeconds,Ue=void 0!==Re&&Re,Je=se.twelveHour,ze=void 0!==Je&&Je,We=se.format,Be=void 0===We?"mmmm d, yyyy":We,Ye=function(e,t){if(null==e)return{};var n,r,i={},a=Object.keys(e);for(r=0;r<a.length;r++)t.indexOf(n=a[r])>=0||(i[n]=e[n]);return i}(se,Q),Ge="number"==typeof pe||"string"==typeof pe?new Date(pe):pe,Ke={initialDateTime:Ge},Ze=Ge||void 0,Qe=Ge?C(Ge):"",Xe=se.min,et=se.max,tt=Xe?!Ge||Xe<Ge.valueOf()?new Date(Xe):Ge:void 0,nt=et?!Ge||et>Ge.valueOf()?new Date(et):Ge:void 0,rt=se.dateTimeOutput||"UTC",it=function(e){Ke.initialDateTime=e,fe("UTC"===rt?e.toUTCString():"ISO"===rt?e.toISOString():e.valueOf())};return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",{className:He},mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(Ue?".col.s6":".col.s8",{style:"padding-right: 0"},mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.DatePicker,O({},Ye,{label:Me,minDate:tt,maxDate:nt,setDefaultDate:!!Ge,format:Be,initialValue:Ze,container:L,onchange:function(e){var t=new Date(Ke.initialDateTime);t.setFullYear(e.getFullYear()),t.setMonth(e.getMonth()),t.setDate(e.getDate()),it(t)}}))),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s4",{style:"min-width: 6rem; padding-right: 0; padding-left: 0"},mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TimePicker,O({},Ye,{label:"",helperText:"",twelveHour:ze,initialValue:Qe,container:L,onchange:function(e){var t=e.split(":").map(function(e){return+e}),n=Ke.initialDateTime||new Date((new Date).setSeconds(0,0));n.setHours(t[0],t[1]),it(n)}}))),Ue&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.NumberInput,{style:"min-width: 4rem; padding-right: 0; padding-left: 0",className:"col s2",min:0,max:59,onchange:function(e){var t=Ke.initialDateTime||new Date((new Date).setSeconds(0,0));t.setSeconds(e,0),it(t)}})]));case"email":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.EmailInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"number":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.NumberInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"radio":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RadioButtons,O({label:""},se,{options:ce,checkedId:pe,onchange:fe}));case"checkbox":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.InputCheckbox,O({},se,{checked:pe,onchange:fe}));case"options":return[[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Options,O({key:x.key,checkboxClass:"col s6 m4 l3",className:"input-field col s12"},se,{disabled:se.disabled||!ce||0===ce.length,options:ce,checkedId:pe,onchange:function(e){return fe(1===e.length?e[0]:e.filter(function(e){return null!==e}))}}))],void 0!==re&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s12.option-buttons",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{disabled:se.disabled,label:ge,iconName:"check",onclick:function(){x.key=Date.now(),fe(ce.map(function(e){return e.id}))}}),ve&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{disabled:se.disabled,label:ve,iconName:"check_box_outline_blank",onclick:function(){var e=N[_]||[];e.length=0,x.key=Date.now(),fe(e)}})])];case"select":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Select,O({placeholder:se.multiple?ne.pickOneOrMore||"Pick one or more":ne.pickOne||"Pick one"},se,{disabled:se.disabled||!ce||0===ce.length,options:ce,checkedId:pe,onchange:function(e){return fe(1!==e.length||se.multiple?e.filter(function(e){return null!==e||void 0!==e}):e[0])}}));case"md":var at=U(_?pe:W||X,N,$);return mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:at,className:he});case"section":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".divider");case"switch":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Switch,O({},se,{left:ce&&ce.length>0?ce[0].label:"",right:ce&&ce.length>1?ce[1].label:"",checked:pe,onchange:fe}));case"tags":var ot=(pe?pe instanceof Array?pe:[pe]:[]).map(function(e){return{tag:e}}),lt=ce&&ce.length>0?{data:ce.reduce(function(e,t){return e[t.id]=null,e},{}),limit:D.maxLength||Infinity,minLenght:D.minLength||1}:{};return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Chips,{className:se.className,label:se.label,isMandatory:se.isMandatory,helperText:se.helperText,onchange:function(e){return fe(e.map(function(e){return e.tag}))},placeholder:D.placeholder||"Add a tag",secondaryPlaceholder:D.secondaryPlaceholder||"+tag",data:ot,autocompleteOptions:lt});case"markdown":case"textarea":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextArea,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"file":var ct=pe,ut=D.url,st=D.placeholder;if(!ut)throw Error('Input field "url" not defined, which indicates the URL to the upload folder.');var dt=ce?ce.map(function(e){return e.id}):void 0;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FileInput,O({},se,{accept:dt,placeholder:st,onchange:function(t){if(!t||t.length<1)fe("");else{var n=new FormData;n.append("file",t[0]),mithril__WEBPACK_IMPORTED_MODULE_0___default().request({method:"POST",url:ut,body:n}).then(function(e){return fe(e)}).catch(console.error)}},initialValue:ct}));case"base64":var ft=pe,pt=!(!ft||!/data:image/i.test(ft)),mt=D.placeholder,gt=ce?ce.map(function(e){return e.id}).join(","):void 0;return pt?mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",[mithril__WEBPACK_IMPORTED_MODULE_0___default()("img.responsive-img",{src:ft,alt:N.title||N.alt||N.name||"",style:"max-height: "+(D.max||50)+"px"}),mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{iconName:"clear",onclick:function(){return fe("")}})]):mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FileInput,O({},se,{accept:gt,placeholder:mt,onchange:function(t){if(!t||t.length<1)fe("");else{var n=new FileReader;n.onloadend=function(){"string"==typeof n.result&&fe(n.result),mithril__WEBPACK_IMPORTED_MODULE_0___default().redraw()},n.readAsDataURL(t[0])}},initialValue:ft}));case"url":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.UrlInput,O({placeholder:"http(s)://www.example.com"},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"text":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe,tabindex:15}));default:return}}}}}}};return{createFormField:function(){return x}}},ee=function(){var t,i={},o=function(e,t){var n=i.onNewItem?i.onNewItem(e,t):{};e instanceof Array?e.push(n):e.hasOwnProperty(t)?e[t].push(n):e[t]=[n]};return{oninit:function(e){var n=e.attrs,r=n.i18n,a=void 0===r?{}:r,o=n.field,l=o.id,c=void 0===l?"":l,u=o.sortProperty,s=o.onNewItem;i.editLabel=a.editRepeat||"Edit "+c,i.createLabel=a.createRepeat||"Create new "+c,i.onNewItem=s,t=function(e){if(!e)return function(e,t){return 0};var t="!"===e[0],n=t?e.substring(1):e;return t?function(e,t){return e[n]>t[n]?-1:e[n]<t[n]?1:0}:function(e,t){return e[n]>t[n]?1:e[n]<t[n]?-1:0}}(u)},view:function(l){var c=l.attrs,u=c.field,s=c.obj,d=c.context,f=c.className,p=void 0===f?u.className?"."+u.className.split(" ").join("."):".col.s12":f,m=c.section,g=c.containerId,v=c.disabled,h=void 0===v?"boolean"==typeof u.disabled?u.disabled:void 0:v,b=c.i18n,I=void 0===b?{}:b,k=c.onchange,O=function(e){return k&&k(e)},D=i.modalKey,N=i.filterValue,j=u.id,A=void 0===j?"":j,S=u.label,V=u.type,$=u.min,C=u.max,L=u.pageSize,T=u.propertyFilter,P=u.filterLabel,_=u.readonly,F=void 0===_?c.readonly:_,E=u.repeatItemClass,M=void 0===E?"":E,q="edit_"+(S?S.toLowerCase().replace(/\s/gi,"_"):(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)()),H=function(e,t){return e instanceof Array?e:(e.hasOwnProperty(t)||(e[t]=[]),e[t])}(s,A),R=N?W(N):void 0,U=T&&R&&R.length>2?H.filter(function(e){return W(""+e[T]).indexOf(R)>=0}):H,J=mithril__WEBPACK_IMPORTED_MODULE_0___default().route.param(A)?Math.min(U.length,+mithril__WEBPACK_IMPORTED_MODULE_0___default().route.param(A)):1,z=L&&U&&(J-1)*L<U.length?J:1,K=L?function(e,t){return(z-1)*L<=t&&t<z*L}:function(){return!0},Z=mithril__WEBPACK_IMPORTED_MODULE_0___default().route.get(),Q=L?Math.ceil(U.length/L):0,X=!!(C&&U.length>=C),ee=!h&&(!$||U.length>$),te=Z.split("?")[0],ne=function(e){var t=e?e.split("?")[1]:window.location.search.slice(1),n={};if(t)for(var r=t.split("&"),i=0;i<r.length;i++){var a=r[i].split("="),o=a[0],l=void 0===a[1]||a[1];if(o.match(/\[(\d+)?\]$/)){var c=n[o.replace(/\[(\d+)?\]/,"")]||[];o.match(/\[\d+\]$/)?c[+/\[(\d+)\]/.exec(o)[1]]=l:c.push(l)}else n[o]?"string"==typeof n[o]?(n[o]=[n[o]],n[o].push(l)):n[o].push(l):n[o]=l}return n}(Z);return[[mithril__WEBPACK_IMPORTED_MODULE_0___default()("#"+A+".mui-repeat-list"+p,[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.mui-repeat-list-controls",mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s12",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{iconName:h||X?"":"add",iconClass:"right",label:S,onclick:function(){var t;o(s,A),mithril__WEBPACK_IMPORTED_MODULE_0___default().route.set(te,Object.assign(ne,((t={})[A]=U.length,t))),O(s)},style:"padding: 0",className:"left",disabled:h||X,readonly:F}),Q>1&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(".right",mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Pagination,{curPage:z,items:B(1,Q).map(function(e){var t;return{href:G(te,ne,(t={},t[A]=e,t))}})})),(U.length>1||N)&&T&&!h&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextInput,{style:"margin-top: -6px; margin-bottom: -1rem;",iconName:"filter_list",iconClass:"small",placeholder:P,onkeyup:function(e,t){return i.filterValue=t},className:"right",disabled:h,readonly:F})])),U&&U.length>0&&"string"!=typeof V&&U.sort(t).filter(K).map(function(t){return[ee&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RoundIconButton,{iconName:"clear",iconClass:"white black-text",className:"row mui-delete-item btn-small right",style:"padding: 0; margin-top: -10px; margin-right: -25px",disabled:h,readonly:F,onclick:function(){i.curItemIdx=z-1}}),[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.repeat-item",{className:M,key:J+Y(t)},[mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{form:u.type,obj:t,i18n:I,context:d instanceof Array?[s].concat(d):[s,d],section:m,containerId:g,disabled:h,readonly:F,onchange:function(){return O(s)}})])]]}),!(h||X||F||!U||0===U.length||1===L)&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RoundIconButton,{iconName:"add",iconClass:"white black-text",className:"row mui-add-new-item btn-small right",title:S,style:"padding: 0; margin-top: -10px; margin-right: -25px",onclick:function(){var t;o(s,A),mithril__WEBPACK_IMPORTED_MODULE_0___default().route.set(te,Object.assign(ne,((t={})[A]=U.length,t))),O(s)}})])],void 0!==i.curItemIdx&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ModalPanel,{id:"deleteItem",onCreate:function(e){return e.open()},options:{onCloseStart:function(){i.curItemIdx=void 0,mithril__WEBPACK_IMPORTED_MODULE_0___default().redraw()}},fixedFooter:!0,title:I.deleteItem||"Delete item",description:mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{form:V,obj:U[i.curItemIdx],context:d instanceof Array?[s].concat(d):[s,d],section:m,containerId:g,readonly:!0,i18n:I}),buttons:[{label:I.disagree||"Disagree"},{label:I.agree||"Agree",onclick:function(){void 0!==i.curItemIdx&&(U.splice(i.curItemIdx,1),s instanceof Array?s=[].concat(U):s[A]=[].concat(U),O(s))}}]}),"string"==typeof V||void 0===V?void 0:mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ModalPanel,{onCreate:function(e){return i.editModal=e},id:q,title:i.editItem?i.editLabel:i.createLabel,fixedFooter:!0,description:mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.form-item",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{key:D,form:V,i18n:I,obj:i.editItem||i.newItem||{},onchange:function(e){return i.canSave=e},context:d instanceof Array?[s].concat(d):[s,d],containerId:g,disabled:h})),buttons:[{iconName:"cancel",label:I.cancel||"Cancel"},{iconName:"save",label:I.save||"Save",disabled:!i.canSave,onclick:function(){if(i.editItem&&void 0!==i.curItemIdx){var e=i.editItem,t=i.curItemIdx;V.forEach(function(n){n.id&&(t[n.id]=e[n.id])})}else i.newItem&&U.push(i.newItem);O(s)}}]})]}}},te=function(){var t={};return{oninit:function(e){var n=e.attrs.i18n,r=void 0===n?{}:n,i=r.raw,a=r.view,o=void 0===a?"VIEW":a;t.raw=void 0===i?"RAW":i,t.view=o},view:function(n){var r=n.attrs,i=r.field,a=i.id,o=void 0===a?"geojson":a,c=i.type,u=i.onSelect,s=r.obj,d=r.context,f=r.containerId,p=r.disabled,m=r.readonly,g=r.i18n,v=r.onchange;if(!(s instanceof Array)){var h=s[o],b=h?JSON.parse(h):void 0,y=b&&b.features||[],w=[],x={title:t.raw,vnode:mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextArea,{class:"col s12",initialValue:b?JSON.stringify(b,null,2):void 0,placeholder:"Enter GeoJSON",onchange:function(e){return s[o]=e}})},O=c,D=O.length>0?O[0].id:void 0,N={title:t.view,vnode:y.length?mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Collapsible,{oncreate:function(e){return t.dom=e.dom},onOpenStart:u?function(e){for(var n=t.dom.children||[],r=0;r<n.length;r++)if(n[r]===e)return void u(r,y[r])}:void 0,className:"geojson-feature-list",items:y.map(function(t,n){return t.properties||(t.properties={}),{id:"erik_"+n,key:n,header:D&&t.properties[D]||t.geometry.type,body:mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{class:"col s12",form:O,obj:t.properties,i18n:g,context:d instanceof Array?[s].concat(d):[s,d],containerId:f,disabled:p,readonly:m,onchange:function(e,t){t&&(y[n].properties=t),s[o]=JSON.stringify(b,null,2),v&&v(s)}}))}})}):mithril__WEBPACK_IMPORTED_MODULE_0___default()("span","...")};return w.push(N),w.push(x),mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Tabs,{tabs:w,tabWidth:"fill"})}}}},ne={},re={},ie=function(e,t,n){ne[e]=t,n&&(re[e]=n)},ae=(D=function(e,t){return t.filter(function(e){return e.required&&void 0!==typeof e.id}).reduce(function(t,n){return t&&!(n.id&&(void 0===e[n.id]||e[n.id]instanceof Array&&0===e[n.id].length||"string"==typeof e[n.id]&&0===e[n.id].length))},!0)},{createLayoutForm:function(){return function(){var t=X(ne,re).createFormField();return{view:function(n){var r=n.attrs,i=r.i18n,a=r.form,o=r.obj,l=r.onchange,c=r.disabled,u=r.readonly,s=r.context,d=r.section,f=function(e){return l&&l(D(e,a),e)};return a.filter(function(e){if(!e)return function(e){return!0};var t=!1;return function(n){return"section"===n.type?(t=n.id===e,!1):t}}(d)).filter(function(e){return!e.show||F(e.show,o,s||{})}).reduce(function(n,r){return r.type||(r.type=function(e){var t=e.value,n=e.options;return e.autogenerate?"none":t?"string"==typeof t?"md":"number"==typeof t?"number":"boolean"==typeof t?"checkbox":"none":n&&n.length>0?"select":"none"}(r)),[].concat(n,[void 0===r.repeat?mithril__WEBPACK_IMPORTED_MODULE_0___default()(t,{i18n:i,field:r,obj:o,onchange:f,disabled:c,readonly:u,context:s,section:d,containerId:"body"}):mithril__WEBPACK_IMPORTED_MODULE_0___default()("geojson"===r.repeat?te:ee,{obj:o,field:r,onchange:f,context:s,i18n:i,containerId:"body",disabled:c,readonly:u})])},[])}}}},isValid:D}).createLayoutForm();
+function O(){return O=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},O.apply(this,arguments)}var D,N=[[/\r\n/g,"\n"],[/\n(#+)(.*)/g,function(e,t,n){void 0===n&&(n="");var r=t.length;return"<h"+r+">"+n.trim()+"</h"+r+">"}],[/!\[([^\[]+)\]\((?:javascript:)?([^\)]+)\)/g,'<img src="$2" alt="$1">'],[/\[([^\[]+)\]\((?:javascript:)?([^\)]+)\)/g,'<a href="$2">$1</a>'],[/(\*\*|__)(.*?)\1/g,"<strong>$2</strong>"],[/\\_/g,"&#95;"],[/(\*|_)(.*?)\1/g,"<em>$2</em>"],[/\~\~(.*?)\~\~/g,"<del>$1</del>"],[/\:\"(.*?)\"\:/g,"<q>$1</q>"],[/\~(.*?)\~/g,"<sub>$1</sub>"],[/\^(.*?)\^/g,"<sup>$1</sup>"],[/\n\s*```\n([^]*?)\n\s*```\s*\n/g,"\n<pre>$1</pre>"],[/`(.*?)`/g,function(e,t){return"<code>"+function(e){e=e.replace(/\&/g,"&amp;");for(var t="'#<>`*-~_=:\"![]()nt",n=t.length,r=0;r<n;r++)e=e.replace(RegExp("\\"+t[r],"g"),function(e){return"&#"+e.charCodeAt(0)+";"});return e}(t)+"</code>"}],[/\n(\*|\-|\+)(.*)/g,function(e,t,n){return void 0===n&&(n=""),"<ul>\n\t<li>"+n.trim()+"</li>\n</ul>"}],[/\n[0-9]+\.(.*)/g,function(e,t){return void 0===t&&(t=""),"<ol>\n\t<li>"+t.trim()+"</li>\n</ol>"}],[/\n(&gt;|\>)(.*)/g,function(e,t,n){return void 0===n&&(n=""),"\n<blockquote>"+n.trim()+"</blockquote>"}],[/\n-{5,}/g,"\n<hr />"],[/( *\|[^\n]+\|\r?\n)((?: *\|:?[ -]+:?)+ *\|)(\n(?: *\|[^\n]+\|\r?\n?)*)?/g,function(e,t,n,r){var i=n.split("|").filter(function(e,t,n){return t>0&&t<n.length-1}).map(function(e){return/:-+:/g.test(e)?"center":/-+:/g.test(e)?"right":/:-+/.test(e)?"left":""}),a=function(e){var t=i[e];return t?' align="'+t+'"':""};return"\n<table><tbody><tr>"+t.split("|").map(function(e){return e.trim()}).filter(function(e){return e&&e.length}).map(function(e,t){return"<th"+a(t)+">"+e+"</th>"}).join("")+"</tr>"+r.split("\n").map(function(e){return e.trim()}).filter(function(e){return e&&e.length}).map(function(e){return"<tr>"+e.split("|").filter(function(e,t,n){return t>0&&t<n.length-1}).map(function(e,t){return"<td"+a(t)+">"+e.trim()+"</td>"}).join("")+"</tr>"}).join("")+"</tbody></table>\n"}],[/\n([^\n]+)\n/g,function(e,t){var n=t.trim();return/^<\/?(ul|ol|li|h|p|bl|table|tr|td)/i.test(n)?"\n"+t+"\n":"\n<p>\n"+n+"\n</p>\n"}],[/\s?<\/ul>\s?<ul>/g,""],[/\s?<\/ol>\s?<ol>/g,""],[/<\/blockquote>\n<blockquote>/g,"<br>\n"],[/https?:\/\/[^"']*/g,function(e){return e.replace(/<\/?em>/g,"_")}],[/&#95;/g,"_"]],j=function(e,t,n){return void 0===t&&(t=!1),void 0===n&&(n=!1),e="\n"+e+"\n",N.forEach(function(t){e=e.replace(t[0],t[1])}),t?n?e.trim().replace(/^<p>([\s\S]*)<\/p>$/,"$1").replace(/<a href="/,'<a target="_blank" href="'):e.trim().replace(/^<p>([\s\S]*)<\/p>$/,"$1"):n?e.trim().replace(/<a href="/,'<a target="_blank" href="'):e.trim()},A=function(e,t){N.push([e,t])},S=function(e){return e.charAt(0).toUpperCase()+e.slice(1)},V=function(e){return"string"==typeof e},$=function e(t,n,r){return void 0===n&&(n=2),void 0===r&&(r="0"),t.toString().length>=n?t.toString():e(r+t,n,r)},C=function(e){return $(e.getHours())+":"+$(e.getMinutes())},L=function(e,t){for(var n=(t=(t=t.replace(/\[(\w+)\]/g,".$1")).replace(/^\./,"")).split("."),r=O({},e),i=0,a=n.length;i<a;++i){var o=n[i];if(o in r)r=r[o];else{if(!(r instanceof Array))return;var l=function(){var t=e[o]||o,n=/([A-Z]\w+)/.exec(o),i=n&&n[0][0].toLowerCase()+n[0].substr(1)||o,a=r.filter(function(e){return e[i]===t}).shift();if(!a)return{v:void 0};r=a}();if("object"==typeof l)return l.v}}return r},T=/([^ =><]*)\s*([=><]*)\s*(\S*)/i,P=/^\s*!\s*/,_=function(e,t){var n=e.split("&"),r=t.reduce(function(e,t){return[].concat(e,t instanceof Array?t:[t])},[]);return n.reduce(function(e,t){var n=P.test(t),i=n?t.replace(P,""):t;return e=e&&r.filter(Boolean).reduce(function(e,t){return e||function(e,t){if(!t||0===Object.keys(t).length)return!1;var n=T.exec(e);if(n){var r=n[0],i=n[2],a=n[3],o=L(t,n[1].trim()),l="boolean"==typeof o?o?"true":"false":o;if(void 0===l||"string"==typeof l&&0===l.length)return!1;if(!i||!a)return!0;var c=isNaN(+a)?"true"===a||"false"!==a&&a:+a;switch(i){case"=":return l instanceof Array?l.indexOf(c)>=0:l===c;case"<=":return l<=c;case">=":return l>=c;case"<":return l<c;case">":return l>c;default:return console.error("Unrecognized operand ("+i+") in expression: "+r),!1}}return!0}(i.trim(),t)},!1),n?!e:e},!0)},F=function(e){var t=arguments,n=e instanceof Array?e:[e];return 0===e.length||n.some(function(e){return _(e,[].slice.call(t,1))})},E=function(e,t){return L(t.filter(Boolean).reduceRight(function(e,t){return O({},t,e)}),e.trim())},M=function(e,t){return void 0!==E(e,t)},q=/{{\s*([^\s"'`:]*):?([^\s]*)\s*}}/g,H=function(e){var t,n=arguments;if(!q.test(e))return!0;q.lastIndex=0;var r=!0;do{(t=q.exec(e))&&(t.index===q.lastIndex&&q.lastIndex++,t.forEach(function(e,t,i){r=r&&M(i[1],[].slice.call(n,1))}))}while(r&&null!==t);return r},R=function e(t,n){if(void 0===t)return"";if(t instanceof Array)return t.map(function(t){return e(t,n)}).join(", ");if(!n)return t.toString();if("boolean"==typeof t){var r=n.indexOf(":");return t?n.substring(0,r):n.substring(r+1)}switch(n){default:return t.toString();case"date":return new Date(t).toLocaleDateString();case"time":return new Date(t).toLocaleTimeString();case"iso":return new Date(t).toISOString();case"utc":return new Date(t).toUTCString()}},U=function(e){var t,n=arguments;if(!q.test(e))return e;q.lastIndex=0;do{(t=q.exec(e))&&(t.index===q.lastIndex&&q.lastIndex++,t.forEach(function(t,r,i){var a=i[0],o=i[2],l=E(i[1],[].slice.call(n,1));!l||l instanceof Array||(e=e.replace(a,R(l,o)))}))}while(null!==t);return e},J=function e(t){if(null===t)return t;if(t instanceof Date)return new Date(t.getTime());if(t instanceof Array){var n=[];return t.forEach(function(e){n.push(e)}),n.map(function(t){return e(t)})}if("object"==typeof t&&t!=={}){var r=O({},t);return Object.keys(r).forEach(function(t){r[t]=e(r[t])}),r}return t},z=function(e){var t=function e(t,n){return void 0===n&&(n=""),t.filter(function(e){return"section"!==e.type&&"md"!==e.type}).reduce(function(t,r){var i=(n?n+".":"")+r.id,a=r.type||(r.options&&r.options.length>0?"select":"text");return"string"==typeof a?t[i]=r:t=O({},t,e(a,i)),t},{})}(e),n=function(e,n){if(!t.hasOwnProperty(e)||void 0===n)return n;var r=t[e],i=n instanceof Array?n.filter(function(e){return null!=e}):[n];switch(r.type||(r.options?"options":"none")){default:return n;case"radio":case"select":case"options":var a="string"==typeof r.options?E(r.options,[t]):r.options;return i.map(function(e){return a.filter(function(t){return t.id===e}).map(function(e){return e.label||S(e.id)}).shift()}).filter(function(e){return void 0!==e})}};return function e(t,r){if(void 0===r&&(r=""),t&&("object"!=typeof t||0!==Object.keys(t).length)){if(t instanceof Array)return t.map(function(t){return e(t,r)});var i={};return Object.keys(t).forEach(function(a){var o=r?r+"."+a:a,l=t[a];if("boolean"==typeof l)i[a]=l;else if("number"==typeof l||"string"==typeof l){var c=n(o,l);c&&(i[a]=c instanceof Array&&1===c.length?c[0]:c)}else if(l instanceof Array)if("string"==typeof l[0]||null===l[0]){var u=n(o,l);u&&(i[a]=u)}else i[a]=e(l,a);else"object"==typeof l&&(i[a]=l)}),i}}},W=function(e){return void 0===e&&(e=""),e.replace(/\s|,|\./g,"").toLowerCase()},B=function(e,t,n){void 0===n&&(n=1);for(var r=[],i=e;i<=t;i+=n)r.push(i);return r},Y=function(e){"string"!=typeof e&&(e=JSON.stringify(e));var t=0;if(0===e.length)return t;for(var n=0;n<e.length;n++)t=(t<<5)-t+e.charCodeAt(n),t&=t;return t},G=function(e,t,n){var r=Object.assign({},t,n);return e+"?"+Object.keys(r).map(function(e){return e+"="+r[e]}).join("&")},K=function(){return{view:function(t){var n=t.attrs,r=n.md,i=n.removeParagraphs,a=n.className;return r?mithril__WEBPACK_IMPORTED_MODULE_0___default()(".markdown "+(void 0===a?"":a),mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(r,void 0!==i&&i))):void 0}}},Z=function(){return{view:function(t){var n=t.attrs,r=n.label,i=n.initialValue,a=n.inline,o=void 0!==a&&a,l={className:n.props.className||"col s12"};if(i instanceof Array&&i.length>3)return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:"\n- "+i.join("\n- ")})]);if("string"==typeof i)return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:i})]);var c=i instanceof Array?i.join(", "):i;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".readonly",l,[r&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("label",r),o?mithril__WEBPACK_IMPORTED_MODULE_0___default()("span",c?": "+c:mithril__WEBPACK_IMPORTED_MODULE_0___default().trust("&nbsp;")):mithril__WEBPACK_IMPORTED_MODULE_0___default()("p",c||mithril__WEBPACK_IMPORTED_MODULE_0___default().trust("&nbsp;"))])}}},Q=["label","className","dateTimeSeconds","twelveHour","format"],X=function(y,w){void 0===y&&(y={}),void 0===w&&(w={});var x=function(){var x={key:Date.now()};return{view:function(I){var k=I.attrs,D=k.field,N=k.obj,A=k.autofocus,V=k.onchange,$=k.context,L=k.containerId,T=k.disabled,P=D.id,_=void 0===P?"":P,M=D.type,q=D.disabled,R=void 0===q?T:q,J=D.readonly,z=void 0===J?k.readonly:J,W=D.value,B=D.required,Y=D.autogenerate,G=D.show,X=D.label,ee=D.description,te=D.i18n,ne=void 0===te?k.i18n||{}:te,re=D.checkAllOptions,ie=D.transform,oe=D.effect;if(!(G&&!F(G,N,$)||X&&!H(X,N,$)||ee&&!H(ee,N,$))){var le="string"==typeof D.options?E(D.options,[N].concat($)):D.options,ce=le&&le instanceof Array?le.filter(function(e){return void 0!==e.id&&(e.label||!/[0-9]/.test(e.id))&&(!e.show||F(e.show,N,$))}).map(function(e){return e.label?e:O({},e,{label:S(e.id)})}):[],ue="boolean"==typeof T&&T,se=function(e,t,r){void 0===t&&(t=!1),void 0===r&&(r=!1);var i=e.id,a=e.label,o=e.description,l=e.required,c=e.multiple,u=e.className,s=e.checkboxClass,d=e.icon,f=e.iconClass,p=e.placeholder,m=e.maxLength,g=e.minLength,v=e.max,h=e.min,b=e.step,y=e.dateTimeOutput,w=e.dateTimeSeconds,x=e.dateFormat,I=e.twelveHour,k={id:i+"-"+(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)(),label:a};return void 0===a&&i&&(k.label=S(i)),o&&(k.helperText=j(o,!0)),u&&(k.className=u),d&&(k.iconName=d),f&&(k.iconClass=f),s&&(k.checkboxClass=s),p&&(k.placeholder=p),l&&(k.isMandatory=!0),c&&(k.multiple=c),r&&(k.disabled=!0),t&&(k.autofocus=!0),void 0!==m&&(k.maxLength=m),void 0!==g&&(k.minLength=g),void 0!==v&&(k.max=v),void 0!==h&&(k.min=h),void 0!==b&&(k.step=b),y&&(k.dateTimeOutput=y),w&&(k.dateTimeSeconds=w),x&&(k.dateFormat=x),I&&(k.twelveHour=I),k}(D,A,"boolean"==typeof R||void 0===R?ue||R:ue||F(R,N,$));X&&(se.label=j(U(se.label||X,N,$),!0)),ee&&(se.description=j(U(se.description||ee,N,$),!0));var de=B?function(e){return e instanceof Array?e&&e.length>0:void 0!==typeof e}:void 0;if(N instanceof Array)console.warn("Only a repeat list can deal with arrays!");else{var fe=function(e){try{return void 0===e||"undefined"===e?(delete N[_],V(N),Promise.resolve()):(N[_]=ie?ie("to",e):e,oe?Promise.resolve(oe(N,N[_],$)).then(function(e){V(void 0!==e?e:N)}):Promise.resolve(V(N)))}catch(e){return Promise.reject(e)}};if(M instanceof Array)return _?(N.hasOwnProperty(_)||(N[_]={}),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".muf-form",{className:D.className},[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".muf-form-header",mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(se.label||S(_),!0))),se.description&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",mithril__WEBPACK_IMPORTED_MODULE_0___default().trust(j(se.description))),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,O({},se,{i18n:ne,readonly:z,form:M,obj:N[_],context:[N].concat($),onchange:function(){return V(N)},containerId:L})))])):void console.warn("Missing ID for type "+JSON.stringify(M));Y&&!N[_]&&(N[_]="guid"===Y?(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uuid4)():"id"===Y?(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)():Date.now());var pe=N.hasOwnProperty(_)&&void 0!==N[_]?ie?ie("from",N[_]):N[_]:W;_&&void 0!==W&&void 0!==pe&&(N[_]=ie?ie("to",pe):pe);var me=re?re.split("|"):["",""],ge=me[0],ve=me[1],he=se.className;if(z&&M&&["md","none"].indexOf(M)<0){if(w.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(w[M],{iv:pe,field:D,props:se,label:se.label,obj:N,context:$});if(M&&y.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(y[M],{iv:pe,field:D,props:se,label:se.label,onchange:fe,obj:N,context:$});switch(M){case"time":var be=pe||new Date,ye=C(be);return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:ye});case"date":var we="number"==typeof pe||"string"==typeof pe||pe instanceof Date?new Date(pe).toLocaleDateString():"";return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:we});case"checkbox":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe?"✔":"✘",inline:!0});case"tags":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe||[]});case"options":case"select":var xe=void 0!==pe?pe instanceof Array?pe:[pe]:[],Ie=ce.filter(function(e){return xe.indexOf(e.id)>=0}),ke=Ie&&0===Ie.length?"?":1===Ie.length?Ie[0].label:Ie.map(function(e){return e.label});return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:ke});case"radio":var Oe=pe,De=ce.filter(function(e){return e.id===Oe});return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,initialValue:De&&De.length?De[0].label:"?"});case"base64":var Ne=pe;return!(!Ne||!/data:image/i.test(Ne))&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",mithril__WEBPACK_IMPORTED_MODULE_0___default()("img.responsive-img",{src:Ne,alt:N.title||N.alt||N.name||"",style:"max-height: "+(D.max||50)+"px"}));case"file":return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",se,(pe instanceof Array?pe:[pe]).map(function(t){void 0===t&&(t="");var n=/data:image|.jpg$|.jpeg$|.png$|.gif$|.svg$|.bmp$|.tif$|.tiff$/i.test(t),r=""+new URL(D.url).origin+t;return mithril__WEBPACK_IMPORTED_MODULE_0___default()("a[target=_blank]",{href:r},n?mithril__WEBPACK_IMPORTED_MODULE_0___default()("img",{src:r,alt:r,style:"max-height: "+(D.max||50)}):mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:D.placeholder||"File",initialValue:t}))}));case"markdown":var je="string"==typeof pe&&pe?j(pe):"";return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:je});default:return mithril__WEBPACK_IMPORTED_MODULE_0___default()(Z,{props:se,label:se.label,initialValue:pe})}}else{if(M&&y.hasOwnProperty(M))return mithril__WEBPACK_IMPORTED_MODULE_0___default()(y[M],{iv:pe,field:D,props:se,label:se.label,onchange:fe,obj:N,context:$});switch(M){case"colour":case"color":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ColorInput,O({},se,{initialValue:pe,onchange:fe}));case"time":var Ae=se.twelveHour,Se=void 0!==Ae&&Ae,Ve=pe?"number"==typeof pe||"string"==typeof pe?new Date(pe):pe:new Date,$e=C(Ve);return N[_]=ie?ie("to",Ve):Ve,mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TimePicker,O({},se,{twelveHour:Se,initialValue:$e,onchange:function(e){var t=e.split(":").map(function(e){return+e});Ve.setHours(t[0],t[1]),fe(Ve)},container:L}));case"date":var Ce=se.format,Le=void 0===Ce?"mmmm d, yyyy":Ce,Te="number"==typeof pe||"string"==typeof pe?new Date(pe):pe;N[_]=Te?ie?ie("to",Te.valueOf()):Te.valueOf():Te;var Pe=se.min,_e=se.max,Fe=Pe?!Te||Pe<Te.valueOf()?new Date(Pe):Te:void 0,Ee=_e?!Te||_e>Te.valueOf()?new Date(_e):Te:void 0;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.DatePicker,O({},se,{minDate:Fe,maxDate:Ee,setDefaultDate:!!Te,format:Le,initialValue:Te,onchange:function(e){fe(new Date(e))},container:L}));case"datetime":var Me=se.label,qe=se.className,He=void 0===qe?"col s12":qe,Re=se.dateTimeSeconds,Ue=void 0!==Re&&Re,Je=se.twelveHour,ze=void 0!==Je&&Je,We=se.format,Be=void 0===We?"mmmm d, yyyy":We,Ye=function(e,t){if(null==e)return{};var n,r,i={},a=Object.keys(e);for(r=0;r<a.length;r++)t.indexOf(n=a[r])>=0||(i[n]=e[n]);return i}(se,Q),Ge="number"==typeof pe||"string"==typeof pe?new Date(pe):pe,Ke={initialDateTime:Ge},Ze=Ge||void 0,Qe=Ge?C(Ge):"",Xe=se.min,et=se.max,tt=Xe?!Ge||Xe<Ge.valueOf()?new Date(Xe):Ge:void 0,nt=et?!Ge||et>Ge.valueOf()?new Date(et):Ge:void 0,rt=se.dateTimeOutput||"UTC",it=function(e){Ke.initialDateTime=e,fe("UTC"===rt?e.toUTCString():"ISO"===rt?e.toISOString():e.valueOf())};return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",{className:He},mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(Ue?".col.s6":".col.s8",{style:"padding-right: 0"},mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.DatePicker,O({},Ye,{label:Me,minDate:tt,maxDate:nt,setDefaultDate:!!Ge,format:Be,initialValue:Ze,container:L,onchange:function(e){var t=new Date(Ke.initialDateTime);t.setFullYear(e.getFullYear()),t.setMonth(e.getMonth()),t.setDate(e.getDate()),it(t)}}))),mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s4",{style:"min-width: 6rem; padding-right: 0; padding-left: 0"},mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TimePicker,O({},Ye,{label:"",helperText:"",twelveHour:ze,initialValue:Qe,container:L,onchange:function(e){var t=e.split(":").map(function(e){return+e}),n=Ke.initialDateTime||new Date((new Date).setSeconds(0,0));n.setHours(t[0],t[1]),it(n)}}))),Ue&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.NumberInput,{style:"min-width: 4rem; padding-right: 0; padding-left: 0",className:"col s2",min:0,max:59,onchange:function(e){var t=Ke.initialDateTime||new Date((new Date).setSeconds(0,0));t.setSeconds(e,0),it(t)}})]));case"email":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.EmailInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"number":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.NumberInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"radio":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RadioButtons,O({label:""},se,{options:ce,checkedId:pe,onchange:fe}));case"checkbox":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.InputCheckbox,O({},se,{checked:pe,onchange:fe}));case"options":return[[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Options,O({key:x.key,checkboxClass:"col s6 m4 l3",className:"input-field col s12"},se,{disabled:se.disabled||!ce||0===ce.length,options:ce,checkedId:pe,onchange:function(e){return fe(1===e.length?e[0]:e.filter(function(e){return null!==e}))}}))],void 0!==re&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s12.option-buttons",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{disabled:se.disabled,label:ge,iconName:"check",onclick:function(){x.key=Date.now(),fe(ce.map(function(e){return e.id}))}}),ve&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{disabled:se.disabled,label:ve,iconName:"check_box_outline_blank",onclick:function(){var e=N[_]||[];e.length=0,x.key=Date.now(),fe(e)}})])];case"select":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Select,O({placeholder:se.multiple?ne.pickOneOrMore||"Pick one or more":ne.pickOne||"Pick one"},se,{disabled:se.disabled||!ce||0===ce.length,options:ce,checkedId:pe,onchange:function(e){return fe(1!==e.length||se.multiple?e.filter(function(e){return null!==e||void 0!==e}):e[0])}}));case"md":var at=U(_?pe:W||X,N,$);return mithril__WEBPACK_IMPORTED_MODULE_0___default()(K,{md:at,className:he});case"section":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".divider");case"switch":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Switch,O({},se,{left:ce&&ce.length>0?ce[0].label:"",right:ce&&ce.length>1?ce[1].label:"",checked:pe,onchange:fe}));case"tags":var ot=(pe?pe instanceof Array?pe:[pe]:[]).map(function(e){return{tag:e}}),lt=ce&&ce.length>0?{data:ce.reduce(function(e,t){return e[t.id]=null,e},{}),limit:D.maxLength||Infinity,minLenght:D.minLength||1}:{};return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Chips,{className:se.className,label:se.label,isMandatory:se.isMandatory,helperText:se.helperText,onchange:function(e){return fe(e.map(function(e){return e.tag}))},placeholder:D.placeholder||"Add a tag",secondaryPlaceholder:D.secondaryPlaceholder||"+tag",data:ot,autocompleteOptions:lt});case"markdown":case"textarea":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextArea,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"file":var ct=pe,ut=D.url,st=D.placeholder;if(!ut)throw Error('Input field "url" not defined, which indicates the URL to the upload folder.');var dt=ce?ce.map(function(e){return e.id}):void 0;return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FileInput,O({},se,{accept:dt,placeholder:st,onchange:function(t){if(!t||t.length<1)fe("");else{var n=new FormData;n.append("file",t[0]),mithril__WEBPACK_IMPORTED_MODULE_0___default().request({method:"POST",url:ut,body:n}).then(function(e){return fe(e)}).catch(console.error)}},initialValue:ct}));case"base64":var ft=pe,pt=!(!ft||!/data:image/i.test(ft)),mt=D.placeholder,gt=ce?ce.map(function(e){return e.id}).join(","):void 0;return pt?mithril__WEBPACK_IMPORTED_MODULE_0___default()("div",[mithril__WEBPACK_IMPORTED_MODULE_0___default()("img.responsive-img",{src:ft,alt:N.title||N.alt||N.name||"",style:"max-height: "+(D.max||50)+"px"}),mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{iconName:"clear",onclick:function(){return fe("")}})]):mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FileInput,O({},se,{accept:gt,placeholder:mt,onchange:function(t){if(!t||t.length<1)fe("");else{var n=new FileReader;n.onloadend=function(){"string"==typeof n.result&&fe(n.result),mithril__WEBPACK_IMPORTED_MODULE_0___default().redraw()},n.readAsDataURL(t[0])}},initialValue:ft}));case"url":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.UrlInput,O({placeholder:"http(s)://www.example.com"},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe}));case"text":return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextInput,O({},se,{validate:de,autofocus:A,onchange:fe,initialValue:pe,tabindex:15}));default:return}}}}}}};return{createFormField:function(){return x}}},ee=function(){var t,i={},o=function(e,t){var n=i.onNewItem?i.onNewItem(e,t):{};e instanceof Array?e.push(n):e.hasOwnProperty(t)?e[t].push(n):e[t]=[n]};return{oninit:function(e){var n=e.attrs,r=n.i18n,a=void 0===r?{}:r,o=n.field,l=o.id,c=void 0===l?"":l,u=o.sortProperty,s=o.onNewItem;i.editLabel=a.editRepeat||"Edit "+c,i.createLabel=a.createRepeat||"Create new "+c,i.onNewItem=s,t=function(e){if(!e)return function(e,t){return 0};var t="!"===e[0],n=t?e.substring(1):e;return t?function(e,t){return e[n]>t[n]?-1:e[n]<t[n]?1:0}:function(e,t){return e[n]>t[n]?1:e[n]<t[n]?-1:0}}(u)},view:function(l){var c=l.attrs,u=c.field,s=c.obj,d=c.context,f=c.className,p=void 0===f?u.className?"."+u.className.split(" ").join("."):".col.s12":f,m=c.section,g=c.containerId,v=c.disabled,h=void 0===v?"boolean"==typeof u.disabled?u.disabled:void 0:v,b=c.i18n,I=void 0===b?{}:b,k=c.onchange,O=function(e){return k&&k(e)},D=i.modalKey,N=i.filterValue,j=u.id,A=void 0===j?"":j,S=u.label,V=u.type,$=u.min,C=u.max,L=u.pageSize,T=u.propertyFilter,P=u.filterLabel,_=u.readonly,F=void 0===_?c.readonly:_,E=u.repeatItemClass,M=void 0===E?"":E,q="edit_"+(S?S.toLowerCase().replace(/\s/gi,"_"):(0,mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.uniqueId)()),H=function(e,t){return e instanceof Array?e:(e.hasOwnProperty(t)||(e[t]=[]),e[t])}(s,A),R=N?W(N):void 0,U=T&&R&&R.length>2?H.filter(function(e){return W(""+e[T]).indexOf(R)>=0}):H,J=mithril__WEBPACK_IMPORTED_MODULE_0___default().route.param(A)?Math.min(U.length,+mithril__WEBPACK_IMPORTED_MODULE_0___default().route.param(A)):1,z=L&&U&&(J-1)*L<U.length?J:1,K=L?function(e,t){return(z-1)*L<=t&&t<z*L}:function(){return!0},Z=mithril__WEBPACK_IMPORTED_MODULE_0___default().route.get(),Q=L?Math.ceil(U.length/L):0,X=!!(C&&U.length>=C),ee=!h&&(!$||U.length>$),te=Z.split("?")[0],ne=function(e){var t=e?e.split("?")[1]:window.location.search.slice(1),n={};if(t)for(var r=t.split("&"),i=0;i<r.length;i++){var a=r[i].split("="),o=a[0],l=void 0===a[1]||a[1];if(o.match(/\[(\d+)?\]$/)){var c=n[o.replace(/\[(\d+)?\]/,"")]||[];o.match(/\[\d+\]$/)?c[+/\[(\d+)\]/.exec(o)[1]]=l:c.push(l)}else n[o]?"string"==typeof n[o]?(n[o]=[n[o]],n[o].push(l)):n[o].push(l):n[o]=l}return n}(Z);return[[mithril__WEBPACK_IMPORTED_MODULE_0___default()("#"+A+".mui-repeat-list"+p,[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.mui-repeat-list-controls",mithril__WEBPACK_IMPORTED_MODULE_0___default()(".col.s12",[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.FlatButton,{iconName:h||X?"":"add",iconClass:"right",label:S,onclick:function(){var t;o(s,A),mithril__WEBPACK_IMPORTED_MODULE_0___default().route.set(te,Object.assign(ne,((t={})[A]=U.length,t))),O(s)},style:"padding: 0",className:"left",disabled:h||X,readonly:F}),Q>1&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(".right",mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Pagination,{curPage:z,items:B(1,Q).map(function(e){var t;return{href:G(te,ne,(t={},t[A]=e,t))}})})),(U.length>1||N)&&T&&!h&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextInput,{style:"margin-top: -6px; margin-bottom: -1rem;",iconName:"filter_list",iconClass:"small",placeholder:P,onkeyup:function(e,t){return i.filterValue=t},className:"right",disabled:h,readonly:F})])),U&&U.length>0&&"string"!=typeof V&&U.sort(t).filter(K).map(function(t,n){return[ee&&[mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RoundIconButton,{type:"button",iconName:"clear",iconClass:"white black-text",className:"row mui-delete-item btn-small right",style:"padding: 0; margin-top: -10px; margin-right: -25px",disabled:h,readonly:F,onclick:function(){i.curItemIdx=L?(z-1)*L+n:n}}),(!L||L>1)&&mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mui-show-item-number","["+((L?(z-1)*L+n:n)+1)+"]")],[mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.repeat-item",{className:M,key:J+Y(t)},[mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{form:u.type,obj:t,i18n:I,context:d instanceof Array?[s].concat(d):[s,d],section:m,containerId:g,disabled:h,readonly:F,onchange:function(){return O(s)}})])]]}),!(h||X||F||!U||0===U.length||1===L)&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.RoundIconButton,{iconName:"add",iconClass:"white black-text",className:"row mui-add-new-item btn-small right",title:S,style:"padding: 0; margin-top: -10px; margin-right: -25px",onclick:function(){var t;o(s,A),mithril__WEBPACK_IMPORTED_MODULE_0___default().route.set(te,Object.assign(ne,((t={})[A]=U.length,t))),O(s)}})])],void 0!==i.curItemIdx&&mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ModalPanel,{id:"deleteItem",onCreate:function(e){return e.open()},options:{onCloseStart:function(){i.curItemIdx=void 0,mithril__WEBPACK_IMPORTED_MODULE_0___default().redraw()}},fixedFooter:!0,title:I.deleteItem||"Delete item",description:mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{form:V,obj:U[i.curItemIdx],context:d instanceof Array?[s].concat(d):[s,d],section:m,containerId:g,readonly:!0,i18n:I}),buttons:[{label:I.disagree||"Disagree"},{label:I.agree||"Agree",onclick:function(){void 0!==i.curItemIdx&&(U.splice(i.curItemIdx,1),s instanceof Array?s=[].concat(U):s[A]=[].concat(U),O(s))}}]}),"string"==typeof V||void 0===V?void 0:mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.ModalPanel,{onCreate:function(e){return i.editModal=e},id:q,title:i.editItem?i.editLabel:i.createLabel,fixedFooter:!0,description:mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row.form-item",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{key:D,form:V,i18n:I,obj:i.editItem||i.newItem||{},onchange:function(e){return i.canSave=e},context:d instanceof Array?[s].concat(d):[s,d],containerId:g,disabled:h})),buttons:[{iconName:"cancel",label:I.cancel||"Cancel"},{iconName:"save",label:I.save||"Save",disabled:!i.canSave,onclick:function(){if(i.editItem&&void 0!==i.curItemIdx){var e=i.editItem,t=i.curItemIdx;V.forEach(function(n){n.id&&(t[n.id]=e[n.id])})}else i.newItem&&U.push(i.newItem);O(s)}}]})]}}},te=function(){var t={};return{oninit:function(e){var n=e.attrs.i18n,r=void 0===n?{}:n,i=r.raw,a=r.view,o=void 0===a?"VIEW":a;t.raw=void 0===i?"RAW":i,t.view=o},view:function(n){var r=n.attrs,i=r.field,a=i.id,o=void 0===a?"geojson":a,c=i.type,u=i.onSelect,s=r.obj,d=r.context,f=r.containerId,p=r.disabled,m=r.readonly,g=r.i18n,v=r.onchange;if(!(s instanceof Array)){var h=s[o],b=h?JSON.parse(h):void 0,y=b&&b.features||[],w=[],x={title:t.raw,vnode:mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.TextArea,{class:"col s12",initialValue:b?JSON.stringify(b,null,2):void 0,placeholder:"Enter GeoJSON",onchange:function(e){return s[o]=e}})},O=c,D=O.length>0?O[0].id:void 0,N={title:t.view,vnode:y.length?mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Collapsible,{oncreate:function(e){return t.dom=e.dom},onOpenStart:u?function(e){for(var n=t.dom.children||[],r=0;r<n.length;r++)if(n[r]===e)return void u(r,y[r])}:void 0,className:"geojson-feature-list",items:y.map(function(t,n){return t.properties||(t.properties={}),{id:"erik_"+n,key:n,header:D&&t.properties[D]||t.geometry.type,body:mithril__WEBPACK_IMPORTED_MODULE_0___default()(".row",mithril__WEBPACK_IMPORTED_MODULE_0___default()(ae,{class:"col s12",form:O,obj:t.properties,i18n:g,context:d instanceof Array?[s].concat(d):[s,d],containerId:f,disabled:p,readonly:m,onchange:function(e,t){t&&(y[n].properties=t),s[o]=JSON.stringify(b,null,2),v&&v(s)}}))}})}):mithril__WEBPACK_IMPORTED_MODULE_0___default()("span","...")};return w.push(N),w.push(x),mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_materialized__WEBPACK_IMPORTED_MODULE_1__.Tabs,{tabs:w,tabWidth:"fill"})}}}},ne={},re={},ie=function(e,t,n){ne[e]=t,n&&(re[e]=n)},ae=(D=function(e,t){return t.filter(function(e){return e.required&&void 0!==typeof e.id}).reduce(function(t,n){return t&&!(n.id&&(void 0===e[n.id]||e[n.id]instanceof Array&&0===e[n.id].length||"string"==typeof e[n.id]&&0===e[n.id].length))},!0)},{createLayoutForm:function(){return function(){var t=X(ne,re).createFormField();return{view:function(n){var r=n.attrs,i=r.i18n,a=r.form,o=r.obj,l=r.onchange,c=r.disabled,u=r.readonly,s=r.context,d=r.section,f=function(e){return l&&l(D(e,a),e)};return a.filter(function(e){if(!e)return function(e){return!0};var t=!1;return function(n){return"section"===n.type?(t=n.id===e,!1):t}}(d)).filter(function(e){return!e.show||F(e.show,o,s||{})}).reduce(function(n,r){return r.type||(r.type=function(e){var t=e.value,n=e.options;return e.autogenerate?"none":t?"string"==typeof t?"md":"number"==typeof t?"number":"boolean"==typeof t?"checkbox":"none":n&&n.length>0?"select":"none"}(r)),[].concat(n,[void 0===r.repeat?mithril__WEBPACK_IMPORTED_MODULE_0___default()(t,{i18n:i,field:r,obj:o,onchange:f,disabled:c,readonly:u,context:s,section:d,containerId:"body"}):mithril__WEBPACK_IMPORTED_MODULE_0___default()("geojson"===r.repeat?te:ee,{obj:o,field:r,onchange:f,context:s,i18n:i,containerId:"body",disabled:c,readonly:u})])},[])}}}},isValid:D}).createLayoutForm();
 //# sourceMappingURL=index.esm.js.map
 
 
@@ -15830,7 +15763,7 @@ module.exports = {}.hasOwnProperty
 
 /***/ }),
 
-/***/ 7221:
+/***/ 9761:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15840,16 +15773,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var mithril_1 = __importDefault(__webpack_require__(9402));
-__webpack_require__(3934);
-__webpack_require__(3856);
-__webpack_require__(3302);
-var routing_service_1 = __webpack_require__(6632);
+__webpack_require__(749);
+__webpack_require__(5277);
+__webpack_require__(5503);
+var routing_service_1 = __webpack_require__(8434);
 mithril_1.default.route(document.body, routing_service_1.routingSvc.defaultRoute, routing_service_1.routingSvc.routingTable());
 
 
 /***/ }),
 
-/***/ 2672:
+/***/ 8579:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15861,22 +15794,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resolveImg = void 0;
 var pharma_webp_1 = __importDefault(__webpack_require__(7330));
 var nutrition_webp_1 = __importDefault(__webpack_require__(1972));
-var supplement_webp_1 = __importDefault(__webpack_require__(8929));
+var beverage_webp_1 = __importDefault(__webpack_require__(3020));
 var resolveImg = function (url, img) {
-    return url === 'pharma'
-        ? pharma_webp_1.default
-        : url === 'nutrition'
-            ? nutrition_webp_1.default
-            : url === 'supplement'
-                ? supplement_webp_1.default
-                : img;
+    return url === 'pharma' ? pharma_webp_1.default : url === 'nutrition' ? nutrition_webp_1.default : url === 'beverage' ? beverage_webp_1.default : img;
 };
 exports.resolveImg = resolveImg;
 
 
 /***/ }),
 
-/***/ 4031:
+/***/ 3701:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15888,9 +15815,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AboutPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(7248);
-var models_1 = __webpack_require__(7396);
-var md = "#### Human Performance Enhancing Technologies\n\n##### Disclaimer\n\nThe experts of TNO are paying attention to make the information as complete and accurate as possible, but are not responsible for medical correctness, completeness and actuality of the information presented on this platform. The information presented on this platform is explicitly intended for informative purposes. The content can therefore not replace professional medical advice in cases of complaints or prevention of complaints. The use and/or implementation of information presented on this platform is your own responsibility. TNO cannot be held accountable for any damage or consequences caused by the presented content on this platform. ";
+var mithril_ui_form_1 = __webpack_require__(2771);
+var models_1 = __webpack_require__(249);
+var md = "#### About\n\nThis website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all technologies.\n\n##### Disclaimer\n\nThis platform is intended for informational purposes only and it does not provide medical advice. It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.\n\n##### How to use this platform\n\n###### Ministry of Defence employee\n\nIf you work for the Ministry of Defence, you can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention. \n\nBy selecting \u2018Compare\u2019, recognizable by the <i class=\"material-icons\">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE (Human-Centered Software Engineering) technologies, you can contact the expert that is listed at the bottom of each intervention page.\n\n##### TNO researcher\n\nIf you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to Administrator. This allows you to add and change technologies. Remember that the changes will only be saved locally on your own PC. If you  want to implement your changes in the master file, do the following:\n\n1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder\n2. Implement you changes or additions to the platform\n3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.";
 var AboutPage = function () {
     return {
         oninit: function (_a) {
@@ -15910,8 +15837,8 @@ var AboutPage = function () {
                             initialValue: curUser,
                             placeholder: 'Select user',
                             options: [
-                                { id: 'mod', label: 'Ministry of Defence employee' },
-                                { id: 'admin', label: 'Administrator' },
+                                { id: 'mod', label: 'Defence employee' },
+                                { id: 'admin', label: 'TNO researcher' },
                             ],
                             // data: users.reduce((acc, cur) => {
                             //   acc[cur.name] = cur.url || null;
@@ -15938,7 +15865,7 @@ exports.AboutPage = AboutPage;
 
 /***/ }),
 
-/***/ 3744:
+/***/ 7469:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15958,10 +15885,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComparisonPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(7396);
+var models_1 = __webpack_require__(249);
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(6679);
-var mithril_ui_form_1 = __webpack_require__(7248);
+var utils_1 = __webpack_require__(2467);
+var mithril_ui_form_1 = __webpack_require__(2771);
 var ComparisonPage = function () {
     var isInitialized = false;
     var technologyLookup = {};
@@ -16108,7 +16035,7 @@ exports.ComparisonPage = ComparisonPage;
 
 /***/ }),
 
-/***/ 7097:
+/***/ 3044:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16133,10 +16060,10 @@ var mithril_1 = __importDefault(__webpack_require__(9402));
 var lz_string_1 = __importDefault(__webpack_require__(1605));
 var mithril_materialized_1 = __webpack_require__(6777);
 var background_jpg_1 = __importDefault(__webpack_require__(2868));
-var services_1 = __webpack_require__(2855);
-var models_1 = __webpack_require__(7396);
-var utils_1 = __webpack_require__(6679);
-var mithril_ui_form_1 = __webpack_require__(7248);
+var services_1 = __webpack_require__(1153);
+var models_1 = __webpack_require__(249);
+var utils_1 = __webpack_require__(2467);
+var mithril_ui_form_1 = __webpack_require__(2771);
 var HomePage = function () {
     var readerAvailable = window.File && window.FileReader && window.FileList && window.Blob;
     return {
@@ -16206,7 +16133,7 @@ var HomePage = function () {
                                 dlAnchorElem.click();
                             },
                         }),
-                        (0, mithril_1.default)('input#selectFiles[type=file]', { style: 'display:none' }),
+                        (0, mithril_1.default)('input#selectFiles[type=file][accept=.json]', { style: 'display:none' }),
                         readerAvailable &&
                             (0, mithril_1.default)(mithril_materialized_1.Button, {
                                 iconName: 'upload',
@@ -16318,7 +16245,7 @@ exports.HomePage = HomePage;
 
 /***/ }),
 
-/***/ 1507:
+/***/ 6224:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16338,19 +16265,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(4031), exports);
-__exportStar(__webpack_require__(7097), exports);
-__exportStar(__webpack_require__(1475), exports);
-__exportStar(__webpack_require__(4039), exports);
-__exportStar(__webpack_require__(6399), exports);
-__exportStar(__webpack_require__(1478), exports);
-__exportStar(__webpack_require__(3744), exports);
-__exportStar(__webpack_require__(9885), exports);
+__exportStar(__webpack_require__(3701), exports);
+__exportStar(__webpack_require__(3044), exports);
+__exportStar(__webpack_require__(8305), exports);
+__exportStar(__webpack_require__(8826), exports);
+__exportStar(__webpack_require__(4819), exports);
+__exportStar(__webpack_require__(7399), exports);
+__exportStar(__webpack_require__(7469), exports);
+__exportStar(__webpack_require__(5534), exports);
 
 
 /***/ }),
 
-/***/ 9885:
+/***/ 5534:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16363,8 +16290,8 @@ exports.Layout = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var tno_svg_1 = __importDefault(__webpack_require__(1555));
-var models_1 = __webpack_require__(7396);
-var routing_service_1 = __webpack_require__(6632);
+var models_1 = __webpack_require__(249);
+var routing_service_1 = __webpack_require__(8434);
 var Layout = function () { return ({
     view: function (_a) {
         var children = _a.children, _b = _a.attrs, _c = _b.state, page = _c.page, curUser = _c.curUser, changePage = _b.actions.changePage;
@@ -16425,7 +16352,7 @@ exports.Layout = Layout;
 
 /***/ }),
 
-/***/ 1478:
+/***/ 7399:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16437,8 +16364,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(7248);
-var models_1 = __webpack_require__(7396);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var models_1 = __webpack_require__(249);
 var userForm = [
     { id: 'id', type: 'none', autogenerate: 'id' },
     {
@@ -16566,7 +16493,7 @@ exports.SettingsPage = SettingsPage;
 
 /***/ }),
 
-/***/ 1475:
+/***/ 8305:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16586,10 +16513,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AllWordsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var mithril_ui_form_1 = __webpack_require__(7248);
-var models_1 = __webpack_require__(7396);
-var utils_1 = __webpack_require__(6679);
-var ui_1 = __webpack_require__(9631);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var models_1 = __webpack_require__(249);
+var utils_1 = __webpack_require__(2467);
+var ui_1 = __webpack_require__(2843);
 var md = "#### Definition of terms";
 var toLexicon = function (arr, header) {
     return arr
@@ -16612,6 +16539,10 @@ var lexicon = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadAr
     {
         a: 'Effect direction',
         b: 'Whether the technology increases or decreases a subjects capability level.',
+    },
+    {
+        a: 'HCSE',
+        b: 'Human-Centered Software Engineering.',
     },
 ], false).sort(function (a, b) { return a.a.localeCompare(b.a); });
 var textFilter = '';
@@ -16669,7 +16600,7 @@ exports.AllWordsPage = AllWordsPage;
 
 /***/ }),
 
-/***/ 6399:
+/***/ 4819:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16701,12 +16632,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TechnologyOverviewPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(7248);
-var images_1 = __webpack_require__(2672);
-var models_1 = __webpack_require__(7396);
-var services_1 = __webpack_require__(2855);
-var utils_1 = __webpack_require__(6679);
-var ui_1 = __webpack_require__(9631);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var images_1 = __webpack_require__(8579);
+var models_1 = __webpack_require__(249);
+var services_1 = __webpack_require__(1153);
+var utils_1 = __webpack_require__(2467);
+var ui_1 = __webpack_require__(2843);
 var TechnologyOverviewPage = function () {
     var toOptions = function (opt) {
         return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
@@ -16732,7 +16663,7 @@ var TechnologyOverviewPage = function () {
                 keywords && (_a = acc[key].desc).push.apply(_a, keywords);
                 booster && acc[key].booster.push(booster);
                 mainCap && acc[key].mainCap.push(mainCap);
-                specificCap && specificCap.length && (_b = acc[key].specificCap).push.apply(_b, specificCap);
+                specificCap && specificCap instanceof Array && (_b = acc[key].specificCap).push.apply(_b, specificCap);
                 hpeClassification && acc[key].hpeClassification.push(hpeClassification);
                 category && acc[key].category.push(category);
                 invasive && acc[key].invasive.push(invasive);
@@ -16754,7 +16685,7 @@ var TechnologyOverviewPage = function () {
                     keywords: keywords && keywords.length ? __spreadArray([], keywords, true) : [],
                     booster: [booster],
                     mainCap: [mainCap],
-                    specificCap: specificCap,
+                    specificCap: specificCap instanceof Array ? specificCap : [specificCap],
                     hpeClassification: [hpeClassification],
                     category: [category],
                     invasive: [invasive],
@@ -16855,7 +16786,7 @@ var TechnologyOverviewPage = function () {
                     }, (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                         modalId: 'search',
                         iconName: 'manage_search',
-                        label: 'Adv. search',
+                        label: 'Advanced search',
                     })), (0, mithril_1.default)('.col.s6.m3.xl2', [
                         (0, mithril_1.default)(mithril_materialized_1.Switch, {
                             label: 'Bookmarked?',
@@ -17009,7 +16940,7 @@ var TechnologyOverviewPage = function () {
                                     }
                                 },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: 'compare',
+                                iconName: 'balance',
                                 className: selectedForComparison ? 'amber-text' : '',
                             }), (0, mithril_1.default)('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE'))),
                         ]));
@@ -17167,7 +17098,7 @@ exports.TechnologyOverviewPage = TechnologyOverviewPage;
 
 /***/ }),
 
-/***/ 4039:
+/***/ 8826:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17188,11 +17119,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TechnologyPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(7248);
-var images_1 = __webpack_require__(2672);
-var models_1 = __webpack_require__(7396);
-var services_1 = __webpack_require__(2855);
-var utils_1 = __webpack_require__(6679);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var images_1 = __webpack_require__(8579);
+var models_1 = __webpack_require__(249);
+var services_1 = __webpack_require__(1153);
+var utils_1 = __webpack_require__(2467);
 var TechnologyPage = function () {
     var initTechForm = function (technologies, id, users) {
         var technologyOptions = technologies
@@ -17248,8 +17179,8 @@ var TechnologyPage = function () {
                     curUser === 'admin' && [
                     (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                         className: 'right no-print',
-                        label: isEditting ? 'Stop editting' : 'Edit',
-                        iconName: 'edit',
+                        label: isEditting ? 'Save' : 'Edit',
+                        iconName: isEditting ? 'save' : 'edit',
                         onclick: function () { return (isEditting = !isEditting); },
                     }),
                     isEditting &&
@@ -17257,11 +17188,7 @@ var TechnologyPage = function () {
                             className: 'right',
                             label: 'Delete',
                             iconName: 'delete',
-                            onclick: function () {
-                                model.technologies = model.technologies.filter(function (t) { return t.id !== curTech.id; });
-                                saveModel(model);
-                                changePage(models_1.Dashboards.TECHNOLOGIES);
-                            },
+                            modalId: 'deleteTechnology',
                         }),
                 ], isEditting
                     ? (0, mithril_1.default)('.col.s12', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
@@ -17288,7 +17215,7 @@ var TechnologyPage = function () {
                                 style: 'padding: 0 5px',
                                 onclick: function () { return compare(curTech.id); },
                             }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: 'compare',
+                                iconName: 'balance',
                                 className: selectedForComparison ? 'amber-text white' : 'white',
                             })),
                         ]),
@@ -17319,7 +17246,7 @@ var TechnologyPage = function () {
                             curTech.specificCap &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold', 'Specific capability: '),
-                                    (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(curTech.specificCap, utils_1.specificCapabilityOptions)) + '.',
+                                    (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(curTech.specificCap, utils_1.specificCapabilityOptions, false)) + '.',
                                 ]),
                             curTech.invasive &&
                                 (0, mithril_1.default)('p', [
@@ -17334,7 +17261,9 @@ var TechnologyPage = function () {
                             typeof curTech.booster !== 'undefined' &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold', 'Can be used as booster: '),
-                                    "".concat(curTech.booster ? 'Yes' : 'No', "."),
+                                    "".concat(curTech.booster
+                                        ? 'Yes, the technology can be applied quickly (approx. < 1 hour)'
+                                        : 'No, the technology can not be applied quickly (approx. < 1 hour)', "."),
                                 ]),
                         ]))),
                         curTech.url &&
@@ -17360,7 +17289,7 @@ var TechnologyPage = function () {
                                 ]),
                             curTech.sideEffects &&
                                 (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Side-effects: '),
+                                    (0, mithril_1.default)('span.bold', 'Possible side-effects: '),
                                     md((0, utils_1.resolveChoice)(curTech.hasSideEffects, curTech.sideEffects)),
                                 ]),
                             curTech.diff &&
@@ -17381,7 +17310,7 @@ var TechnologyPage = function () {
                                 })),
                             curTech.evidenceDir &&
                                 (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Evidence direction: '),
+                                    (0, mithril_1.default)('span.bold', 'Evidence indication: '),
                                     (0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, curTech.evidenceDir) + '.',
                                 ]),
                             curTech.evidenceScore &&
@@ -17408,42 +17337,30 @@ var TechnologyPage = function () {
                             ],
                         ])),
                         owner &&
-                            (0, mithril_1.default)('.col.s6.m4', (0, mithril_1.default)('.card', [
-                                owner.url &&
-                                    (0, mithril_1.default)('.card-image.waves-effect.waves-block.waves-light', [
-                                        (0, mithril_1.default)('a', owner &&
-                                            owner.url &&
-                                            (0, mithril_1.default)('img.activator', { src: owner.url, alt: owner.name })),
-                                    ]),
-                                (0, mithril_1.default)('.card-content', (0, mithril_1.default)('p', (0, mithril_1.default)('span.card-title.activator', owner.name, (0, mithril_1.default)('i.material-icons.right', 'more_vert')), (0, mithril_1.default)('ul', [
-                                    owner.phone &&
-                                        (0, mithril_1.default)('li', [
-                                            (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                                iconName: 'phone',
-                                                className: 'tiny',
-                                            }),
-                                            (0, mithril_1.default)('a', { href: "tel:".concat(owner.phone) }, ' ' + owner.phone),
-                                        ]),
-                                    (0, mithril_1.default)('li', [
-                                        (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                            iconName: 'email',
-                                            className: 'tiny',
-                                        }),
-                                        (0, mithril_1.default)('a', { href: mailtoLink }, ' ' + owner.email),
-                                    ]),
-                                ]))),
-                                (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a', { href: mailtoLink }, 'Email')),
-                                (0, mithril_1.default)('.card-reveal', [
-                                    (0, mithril_1.default)('span.card-title.bold', owner.name, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'close', className: 'right' })),
-                                    updated &&
-                                        (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', "Last update: ".concat(updated.toDateString()))]),
-                                    (0, mithril_1.default)('p', [
-                                        (0, mithril_1.default)('span.bold', 'Status: '),
-                                        (0, utils_1.getOptionsLabel)(utils_1.statusOptions, curTech.status) + '.',
-                                    ]),
-                                ]),
-                            ])),
+                            (0, mithril_1.default)('.col.s6.m4', (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Expert: '), owner.name + '.']), (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Email: '), (0, mithril_1.default)('a', { href: mailtoLink }, owner.email)]), owner.phone &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Phone: '),
+                                    (0, mithril_1.default)('a', { href: "tel:".concat(owner.phone) }, owner.phone),
+                                ]), updated &&
+                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Last update: '), updated.toDateString() + '.'])),
                     ]),
+                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
+                    id: 'deleteTechnology',
+                    title: "Delete ".concat(curTech.technology, "?"),
+                    description: "Are you sure that you want to delete ".concat(curTech.technology, "?"),
+                    buttons: [
+                        {
+                            label: 'Yes',
+                            iconName: 'delete',
+                            onclick: function () {
+                                model.technologies = model.technologies.filter(function (t) { return t.id !== curTech.id; });
+                                saveModel(model);
+                                changePage(models_1.Dashboards.TECHNOLOGIES);
+                            },
+                        },
+                        { label: 'No', iconName: 'cancel' },
+                    ],
+                }),
             ];
         },
     };
@@ -17453,7 +17370,7 @@ exports.TechnologyPage = TechnologyPage;
 
 /***/ }),
 
-/***/ 9631:
+/***/ 2843:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17473,13 +17390,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(5102), exports);
-__exportStar(__webpack_require__(3013), exports);
+__exportStar(__webpack_require__(7614), exports);
+__exportStar(__webpack_require__(5796), exports);
 
 
 /***/ }),
 
-/***/ 5102:
+/***/ 7614:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17509,7 +17426,7 @@ exports.CircularSpinner = CircularSpinner;
 
 /***/ }),
 
-/***/ 3013:
+/***/ 5796:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17521,7 +17438,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TextInputWithClear = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(6679);
+var utils_1 = __webpack_require__(2467);
 var TextInputWithClear = function () {
     var id;
     var input;
@@ -17594,7 +17511,7 @@ exports.TextInputWithClear = TextInputWithClear;
 
 /***/ }),
 
-/***/ 8846:
+/***/ 66:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17617,7 +17534,7 @@ var Dashboards;
 
 /***/ }),
 
-/***/ 3839:
+/***/ 8908:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17838,7 +17755,7 @@ var AVAILABILITY;
 
 /***/ }),
 
-/***/ 7396:
+/***/ 249:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17858,14 +17775,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(8846), exports);
-__exportStar(__webpack_require__(3839), exports);
-__exportStar(__webpack_require__(9998), exports);
+__exportStar(__webpack_require__(66), exports);
+__exportStar(__webpack_require__(8908), exports);
+__exportStar(__webpack_require__(1029), exports);
 
 
 /***/ }),
 
-/***/ 9998:
+/***/ 1029:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17875,7 +17792,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 2855:
+/***/ 1153:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17895,13 +17812,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(9365), exports);
-__exportStar(__webpack_require__(6632), exports);
+__exportStar(__webpack_require__(6438), exports);
+__exportStar(__webpack_require__(8434), exports);
 
 
 /***/ }),
 
-/***/ 9365:
+/***/ 6438:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17948,10 +17865,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cells = exports.appActions = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var mergerino_1 = __importDefault(__webpack_require__(1162));
-var _1 = __webpack_require__(2855);
-var models_1 = __webpack_require__(7396);
-var local_ldb_1 = __webpack_require__(8544);
+var meiosis_setup_1 = __webpack_require__(3527);
+var _1 = __webpack_require__(1153);
+var models_1 = __webpack_require__(249);
+var local_ldb_1 = __webpack_require__(3448);
 var MODEL_KEY = 'HPET_MODEL';
 var CUR_USER_KEY = 'HPET_CUR_USER';
 var BOOKMARKS_KEY = 'HPET_BOOKMARK';
@@ -18058,7 +17975,7 @@ var app = {
         searchFilters: {},
     },
 };
-exports.cells = (0, mergerino_1.default)({ app: app });
+exports.cells = (0, meiosis_setup_1.meiosisSetup)({ app: app });
 initialize((0, exports.cells)().update);
 exports.cells.map(function () {
     mithril_1.default.redraw();
@@ -18067,7 +17984,7 @@ exports.cells.map(function () {
 
 /***/ }),
 
-/***/ 6632:
+/***/ 8434:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -18089,11 +18006,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.routingSvc = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(7396);
-var meiosis_1 = __webpack_require__(9365);
-var layout_1 = __webpack_require__(9885);
-var components_1 = __webpack_require__(1507);
-var technology_overview_page_1 = __webpack_require__(6399);
+var models_1 = __webpack_require__(249);
+var meiosis_1 = __webpack_require__(6438);
+var layout_1 = __webpack_require__(5534);
+var components_1 = __webpack_require__(6224);
+var technology_overview_page_1 = __webpack_require__(4819);
 var RoutingService = /** @class */ (function () {
     function RoutingService(dashboards) {
         this.setList(dashboards);
@@ -18181,7 +18098,7 @@ exports.routingSvc = new RoutingService([
     {
         id: models_1.Dashboards.TECHNOLOGY,
         title: 'TECHNOLOGY',
-        icon: 'military_tech',
+        icon: 'lightbulb',
         route: '/technology',
         visible: true,
         component: components_1.TechnologyPage,
@@ -18189,7 +18106,7 @@ exports.routingSvc = new RoutingService([
     {
         id: models_1.Dashboards.COMPARE,
         title: 'Compare',
-        icon: 'compare',
+        icon: 'balance',
         route: '/compare',
         visible: true,
         component: components_1.ComparisonPage,
@@ -18223,7 +18140,7 @@ exports.routingSvc = new RoutingService([
 
 /***/ }),
 
-/***/ 6679:
+/***/ 2467:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -18244,8 +18161,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.technologyForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.technologyCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(7248);
-var models_1 = __webpack_require__(7396);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var models_1 = __webpack_require__(249);
 var supRegex = /\^([^_ ]+)(_|$|\s)/g;
 var subRegex = /\_([^\^ ]+)(\^|$|\s)/g;
 /** Expand markdown notation by converting A_1 to subscript and x^2 to superscript. */
@@ -18330,12 +18247,13 @@ var joinListWithAnd = function (arr, and, prefix) {
 };
 exports.joinListWithAnd = joinListWithAnd;
 /** Convert a list of options to text (label + title?) */
-var optionsToTxt = function (selectedIds, options) {
+var optionsToTxt = function (selectedIds, options, showTitle) {
+    if (showTitle === void 0) { showTitle = true; }
     if (!selectedIds || (selectedIds instanceof Array && selectedIds.length === 0))
         return [''];
     var ids = selectedIds instanceof Array ? selectedIds : [selectedIds];
     var lookup = options.reduce(function (acc, cur) {
-        acc[cur.id] = "".concat(cur.label).concat(cur.title ? " (".concat(cur.title, ")") : '');
+        acc[cur.id] = "".concat(cur.label).concat(showTitle && cur.title ? " (".concat(cur.title, ")") : '');
         return acc;
     }, {});
     return ids.map(function (id) { return lookup[id]; });
@@ -18818,15 +18736,15 @@ var technologyForm = function (users, technologyOptions) {
             label: 'Owner',
             type: 'select',
             options: users.map(function (u) { return ({ id: u.id, label: u.name }); }),
-            className: 'col s8',
+            className: 'col s12',
         },
-        {
-            id: 'status',
-            label: 'Status',
-            type: 'select',
-            options: exports.statusOptions,
-            className: 'col s4',
-        },
+        // {
+        //   id: 'status',
+        //   label: 'Status',
+        //   type: 'select',
+        //   options: statusOptions,
+        //   className: 'col s4',
+        // },
         // {
         //   id: 'reviewer',
         //   label: 'Reviewer',
@@ -19041,9 +18959,9 @@ var technologyForm = function (users, technologyOptions) {
             className: 'col s3',
             options: [
                 { id: 'nutrition', label: 'Nutrition' },
-                { id: 'pharma', label: 'Pharma' },
-                { id: 'supplement', label: 'Supplement' },
-                { id: 'upload', label: 'Upload' },
+                { id: 'pharma', label: 'Pharma/supplement' },
+                { id: 'beverage', label: 'Beverage' },
+                { id: 'upload', label: 'Upload your own' },
             ],
         },
         { id: 'img', label: 'Upload image', type: 'base64', className: 'col s9', show: 'url=upload' },
@@ -19095,7 +19013,7 @@ exports.isUnique = isUnique;
 
 /***/ }),
 
-/***/ 8544:
+/***/ 3448:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -19335,6 +19253,14 @@ module.exports = __webpack_require__.p + "682f370b71a2168f21f2.jpg";
 
 /***/ }),
 
+/***/ 3020:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+module.exports = __webpack_require__.p + "daa9f69cfe2d801887aa.webp";
+
+/***/ }),
+
 /***/ 1972:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
@@ -19348,14 +19274,6 @@ module.exports = __webpack_require__.p + "ebcbb1571881e2c73825.webp";
 
 "use strict";
 module.exports = __webpack_require__.p + "b08b9fdad985ae5003ec.webp";
-
-/***/ }),
-
-/***/ 8929:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-module.exports = __webpack_require__.p + "49b108a6d14b6bad0e6d.webp";
 
 /***/ }),
 
@@ -19456,7 +19374,7 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(7221);
+/******/ 	var __webpack_exports__ = __webpack_require__(9761);
 /******/ 	
 /******/ })()
 ;
