@@ -15777,6 +15777,18 @@ __webpack_require__(749);
 __webpack_require__(5277);
 __webpack_require__(5503);
 var routing_service_1 = __webpack_require__(8434);
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker
+            .register('/service-worker.js')
+            .then(function (registration) {
+            console.log('SW registered: ', registration);
+        })
+            .catch(function (registrationError) {
+            console.log('SW registration failed: ', registrationError);
+        });
+    });
+}
 mithril_1.default.route(document.body, routing_service_1.routingSvc.defaultRoute, routing_service_1.routingSvc.routingTable());
 
 
@@ -19459,4 +19471,4 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=main.bundle.js.map
