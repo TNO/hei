@@ -107,8 +107,8 @@ module.exports = (env) => {
       isProduction
         ? new CopyPlugin({
             patterns: [
-              { from: './src/assets/android-chrome-192x192.png', to: './docs/' },
-              { from: './src/assets/android-chrome-512x512.png', to: './docs/' },
+              { from: './src/assets/android-chrome-192x192.png', to: './' },
+              { from: './src/assets/android-chrome-512x512.png', to: './' },
             ],
           })
         : undefined,

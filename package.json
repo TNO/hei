@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Web application to display Human Enhancement Interventions Technologies.",
   "scripts": {
-    "clean": "rimraf ./public ./.parcel-cache ./.cache ./dist",
+    "clean": "rimraf ./public ./.parcel-cache ./.cache ./dist ./docs",
     "cleanup": "npm run clean",
     "dev": "npm start",
     "start": "webpack serve --env development --open",
