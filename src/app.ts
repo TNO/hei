@@ -5,6 +5,8 @@ import './css/style.css';
 import { routingSvc } from './services/routing-service';
 import { registerServiceWorker } from './services/register-service-worker';
 
+console.log(JSON.stringify(process.env));
+
 registerServiceWorker({
   onSuccess: (registration) => console.log('SW registered: ', registration),
   onUpdate: (registration) => console.log('SW updated: ', registration),

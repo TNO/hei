@@ -7,7 +7,7 @@
     "cleanup": "npm run clean",
     "dev": "npm start",
     "start": "webpack serve --env development --open",
-    "build": "webpack --env production PUBLIC_URL=https://tno.github.io/hei/",
+    "build": "webpack --env production --env PUBLIC_URL=https://tno.github.io/hei/",
     "build:domain": "npm run clean && npm run build"
   },
   "repository": {
@@ -45,7 +45,6 @@
     "@types/mithril": "^2.0.11",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
-    "dotenv-webpack": "^8.0.0",
     "html-webpack-plugin": "^5.5.0",
     "html-webpack-tags-plugin": "^3.0.2",
     "mini-css-extract-plugin": "^2.6.1",

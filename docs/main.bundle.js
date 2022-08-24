@@ -15778,6 +15778,7 @@ __webpack_require__(5277);
 __webpack_require__(5503);
 var routing_service_1 = __webpack_require__(8434);
 var register_service_worker_1 = __webpack_require__(6073);
+console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}));
 (0, register_service_worker_1.registerServiceWorker)({
     onSuccess: function (registration) { return console.log('SW registered: ', registration); },
     onUpdate: function (registration) { return console.log('SW updated: ', registration); },
@@ -18046,8 +18047,7 @@ exports.cells.map(function () {
 
 "use strict";
 
-// This optional code is used to register a service worker.
-// register() is not called by default.
+// Source: https://github.com/cra-template/pwa/blob/fc9613279681a06606f90514926b8078db629ec6/packages/cra-template-pwa/template/src/serviceWorkerRegistration.js
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.unregister = exports.registerServiceWorker = void 0;
 var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
@@ -18058,7 +18058,7 @@ var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
 function registerServiceWorker(config) {
     if ( true && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
-        var publicUrl = new URL("MISSING_ENV_VAR".PUBLIC_URL, window.location.href);
+        var publicUrl = new URL({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, window.location.href);
         if (publicUrl.origin !== window.location.origin) {
             // Our service worker won't work if PUBLIC_URL is on a different origin
             // from what our page is served on. This might happen if a CDN is used to
@@ -18067,7 +18067,7 @@ function registerServiceWorker(config) {
             return;
         }
         window.addEventListener('load', function () {
-            var swUrl = "".concat("MISSING_ENV_VAR".PUBLIC_URL, "/service-worker.js");
+            var swUrl = "".concat({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, "/service-worker.js");
             if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
                 checkValidServiceWorker(swUrl, config);

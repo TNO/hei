@@ -1,32 +1,32 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const Dotenv = require('dotenv-webpack');
 const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = (env) => {
+  console.log(JSON.stringify(env, null, 2));
   const isProduction = env.production;
   const outputPath = path.resolve(__dirname, isProduction ? 'docs' : 'dist');
   const publicPath = isProduction ? env.PUBLIC_URL : '/';
 
-  console.log(
-    `Running in ${
-      isProduction ? 'production' : 'development'
-    } mode, path ${publicPath}, output directed to ${outputPath}.`
-  );
+  const mode = isProduction ? 'production' : 'development';
+  console.log(`Running in ${mode} mode, path ${publicPath}, output directed to ${outputPath}.`);
 
   return {
-    mode: isProduction ? 'production' : 'development',
+    mode,
     entry: './src/app.ts',
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
       port: isProduction ? 3377 : 3378,
     },
     plugins: [
-      new Dotenv(),
+      new webpack.DefinePlugin({
+        'process.env': JSON.stringify({ NODE_ENV: mode, PUBLIC_URL: publicPath }),
+      }),
       new HtmlWebpackPlugin({
         title: 'Database for Human Enhancement Interventions',
         favicon: './src/favicon.ico',
