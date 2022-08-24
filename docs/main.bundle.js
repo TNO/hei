@@ -15780,7 +15780,7 @@ var routing_service_1 = __webpack_require__(8434);
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
         navigator.serviceWorker
-            .register('/hei/service-worker.js')
+            .register('/service-worker.js')
             .then(function (registration) {
             console.log('SW registered: ', registration);
         })
