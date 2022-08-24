@@ -316,7 +316,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                   ])
                 ),
                 m(
-                  '.col.s6.m8',
+                  '.col.s12.m8',
                   m('.row', [
                     usedLiterature && [
                       m(
@@ -341,7 +341,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                 ),
                 owner &&
                   m(
-                    '.col.s6.m4',
+                    '.col.s12.m4',
                     m('p', [m('span.bold', 'Expert: '), owner.name + '.']),
                     m('p', [m('span.bold', 'Email: '), m('a', { href: mailtoLink }, owner.email)]),
                     owner.phone &&

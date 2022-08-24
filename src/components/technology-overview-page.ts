@@ -254,7 +254,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
             m(
               '.row.search-filters',
               m(
-                '.col.s6.m4.xl3',
+                '.col.s12.m4',
                 {
                   style: 'height: 81px',
                 },
@@ -271,17 +271,17 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 })
               ),
               m(
-                '.col.s6.m2.xl1',
+                '.col.s6.m2',
                 {
                   style: 'height: 81px',
                 },
                 m(FlatButton, {
                   modalId: 'search',
                   iconName: 'manage_search',
-                  label: 'Advanced search',
+                  label: 'Adv.search',
                 })
               ),
-              m('.col.s6.m3.xl2', [
+              m('.col.s6.m3', [
                 m(Switch, {
                   label: 'Bookmarked?',
                   right: 'Yes',
@@ -544,9 +544,12 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         ]),
         m(ModalPanel, {
           id: 'search',
-          title: 'Specify search parameters',
+          title: 'Advanced search',
           description: m(
             '.row',
+            {
+              style: 'max-height: 100%; height: calc(100% - 56px); overflow-y: scroll',
+            },
             m(LayoutForm, {
               form: [
                 {
