@@ -7,12 +7,12 @@
   "start_url": "/",
   "icons": [
     {
-      "src": "/hei/android-chrome-192x192.png?v=NmbWaqEWWA",
+      "src": "android-chrome-192x192.png?v=NmbWaqEWWA",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/hei/android-chrome-512x512.png?v=NmbWaqEWWA",
+      "src": "android-chrome-512x512.png?v=NmbWaqEWWA",
       "sizes": "512x512",
       "type": "image/png"
     }
