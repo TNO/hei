@@ -36,7 +36,8 @@ module.exports = (env) => {
       new WebpackPwaManifest({
         name: 'Database for Human Enhancement Interventions',
         short_name: 'HEI',
-        start_url: '/hei/',
+        start_url: publicPath,
+        scope: '/',
         description: 'A database with known interventions to enhance human performance.',
         background_color: '#ffffff',
         theme_color: '#ffffff',
