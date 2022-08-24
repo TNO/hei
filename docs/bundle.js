@@ -16529,7 +16529,8 @@ var toLexicon = function (arr, header) {
         });
     });
 };
-var lexicon = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], toLexicon(utils_1.mainCapabilityOptions, 'Main capability'), true), toLexicon(utils_1.specificCapabilityOptions, 'Specific capability'), true), toLexicon(utils_1.invasivenessOptions, 'Invasiveness'), true), toLexicon(utils_1.maturityOptions, 'Maturity'), true), [
+var lexicon = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], toLexicon(utils_1.mainCapabilityOptions, 'Main capability'), true), toLexicon(utils_1.specificCapabilityOptions, 'Specific capability'), true), toLexicon(utils_1.invasivenessOptions, 'Invasiveness'), true), toLexicon(utils_1.maturityOptions, 'Maturity'), true), toLexicon(utils_1.ethicalConsiderationsOptions, 'Ethical considerations'), true), [
+    { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
     { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
     {
         a: 'Quality of evidence',
@@ -16647,7 +16648,7 @@ var TechnologyOverviewPage = function () {
     var invasivenessOpt = toOptions(utils_1.invasivenessOptions);
     var maturityOpt = toOptions(utils_1.maturityOptions);
     var availabilityOpt = toOptions(utils_1.availabilityOptions);
-    var ethicalOpt = toOptions(utils_1.NoYesUnknown);
+    var ethicalOpt = toOptions(utils_1.ethicalConsiderationsOptions);
     var evidenceDirOpt = toOptions(utils_1.evidenceDirOptions);
     var evidenceQualityOpt = toOptions(utils_1.evidenceLevelOptions);
     var boosterOpt = toOptions(utils_1.boosterOptions);
@@ -16766,7 +16767,7 @@ var TechnologyOverviewPage = function () {
                 }
                 return true;
             });
-            var hasFilters = true; // Object.keys(searchFilters).some((f) => !f);
+            var hasFilters = filteredTechnologies.length !== technologies.length;
             return [
                 (0, mithril_1.default)('.row.technology-overview-page', { style: 'height: 95vh' }, [
                     (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s6.m4.xl3', {
@@ -16809,8 +16810,9 @@ var TechnologyOverviewPage = function () {
                                 changePage(models_1.Dashboards.TECHNOLOGY, { id: newTech.id, edit: 'true' });
                             },
                         })))),
-                    hasFilters &&
+                    hasFilters && [
                         (0, mithril_1.default)('.col.s12.filters', [
+                            (0, mithril_1.default)('span', "".concat(filteredTechnologies.length, " search result").concat(filteredTechnologies.length === 1 ? '' : 's', ": ")),
                             mainCapFilter > 0 &&
                                 (0, mithril_1.default)('.chip', [
                                     "Capability: ".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCapFilter, false)),
@@ -16878,6 +16880,7 @@ var TechnologyOverviewPage = function () {
                                     }, 'close'),
                                 ]),
                         ]),
+                    ],
                     filteredTechnologies.map(function (t) {
                         var isBookmarked = t.id.some(function (id) { return bookmarks.indexOf(id) >= 0; });
                         var selectedForComparison = t.id.some(function (id) { return compareList.indexOf(id) >= 0; });
@@ -17132,7 +17135,7 @@ var TechnologyPage = function () {
         return (0, utils_1.technologyForm)(users, technologyOptions);
     };
     var id = '';
-    var isEditting = false;
+    var isEditing = false;
     var form = [];
     var allTechnologies = [];
     var isBookmarked = false;
@@ -17142,7 +17145,7 @@ var TechnologyPage = function () {
             var _f = model.technologies, technologies = _f === void 0 ? [] : _f, _g = model.users, users = _g === void 0 ? [] : _g;
             setPage(models_1.Dashboards.TECHNOLOGY);
             id = mithril_1.default.route.param('id') || curTech.id || '';
-            isEditting = mithril_1.default.route.param('edit') === true ? true : false;
+            isEditing = mithril_1.default.route.param('edit') === true ? true : false;
             form = initTechForm(technologies, id, users);
             var found = id === curTech.id
                 ? curTech
@@ -17179,18 +17182,32 @@ var TechnologyPage = function () {
                     curUser === 'admin' && [
                     (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                         className: 'right no-print',
-                        label: isEditting ? 'Save' : 'Edit',
-                        iconName: isEditting ? 'save' : 'edit',
-                        onclick: function () { return (isEditting = !isEditting); },
+                        label: isEditing ? 'Save' : 'Edit',
+                        iconName: isEditing ? 'save' : 'edit',
+                        onclick: function () { return (isEditing = !isEditing); },
                     }),
-                    isEditting &&
-                        (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                    isEditing
+                        ? (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                             className: 'right',
                             label: 'Delete',
                             iconName: 'delete',
                             modalId: 'deleteTechnology',
+                        })
+                        : (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                            className: 'right no-print',
+                            label: 'Duplicate',
+                            iconName: 'content_copy',
+                            onclick: function () {
+                                var clone = JSON.parse(JSON.stringify(curTech));
+                                clone.technology += ' (COPY)';
+                                clone.id = (0, mithril_materialized_1.uuid4)();
+                                model.technologies.push(clone);
+                                isEditing = true;
+                                setTechnology(clone);
+                                changePage(models_1.Dashboards.TECHNOLOGY, { id: clone.id });
+                            },
                         }),
-                ], isEditting
+                ], isEditing
                     ? (0, mithril_1.default)('.col.s12', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
                         form: form,
                         obj: curTech,
@@ -17630,6 +17647,14 @@ var SPECIFIC_CAPABILITY;
     SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["OBEDIENCE"] = 36] = "OBEDIENCE";
     SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["RISK_TAKING"] = 37] = "RISK_TAKING";
     SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["PERSISTANCE"] = 38] = "PERSISTANCE";
+    // New
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["INC_EXPLOSIVENESS"] = 39] = "INC_EXPLOSIVENESS";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["INC_TRANQUILITY"] = 40] = "INC_TRANQUILITY";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["DEC_PAIN_PERCEPTION"] = 41] = "DEC_PAIN_PERCEPTION";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["CONSCIENSCIOUSNESS"] = 42] = "CONSCIENSCIOUSNESS";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["OPENNESS"] = 43] = "OPENNESS";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["EXTRAVERSION"] = 44] = "EXTRAVERSION";
+    SPECIFIC_CAPABILITY[SPECIFIC_CAPABILITY["NEUROTICISM"] = 45] = "NEUROTICISM";
 })(SPECIFIC_CAPABILITY = exports.SPECIFIC_CAPABILITY || (exports.SPECIFIC_CAPABILITY = {}));
 var COGNITION_CAPABILITY;
 (function (COGNITION_CAPABILITY) {
@@ -18158,7 +18183,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.technologyForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.technologyCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
+exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.technologyForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.ethicalConsiderationsOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.technologyCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var mithril_ui_form_1 = __webpack_require__(2771);
@@ -18250,7 +18275,7 @@ exports.joinListWithAnd = joinListWithAnd;
 var optionsToTxt = function (selectedIds, options, showTitle) {
     if (showTitle === void 0) { showTitle = true; }
     if (!selectedIds || (selectedIds instanceof Array && selectedIds.length === 0))
-        return [''];
+        return ['−'];
     var ids = selectedIds instanceof Array ? selectedIds : [selectedIds];
     var lookup = options.reduce(function (acc, cur) {
         acc[cur.id] = "".concat(cur.label).concat(showTitle && cur.title ? " (".concat(cur.title, ")") : '');
@@ -18377,7 +18402,7 @@ exports.specificCapabilityOptions = [
         mc: models_1.MAIN_CAPABILITY.COGNITION,
         id: models_1.SPECIFIC_CAPABILITY.PSYCHOMOTOR,
         label: 'Increased psychomotor ability',
-        title: 'Any ability (e.g., handwriting, drawing, driving a car) whose performance draws on a combined and coordinated set of cognitive and motor processes',
+        title: 'Psychomotor abilities are skills such as hand-eye coordination, balance, and reaction time that arise from a unity of cognitive and physical functions',
     },
     {
         mc: models_1.MAIN_CAPABILITY.COGNITION,
@@ -18401,13 +18426,13 @@ exports.specificCapabilityOptions = [
         mc: models_1.MAIN_CAPABILITY.COGNITION,
         id: models_1.SPECIFIC_CAPABILITY.ARITHMETIC,
         label: 'Increased arithmetic ability',
-        title: 'The branch of mathematics concerned with numerical calculations, such as addition, subtraction, multiplication, and division',
+        title: 'The ability to perform numerical calculations, such as addition, subtraction, multiplication, and division',
     },
     {
         mc: models_1.MAIN_CAPABILITY.COGNITION,
         id: models_1.SPECIFIC_CAPABILITY.WORKING_MEMORY,
         label: 'Increased working memory',
-        title: 'Memory as it is used to plan and carry out behavior',
+        title: 'Working memory is the small amount of information that can be held briefly in the mind and is used in the execution of cognitive tasks',
     },
     {
         mc: models_1.MAIN_CAPABILITY.PHYSICAL,
@@ -18476,9 +18501,19 @@ exports.specificCapabilityOptions = [
         title: 'The ability to perceive objects or judge sensations through the sense of touch.',
     },
     {
+        mc: models_1.MAIN_CAPABILITY.PHYSICAL,
+        id: models_1.SPECIFIC_CAPABILITY.INC_EXPLOSIVENESS,
+        label: 'Increased explosiveness',
+    },
+    {
         mc: models_1.MAIN_CAPABILITY.MENTAL,
         id: models_1.SPECIFIC_CAPABILITY.EMOTION_REGULATION,
-        label: 'Improved emotion regulation',
+        label: 'Improved mood',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.MENTAL,
+        id: models_1.SPECIFIC_CAPABILITY.INC_TRANQUILITY,
+        label: 'Increased tranquility',
     },
     {
         mc: models_1.MAIN_CAPABILITY.MENTAL,
@@ -18504,6 +18539,11 @@ exports.specificCapabilityOptions = [
         mc: models_1.MAIN_CAPABILITY.MENTAL,
         id: models_1.SPECIFIC_CAPABILITY.SENSE_OF_FATIGUE,
         label: 'Decreased sense of fatigue',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.MENTAL,
+        id: models_1.SPECIFIC_CAPABILITY.DEC_PAIN_PERCEPTION,
+        label: 'Decreased pain perception',
     },
     {
         mc: models_1.MAIN_CAPABILITY.SOCIAL,
@@ -18549,6 +18589,30 @@ exports.specificCapabilityOptions = [
         mc: models_1.MAIN_CAPABILITY.PERSONALITY,
         id: models_1.SPECIFIC_CAPABILITY.PERSISTANCE,
         label: 'Increased persistance',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.PERSONALITY,
+        id: models_1.SPECIFIC_CAPABILITY.CONSCIENSCIOUSNESS,
+        label: 'Consciensciousness',
+        title: 'Conscientiousness is the personality trait of being careful, or diligent. Conscientiousness implies a desire to do a task well, and to take obligations to others seriously',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.PERSONALITY,
+        id: models_1.SPECIFIC_CAPABILITY.OPENNESS,
+        label: 'Openness',
+        title: 'Openness involves: active imagination (fantasy), aesthetic sensitivity, attentiveness to inner feelings, preference for variety (adventurousness), intellectual curiosity, and challenging authority (psychological liberalism)',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.PERSONALITY,
+        id: models_1.SPECIFIC_CAPABILITY.EXTRAVERSION,
+        label: 'Extraversion',
+        title: 'Extraversion is defined by the general tendency to experience positive emotions, as well as by traits such as sociable, lively, and active',
+    },
+    {
+        mc: models_1.MAIN_CAPABILITY.PERSONALITY,
+        id: models_1.SPECIFIC_CAPABILITY.NEUROTICISM,
+        label: 'Neuroticism',
+        title: 'Neuroticism is the trait disposition to experience negative affects, including anger, anxiety, self‐consciousness, irritability, emotional instability, and depression',
     },
 ];
 exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions.filter(function (_a) {
@@ -18615,6 +18679,23 @@ exports.effectDirectionOptions = [
         id: models_1.EFFECT_DIRECTION.POSITIVE,
         label: 'Positive',
         title: 'The technology increases a subjects capability level',
+    },
+];
+exports.ethicalConsiderationsOptions = [
+    {
+        id: models_1.CHOICE.NONE,
+        label: 'None',
+        title: 'No ethical considerations known',
+    },
+    {
+        id: models_1.CHOICE.YES,
+        label: 'Yes',
+        title: 'Ethical considerations exist',
+    },
+    {
+        id: models_1.CHOICE.UNKNOWN,
+        label: 'Unknown',
+        title: 'Unclear about ethical considerations',
     },
 ];
 exports.evidenceDirOptions = [
