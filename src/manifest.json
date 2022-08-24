@@ -4,7 +4,7 @@
   "description": "A database with known interventions to enhance human performance.",
   "lang": "en",
   "categories": ["government", "personalization", "productivity", "utitlies"],
-  "start_url": "/",
+  "start_url": "/hei/",
   "icons": [
     {
       "src": "/android-chrome-192x192.png?v=NmbWaqEWWA",

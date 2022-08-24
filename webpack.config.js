@@ -4,6 +4,7 @@ const Dotenv = require('dotenv-webpack');
 const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = (env) => {
@@ -100,6 +101,12 @@ module.exports = (env) => {
       new MiniCssExtractPlugin({
         filename: '[name].css',
         chunkFilename: '[id].css',
+      }),
+      new CopyPlugin({
+        patterns: [
+          { from: './src/assets/android-chrome-192x192.png', to: './docs/' },
+          { from: './src/assets/android-chrome-512x512.png', to: './docs/' },
+        ],
       }),
     ],
     module: {
