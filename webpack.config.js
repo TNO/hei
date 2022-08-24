@@ -1,10 +1,10 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = (env) => {
@@ -32,6 +32,33 @@ module.exports = (env) => {
         title: 'Database for Human Enhancement Interventions',
         favicon: './src/favicon.ico',
         meta: { viewport: 'width=device-width, initial-scale=1' },
+      }),
+      new WebpackPwaManifest({
+        name: 'Database for Human Enhancement Interventions',
+        short_name: 'HEI',
+        start_url: '/',
+        description: 'A database with known interventions to enhance human performance.',
+        background_color: '#ffffff',
+        theme_color: '#ffffff',
+        crossorigin: null, //can be null, use-credentials or anonymous
+        display: 'standalone',
+        lang: 'en',
+        categories: ['government', 'personalization', 'productivity', 'utitlies'],
+        icons: [
+          {
+            src: path.resolve('src/assets/android-chrome-512x512.png'),
+            sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
+          },
+          // {
+          //   src: path.resolve('src/assets/large-icon.png'),
+          //   size: '1024x1024', // you can also use the specifications pattern
+          // },
+          // {
+          //   src: path.resolve('src/assets/maskable-icon.png'),
+          //   size: '1024x1024',
+          //   purpose: 'maskable',
+          // },
+        ],
       }),
       isProduction
         ? new WorkboxPlugin.GenerateSW({
@@ -104,15 +131,6 @@ module.exports = (env) => {
         filename: '[name].css',
         chunkFilename: '[id].css',
       }),
-      isProduction
-        ? new CopyPlugin({
-            patterns: [
-              { from: './src/assets/android-chrome-192x192.png', to: './' },
-              { from: './src/assets/android-chrome-512x512.png', to: './' },
-              { from: 'src/manifest.json', to: './manifest.json' },
-            ],
-          })
-        : undefined,
     ].filter((p) => p),
     module: {
       rules: [
