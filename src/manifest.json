@@ -4,15 +4,15 @@
   "description": "A database with known interventions to enhance human performance.",
   "lang": "en",
   "categories": ["government", "personalization", "productivity", "utitlies"],
-  "start_url": "/hei/",
+  "start_url": "/",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png?v=NmbWaqEWWA",
+      "src": "/hei/android-chrome-192x192.png?v=NmbWaqEWWA",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/android-chrome-512x512.png?v=NmbWaqEWWA",
+      "src": "/hei/android-chrome-512x512.png?v=NmbWaqEWWA",
       "sizes": "512x512",
       "type": "image/png"
     }

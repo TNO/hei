@@ -23,7 +23,7 @@ module.exports = (env) => {
     entry: './src/app.ts',
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
-      port: 3377,
+      port: isProduction ? 3377 : 3378,
       // contentBase: './dist',
     },
     plugins: [
@@ -33,13 +33,15 @@ module.exports = (env) => {
         favicon: './src/favicon.ico',
         meta: { viewport: 'width=device-width, initial-scale=1' },
       }),
-      new WorkboxPlugin.GenerateSW({
-        // these options encourage the ServiceWorkers to get in there fast
-        // and not allow any straggling "old" SWs to hang around
-        maximumFileSizeToCacheInBytes: 3145728,
-        clientsClaim: true,
-        skipWaiting: true,
-      }),
+      isProduction
+        ? new WorkboxPlugin.GenerateSW({
+            // these options encourage the ServiceWorkers to get in there fast
+            // and not allow any straggling "old" SWs to hang around
+            maximumFileSizeToCacheInBytes: 3145728,
+            clientsClaim: true,
+            skipWaiting: true,
+          })
+        : undefined,
       new HtmlWebpackTagsPlugin({
         metas: [
           {
@@ -102,13 +104,15 @@ module.exports = (env) => {
         filename: '[name].css',
         chunkFilename: '[id].css',
       }),
-      new CopyPlugin({
-        patterns: [
-          { from: './src/assets/android-chrome-192x192.png', to: './docs/' },
-          { from: './src/assets/android-chrome-512x512.png', to: './docs/' },
-        ],
-      }),
-    ],
+      isProduction
+        ? new CopyPlugin({
+            patterns: [
+              { from: './src/assets/android-chrome-192x192.png', to: './docs/' },
+              { from: './src/assets/android-chrome-512x512.png', to: './docs/' },
+            ],
+          })
+        : undefined,
+    ].filter((p) => p),
     module: {
       rules: [
         {

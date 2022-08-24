@@ -7,7 +7,7 @@ import { routingSvc } from './services/routing-service';
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('/service-worker.js')
+      .register('/hei/service-worker.js')
       .then((registration) => {
         console.log('SW registered: ', registration);
       })

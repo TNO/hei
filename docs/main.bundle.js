@@ -15780,7 +15780,7 @@ var routing_service_1 = __webpack_require__(8434);
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
         navigator.serviceWorker
-            .register('/service-worker.js')
+            .register('/hei/service-worker.js')
             .then(function (registration) {
             console.log('SW registered: ', registration);
         })
@@ -16308,9 +16308,13 @@ var Layout = function () { return ({
     view: function (_a) {
         var children = _a.children, _b = _a.attrs, _c = _b.state, page = _c.page, curUser = _c.curUser, changePage = _b.actions.changePage;
         var isActive = function (d) { return (page === d.id ? '.active' : ''); };
+        var routes = routing_service_1.routingSvc
+            .getList()
+            .filter(function (d) { return curUser === 'admin' || d.id !== models_1.Dashboards.SETTINGS; })
+            .filter(function (d) { return (typeof d.visible === 'boolean' ? d.visible : d.visible()) || isActive(d); });
         return (0, mithril_1.default)('.main', { style: 'overflow-x: hidden' }, [
             (0, mithril_1.default)('.navbar-fixed', { style: 'z-index: 1001' }, (0, mithril_1.default)('nav', (0, mithril_1.default)('.nav-wrapper', [
-                (0, mithril_1.default)('a.brand-logo[href=#].hide-on-small-only', { style: 'margin-left: 20px' }, [
+                (0, mithril_1.default)('a.brand-logo[href=#].show-on-large', { style: 'margin-left: 20px' }, [
                     (0, mithril_1.default)("img[width=60][height=60][src=".concat(tno_svg_1.default, "]"), {
                         style: 'margin-top: 5px; margin-left: -5px;',
                     }),
@@ -16339,11 +16343,20 @@ var Layout = function () { return ({
                     className: 'hide-on-med-and-up black-text',
                     style: 'margin-left: 5px;',
                 })),
-                (0, mithril_1.default)('ul.right', routing_service_1.routingSvc
-                    .getList()
-                    .filter(function (d) { return curUser === 'admin' || d.id !== models_1.Dashboards.SETTINGS; })
-                    .filter(function (d) { return (typeof d.visible === 'boolean' ? d.visible : d.visible()) || isActive(d); })
-                    .map(function (d) {
+                (0, mithril_1.default)('ul#slide-out.sidenav.hide-on-med-and-up', {
+                    oncreate: function () {
+                        var elems = document.querySelectorAll('.sidenav');
+                        M.Sidenav.init(elems);
+                    },
+                }, routes.map(function (d) {
+                    return (0, mithril_1.default)("li.tooltip".concat(isActive(d)), [
+                        (0, mithril_1.default)('a', { href: routing_service_1.routingSvc.href(d.id) }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                            className: d.iconClass ? " ".concat(d.iconClass) : '',
+                            iconName: typeof d.icon === 'string' ? d.icon : d.icon(),
+                        }), (typeof d.title === 'string' ? d.title : d.title()).toUpperCase()),
+                    ]);
+                })),
+                (0, mithril_1.default)('ul.right.hide-on-med-and-down', routes.map(function (d) {
                     return (0, mithril_1.default)("li.tooltip".concat(isActive(d)), [
                         (0, mithril_1.default)(mithril_materialized_1.Icon, {
                             className: 'hoverable' + (d.iconClass ? " ".concat(d.iconClass) : ''),
@@ -16782,7 +16795,7 @@ var TechnologyOverviewPage = function () {
             var hasFilters = filteredTechnologies.length !== technologies.length;
             return [
                 (0, mithril_1.default)('.row.technology-overview-page', { style: 'height: 95vh' }, [
-                    (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s6.m4.xl3', {
+                    (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s12.m4', {
                         style: 'height: 81px',
                     }, (0, mithril_1.default)(ui_1.TextInputWithClear, {
                         label: 'Search',
@@ -16794,13 +16807,13 @@ var TechnologyOverviewPage = function () {
                             setSearchFilters(searchFilters);
                             // m.redraw();
                         },
-                    })), (0, mithril_1.default)('.col.s6.m2.xl1', {
+                    })), (0, mithril_1.default)('.col.s6.m2', {
                         style: 'height: 81px',
                     }, (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                         modalId: 'search',
                         iconName: 'manage_search',
-                        label: 'Advanced search',
-                    })), (0, mithril_1.default)('.col.s6.m3.xl2', [
+                        label: 'Adv.search',
+                    })), (0, mithril_1.default)('.col.s6.m3', [
                         (0, mithril_1.default)(mithril_materialized_1.Switch, {
                             label: 'Bookmarked?',
                             right: 'Yes',
@@ -16963,8 +16976,10 @@ var TechnologyOverviewPage = function () {
                 ]),
                 (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
                     id: 'search',
-                    title: 'Specify search parameters',
-                    description: (0, mithril_1.default)('.row', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                    title: 'Advanced search',
+                    description: (0, mithril_1.default)('.row', {
+                        style: 'max-height: 100%; height: calc(100% - 56px); overflow-y: scroll',
+                    }, (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
                         form: [
                             {
                                 id: 'mainCapFilter',
@@ -17354,7 +17369,7 @@ var TechnologyPage = function () {
                                 ]),
                             (0, mithril_1.default)('h5.separator', 'References'),
                         ])),
-                        (0, mithril_1.default)('.col.s6.m8', (0, mithril_1.default)('.row', [
+                        (0, mithril_1.default)('.col.s12.m8', (0, mithril_1.default)('.row', [
                             usedLiterature && [
                                 (0, mithril_1.default)('ol.browser-default', usedLiterature.map(function (l) {
                                     return (0, mithril_1.default)('li', (0, mithril_1.default)('a', {
@@ -17366,7 +17381,7 @@ var TechnologyPage = function () {
                             ],
                         ])),
                         owner &&
-                            (0, mithril_1.default)('.col.s6.m4', (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Expert: '), owner.name + '.']), (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Email: '), (0, mithril_1.default)('a', { href: mailtoLink }, owner.email)]), owner.phone &&
+                            (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Expert: '), owner.name + '.']), (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Email: '), (0, mithril_1.default)('a', { href: mailtoLink }, owner.email)]), owner.phone &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold', 'Phone: '),
                                     (0, mithril_1.default)('a', { href: "tel:".concat(owner.phone) }, owner.phone),
