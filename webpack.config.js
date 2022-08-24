@@ -109,6 +109,7 @@ module.exports = (env) => {
             patterns: [
               { from: './src/assets/android-chrome-192x192.png', to: './' },
               { from: './src/assets/android-chrome-512x512.png', to: './' },
+              { from: 'src/manifest.json', to: './manifest.json' },
             ],
           })
         : undefined,
