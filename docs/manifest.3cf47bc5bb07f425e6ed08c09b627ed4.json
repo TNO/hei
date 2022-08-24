@@ -35,7 +35,7 @@
   "short_name": "HEI",
   "orientation": "portrait",
   "display": "standalone",
-  "start_url": "https://tno.github.io/hei",
+  "start_url": "https://tno.github.io/hei/",
   "scope": "/",
   "description": "A database with known interventions to enhance human performance.",
   "background_color": "#ffffff",
