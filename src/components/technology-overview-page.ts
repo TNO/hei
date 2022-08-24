@@ -21,6 +21,7 @@ import { MeiosisComponent, routingSvc } from '../services';
 import {
   availabilityOptions,
   boosterOptions,
+  ethicalConsiderationsOptions,
   evidenceDirOptions,
   evidenceLevelOptions,
   getOptionsLabel,
@@ -52,7 +53,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
   const invasivenessOpt = toOptions(invasivenessOptions);
   const maturityOpt = toOptions(maturityOptions);
   const availabilityOpt = toOptions(availabilityOptions);
-  const ethicalOpt = toOptions(NoYesUnknown);
+  const ethicalOpt = toOptions(ethicalConsiderationsOptions);
   const evidenceDirOpt = toOptions(evidenceDirOptions);
   const evidenceQualityOpt = toOptions(evidenceLevelOptions);
   const boosterOpt = toOptions(boosterOptions);
@@ -244,7 +245,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
         }
         return true;
       });
-      const hasFilters = true; // Object.keys(searchFilters).some((f) => !f);
+      const hasFilters = filteredTechnologies.length !== technologies.length;
 
       return [
         m('.row.technology-overview-page', { style: 'height: 95vh' }, [
@@ -308,8 +309,14 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                 )
             )
           ),
-          hasFilters &&
+          hasFilters && [
             m('.col.s12.filters', [
+              m(
+                'span',
+                `${filteredTechnologies.length} search result${
+                  filteredTechnologies.length === 1 ? '' : 's'
+                }: `
+              ),
               mainCapFilter > 0 &&
                 m('.chip', [
                   `Capability: ${getOptionsLabel(mainCapabilityOptions, mainCapFilter, false)}`,
@@ -436,6 +443,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   ),
                 ]),
             ]),
+          ],
           filteredTechnologies.map((t) => {
             const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
             const selectedForComparison = t.id.some((id) => compareList.indexOf(id) >= 0);

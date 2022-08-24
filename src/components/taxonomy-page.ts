@@ -3,6 +3,7 @@ import { render } from 'mithril-ui-form';
 import { Dashboards } from '../models';
 import { MeiosisComponent } from '../services';
 import {
+  ethicalConsiderationsOptions,
   invasivenessOptions,
   mainCapabilityOptions,
   maturityOptions,
@@ -27,6 +28,8 @@ const lexicon = [
   // ...toLexicon(technologyCategoryOptions),
   ...toLexicon(invasivenessOptions, 'Invasiveness'),
   ...toLexicon(maturityOptions, 'Maturity'),
+  ...toLexicon(ethicalConsiderationsOptions, 'Ethical considerations'),
+  { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
   { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
   {
     a: 'Quality of evidence',

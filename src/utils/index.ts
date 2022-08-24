@@ -104,7 +104,7 @@ export const optionsToTxt = <T extends string | number>(
   options: Array<{ id: T; label: string; title?: string }>,
   showTitle = true
 ) => {
-  if (!selectedIds || (selectedIds instanceof Array && selectedIds.length === 0)) return [''];
+  if (!selectedIds || (selectedIds instanceof Array && selectedIds.length === 0)) return ['−'];
   const ids = selectedIds instanceof Array ? selectedIds : [selectedIds];
   const lookup = options.reduce((acc, cur) => {
     acc[cur.id] = `${cur.label}${showTitle && cur.title ? ` (${cur.title})` : ''}`;
@@ -248,7 +248,7 @@ export const specificCapabilityOptions = [
     id: SPECIFIC_CAPABILITY.PSYCHOMOTOR,
     label: 'Increased psychomotor ability',
     title:
-      'Any ability (e.g., handwriting, drawing, driving a car) whose performance draws on a combined and coordinated set of cognitive and motor processes',
+      'Psychomotor abilities are skills such as hand-eye coordination, balance, and reaction time that arise from a unity of cognitive and physical functions',
   },
   {
     mc: MAIN_CAPABILITY.COGNITION,
@@ -274,13 +274,14 @@ export const specificCapabilityOptions = [
     id: SPECIFIC_CAPABILITY.ARITHMETIC,
     label: 'Increased arithmetic ability',
     title:
-      'The branch of mathematics concerned with numerical calculations, such as addition, subtraction, multiplication, and division',
+      'The ability to perform numerical calculations, such as addition, subtraction, multiplication, and division',
   },
   {
     mc: MAIN_CAPABILITY.COGNITION,
     id: SPECIFIC_CAPABILITY.WORKING_MEMORY,
     label: 'Increased working memory',
-    title: 'Memory as it is used to plan and carry out behavior',
+    title:
+      'Working memory is the small amount of information that can be held briefly in the mind and is used in the execution of cognitive tasks',
   },
   {
     mc: MAIN_CAPABILITY.PHYSICAL,
@@ -352,9 +353,19 @@ export const specificCapabilityOptions = [
     title: 'The ability to perceive objects or judge sensations through the sense of touch.',
   },
   {
+    mc: MAIN_CAPABILITY.PHYSICAL,
+    id: SPECIFIC_CAPABILITY.INC_EXPLOSIVENESS,
+    label: 'Increased explosiveness',
+  },
+  {
     mc: MAIN_CAPABILITY.MENTAL,
     id: SPECIFIC_CAPABILITY.EMOTION_REGULATION,
-    label: 'Improved emotion regulation',
+    label: 'Improved mood',
+  },
+  {
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.INC_TRANQUILITY,
+    label: 'Increased tranquility',
   },
   {
     mc: MAIN_CAPABILITY.MENTAL,
@@ -380,6 +391,11 @@ export const specificCapabilityOptions = [
     mc: MAIN_CAPABILITY.MENTAL,
     id: SPECIFIC_CAPABILITY.SENSE_OF_FATIGUE,
     label: 'Decreased sense of fatigue',
+  },
+  {
+    mc: MAIN_CAPABILITY.MENTAL,
+    id: SPECIFIC_CAPABILITY.DEC_PAIN_PERCEPTION,
+    label: 'Decreased pain perception',
   },
   {
     mc: MAIN_CAPABILITY.SOCIAL,
@@ -425,6 +441,34 @@ export const specificCapabilityOptions = [
     mc: MAIN_CAPABILITY.PERSONALITY,
     id: SPECIFIC_CAPABILITY.PERSISTANCE,
     label: 'Increased persistance',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.CONSCIENSCIOUSNESS,
+    label: 'Consciensciousness',
+    title:
+      'Conscientiousness is the personality trait of being careful, or diligent. Conscientiousness implies a desire to do a task well, and to take obligations to others seriously',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.OPENNESS,
+    label: 'Openness',
+    title:
+      'Openness involves: active imagination (fantasy), aesthetic sensitivity, attentiveness to inner feelings, preference for variety (adventurousness), intellectual curiosity, and challenging authority (psychological liberalism)',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.EXTRAVERSION,
+    label: 'Extraversion',
+    title:
+      'Extraversion is defined by the general tendency to experience positive emotions, as well as by traits such as sociable, lively, and active',
+  },
+  {
+    mc: MAIN_CAPABILITY.PERSONALITY,
+    id: SPECIFIC_CAPABILITY.NEUROTICISM,
+    label: 'Neuroticism',
+    title:
+      'Neuroticism is the trait disposition to experience negative affects, including anger, anxiety, self‐consciousness, irritability, emotional instability, and depression',
   },
 ];
 
@@ -497,6 +541,24 @@ export const effectDirectionOptions = [
     id: EFFECT_DIRECTION.POSITIVE,
     label: 'Positive',
     title: 'The technology increases a subjects capability level',
+  },
+];
+
+export const ethicalConsiderationsOptions = [
+  {
+    id: CHOICE.NONE,
+    label: 'None',
+    title: 'No ethical considerations known',
+  },
+  {
+    id: CHOICE.YES,
+    label: 'Yes',
+    title: 'Ethical considerations exist',
+  },
+  {
+    id: CHOICE.UNKNOWN,
+    label: 'Unknown',
+    title: 'Unclear about ethical considerations',
   },
 ];
 
