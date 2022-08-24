@@ -10,12 +10,12 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 module.exports = (env) => {
   const isProduction = env.production;
   const outputPath = path.resolve(__dirname, isProduction ? 'docs' : 'dist');
-  const publicPath = isProduction ? 'https://tno.github.io/hei/' : '/';
+  const publicPath = isProduction ? env.PUBLIC_URL : '/';
 
   console.log(
     `Running in ${
       isProduction ? 'production' : 'development'
-    } mode, output directed to ${outputPath}.`
+    } mode, path ${publicPath}, output directed to ${outputPath}.`
   );
 
   return {
@@ -24,7 +24,6 @@ module.exports = (env) => {
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
       port: isProduction ? 3377 : 3378,
-      // contentBase: './dist',
     },
     plugins: [
       new Dotenv(),
@@ -65,9 +64,10 @@ module.exports = (env) => {
         ? new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast
             // and not allow any straggling "old" SWs to hang around
-            maximumFileSizeToCacheInBytes: 3145728,
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
             clientsClaim: true,
             skipWaiting: true,
+            exclude: [/\.map$/, /manifest.*\.json$/],
           })
         : undefined,
       new HtmlWebpackTagsPlugin({
