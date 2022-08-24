@@ -118,41 +118,41 @@ export const HomePage: MeiosisComponent = () => {
                 fileInput.click();
               },
             }),
-          m(Button, {
-            iconName: 'link',
-            className: 'btn-large',
-            label: 'Permalink',
-            onclick: () => {
-              const permLink = document.createElement('input') as HTMLInputElement;
-              document.body.appendChild(permLink);
-              if (!permLink) {
-                return;
-              }
-              const compressed = lz.compressToEncodedURIComponent(JSON.stringify(model));
-              const url = `${window.location.href}${
-                /\?/.test(window.location.href) ? '&' : '?'
-              }model=${compressed}`;
-              permLink.value = url;
-              permLink.select();
-              permLink.setSelectionRange(0, 999999); // For mobile devices
-              try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                  M.toast({
-                    html: 'Copied permanent link to clipboard.',
-                    classes: 'yellow black-text',
-                  });
-                }
-              } catch (err) {
-                M.toast({
-                  html: 'Failed copying link to clipboard: ' + err,
-                  classes: 'red',
-                });
-              } finally {
-                document.body.removeChild(permLink);
-              }
-            },
-          }),
+          // m(Button, {
+          //   iconName: 'link',
+          //   className: 'btn-large',
+          //   label: 'Permalink',
+          //   onclick: () => {
+          //     const permLink = document.createElement('input') as HTMLInputElement;
+          //     document.body.appendChild(permLink);
+          //     if (!permLink) {
+          //       return;
+          //     }
+          //     const compressed = lz.compressToEncodedURIComponent(JSON.stringify(model));
+          //     const url = `${window.location.href}${
+          //       /\?/.test(window.location.href) ? '&' : '?'
+          //     }model=${compressed}`;
+          //     permLink.value = url;
+          //     permLink.select();
+          //     permLink.setSelectionRange(0, 999999); // For mobile devices
+          //     try {
+          //       const successful = document.execCommand('copy');
+          //       if (successful) {
+          //         M.toast({
+          //           html: 'Copied permanent link to clipboard.',
+          //           classes: 'yellow black-text',
+          //         });
+          //       }
+          //     } catch (err) {
+          //       M.toast({
+          //         html: 'Failed copying link to clipboard: ' + err,
+          //         classes: 'red',
+          //       });
+          //     } finally {
+          //       document.body.removeChild(permLink);
+          //     }
+          //   },
+          // }),
         ]),
         m(
           '.section.white',

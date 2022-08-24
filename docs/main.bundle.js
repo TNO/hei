@@ -16176,41 +16176,41 @@ var HomePage = function () {
                                     fileInput.click();
                                 },
                             }),
-                        (0, mithril_1.default)(mithril_materialized_1.Button, {
-                            iconName: 'link',
-                            className: 'btn-large',
-                            label: 'Permalink',
-                            onclick: function () {
-                                var permLink = document.createElement('input');
-                                document.body.appendChild(permLink);
-                                if (!permLink) {
-                                    return;
-                                }
-                                var compressed = lz_string_1.default.compressToEncodedURIComponent(JSON.stringify(model));
-                                var url = "".concat(window.location.href).concat(/\?/.test(window.location.href) ? '&' : '?', "model=").concat(compressed);
-                                permLink.value = url;
-                                permLink.select();
-                                permLink.setSelectionRange(0, 999999); // For mobile devices
-                                try {
-                                    var successful = document.execCommand('copy');
-                                    if (successful) {
-                                        M.toast({
-                                            html: 'Copied permanent link to clipboard.',
-                                            classes: 'yellow black-text',
-                                        });
-                                    }
-                                }
-                                catch (err) {
-                                    M.toast({
-                                        html: 'Failed copying link to clipboard: ' + err,
-                                        classes: 'red',
-                                    });
-                                }
-                                finally {
-                                    document.body.removeChild(permLink);
-                                }
-                            },
-                        }),
+                        // m(Button, {
+                        //   iconName: 'link',
+                        //   className: 'btn-large',
+                        //   label: 'Permalink',
+                        //   onclick: () => {
+                        //     const permLink = document.createElement('input') as HTMLInputElement;
+                        //     document.body.appendChild(permLink);
+                        //     if (!permLink) {
+                        //       return;
+                        //     }
+                        //     const compressed = lz.compressToEncodedURIComponent(JSON.stringify(model));
+                        //     const url = `${window.location.href}${
+                        //       /\?/.test(window.location.href) ? '&' : '?'
+                        //     }model=${compressed}`;
+                        //     permLink.value = url;
+                        //     permLink.select();
+                        //     permLink.setSelectionRange(0, 999999); // For mobile devices
+                        //     try {
+                        //       const successful = document.execCommand('copy');
+                        //       if (successful) {
+                        //         M.toast({
+                        //           html: 'Copied permanent link to clipboard.',
+                        //           classes: 'yellow black-text',
+                        //         });
+                        //       }
+                        //     } catch (err) {
+                        //       M.toast({
+                        //         html: 'Failed copying link to clipboard: ' + err,
+                        //         classes: 'red',
+                        //       });
+                        //     } finally {
+                        //       document.body.removeChild(permLink);
+                        //     }
+                        //   },
+                        // }),
                     ]),
                     (0, mithril_1.default)('.section.white', (0, mithril_1.default)('.row.container.center', [
                         (0, mithril_1.default)('.row', [
@@ -16310,7 +16310,7 @@ var Layout = function () { return ({
         var isActive = function (d) { return (page === d.id ? '.active' : ''); };
         return (0, mithril_1.default)('.main', { style: 'overflow-x: hidden' }, [
             (0, mithril_1.default)('.navbar-fixed', { style: 'z-index: 1001' }, (0, mithril_1.default)('nav', (0, mithril_1.default)('.nav-wrapper', [
-                (0, mithril_1.default)('a.brand-logo[href=#].hide-on-small', { style: 'margin-left: 20px' }, [
+                (0, mithril_1.default)('a.brand-logo[href=#].hide-on-small-only', { style: 'margin-left: 20px' }, [
                     (0, mithril_1.default)("img[width=60][height=60][src=".concat(tno_svg_1.default, "]"), {
                         style: 'margin-top: 5px; margin-left: -5px;',
                     }),

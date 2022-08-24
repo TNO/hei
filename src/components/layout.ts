@@ -22,7 +22,7 @@ export const Layout: MeiosisComponent = () => ({
         m(
           'nav',
           m('.nav-wrapper', [
-            m('a.brand-logo[href=#].hide-on-small', { style: 'margin-left: 20px' }, [
+            m('a.brand-logo[href=#].hide-on-small-only', { style: 'margin-left: 20px' }, [
               m(`img[width=60][height=60][src=${logo}]`, {
                 style: 'margin-top: 5px; margin-left: -5px;',
               }),
