@@ -616,7 +616,10 @@ ul.projects > li > span.project-id {
 .bold {
   font-weight: bold;
 }
-
+.users > h4,
+.technology-page > h3 {
+  margin-top: 0;
+}
 .technology-overview-page {
   left: 0;
   position: absolute;

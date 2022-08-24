@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { FlatButton, Icon, ModalPanel } from 'mithril-materialized';
+import { FlatButton, Icon, ModalPanel, uuid4 } from 'mithril-materialized';
 import { UIForm, LayoutForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import { Dashboards, defaultModel, Technology, User } from '../models';
@@ -31,7 +31,7 @@ export const TechnologyPage: MeiosisComponent = () => {
   };
 
   let id = '';
-  let isEditting = false;
+  let isEditing = false;
   let form: UIForm = [];
   let allTechnologies = [] as Technology[];
   let isBookmarked = false;
@@ -46,7 +46,7 @@ export const TechnologyPage: MeiosisComponent = () => {
       const { technologies = [], users = [] } = model;
       setPage(Dashboards.TECHNOLOGY);
       id = m.route.param('id') || curTech.id || '';
-      isEditting = (m.route.param('edit') as unknown as boolean) === true ? true : false;
+      isEditing = (m.route.param('edit') as unknown as boolean) === true ? true : false;
       form = initTechForm(technologies, id, users);
       const found =
         id === curTech.id
@@ -100,19 +100,34 @@ export const TechnologyPage: MeiosisComponent = () => {
             curUser === 'admin' && [
               m(FlatButton, {
                 className: 'right no-print',
-                label: isEditting ? 'Save' : 'Edit',
-                iconName: isEditting ? 'save' : 'edit',
-                onclick: () => (isEditting = !isEditting),
+                label: isEditing ? 'Save' : 'Edit',
+                iconName: isEditing ? 'save' : 'edit',
+                onclick: () => (isEditing = !isEditing),
               }),
-              isEditting &&
-                m(FlatButton, {
-                  className: 'right',
-                  label: 'Delete',
-                  iconName: 'delete',
-                  modalId: 'deleteTechnology',
-                }),
+
+              isEditing
+                ? m(FlatButton, {
+                    className: 'right',
+                    label: 'Delete',
+                    iconName: 'delete',
+                    modalId: 'deleteTechnology',
+                  })
+                : m(FlatButton, {
+                    className: 'right no-print',
+                    label: 'Duplicate',
+                    iconName: 'content_copy',
+                    onclick: () => {
+                      const clone = JSON.parse(JSON.stringify(curTech)) as Technology;
+                      clone.technology += ' (COPY)';
+                      clone.id = uuid4();
+                      model.technologies.push(clone);
+                      isEditing = true;
+                      setTechnology(clone);
+                      changePage(Dashboards.TECHNOLOGY, { id: clone.id });
+                    },
+                  }),
             ],
-          isEditting
+          isEditing
             ? m(
                 '.col.s12',
                 m(LayoutForm, {
