@@ -33,7 +33,7 @@ export interface Actions {
   bookmark: (id: ID) => void;
   compare: (id: ID) => void;
   setCompareList: (ids: ID[]) => void;
-  setSearchFilters: (sf: SearchFilter) => void;
+  setSearchFilters: (sf: Partial<SearchFilter>) => void;
 }
 
 export type MeiosisComponent<T extends { [key: string]: any } = {}> = FactoryComponent<{
@@ -92,7 +92,10 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
   setCompareList: (ids: ID[]) => {
     update({ compareList: () => ids });
   },
-  setSearchFilters: (searchFilters: SearchFilter) => update({ searchFilters }),
+  setSearchFilters: (searchFilters: Partial<SearchFilter>) => {
+    console.log(JSON.stringify(searchFilters, null, 2));
+    update({ searchFilters });
+  },
 });
 
 const initialize = async (update: Update<State>) => {

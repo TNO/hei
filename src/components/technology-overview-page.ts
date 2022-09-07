@@ -264,8 +264,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   className: 'bottom-margin0',
                   initialValue: searchFilter,
                   oninput: (s) => {
-                    searchFilters.searchFilter = s || '';
-                    setSearchFilters(searchFilters);
+                    setSearchFilters({ searchFilter: s || '' });
                     // m.redraw();
                   },
                 })
@@ -286,8 +285,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   label: 'Bookmarked?',
                   right: 'Yes',
                   onchange: (v) => {
-                    searchFilters.bookmarked = v;
-                    setSearchFilters(searchFilters);
+                    setSearchFilters({ bookmarked: v });
                   },
                 }),
               ]),
@@ -322,7 +320,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   `Capability: ${getOptionsLabel(mainCapabilityOptions, mainCapFilter, false)}`,
                   m(
                     'i.close.material-icons',
-                    { onclick: () => setSearchFilters({ ...searchFilters, mainCapFilter: 0 }) },
+                    { onclick: () => setSearchFilters({ mainCapFilter: 0 }) },
                     'close'
                   ),
                 ]),
@@ -335,7 +333,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   )}`,
                   m(
                     'i.close.material-icons',
-                    { onclick: () => setSearchFilters({ ...searchFilters, specificCapFilter: 0 }) },
+                    { onclick: () => setSearchFilters({ specificCapFilter: 0 }) },
                     'close'
                   ),
                 ]),
@@ -344,7 +342,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   `Category: ${getOptionsLabel(technologyCategoryOptions, categoryFilter, false)}`,
                   m(
                     'i.close.material-icons',
-                    { onclick: () => setSearchFilters({ ...searchFilters, categoryFilter: 0 }) },
+                    { onclick: () => setSearchFilters({ categoryFilter: 0 }) },
                     'close'
                   ),
                 ]),
@@ -358,7 +356,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, invasivenessFilter: 0 }),
+                      onclick: () => setSearchFilters({ invasivenessFilter: 0 }),
                     },
                     'close'
                   ),
@@ -369,7 +367,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, maturityFilter: 0 }),
+                      onclick: () => setSearchFilters({ maturityFilter: 0 }),
                     },
                     'close'
                   ),
@@ -384,7 +382,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, availabilityFilter: 0 }),
+                      onclick: () => setSearchFilters({ availabilityFilter: 0 }),
                     },
                     'close'
                   ),
@@ -395,7 +393,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, boosterFilter: 0 }),
+                      onclick: () => setSearchFilters({ boosterFilter: 0 }),
                     },
                     'close'
                   ),
@@ -406,7 +404,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, ethicalFilter: 0 }),
+                      onclick: () => setSearchFilters({ ethicalFilter: 0 }),
                     },
                     'close'
                   ),
@@ -421,7 +419,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () => setSearchFilters({ ...searchFilters, evidenceDirFilter: 0 }),
+                      onclick: () => setSearchFilters({ evidenceDirFilter: 0 }),
                     },
                     'close'
                   ),
@@ -436,8 +434,7 @@ export const TechnologyOverviewPage: MeiosisComponent = () => {
                   m(
                     'i.close.material-icons',
                     {
-                      onclick: () =>
-                        setSearchFilters({ ...searchFilters, evidenceQualityFilter: 0 }),
+                      onclick: () => setSearchFilters({ evidenceQualityFilter: 0 }),
                     },
                     'close'
                   ),
