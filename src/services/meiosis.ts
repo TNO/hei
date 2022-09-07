@@ -14,7 +14,7 @@ export interface State {
   page: Dashboards;
   model: DataModel;
   curUser?: string;
-  curTech?: Intervention;
+  curIntervention?: Intervention;
   bookmarks: ID[];
   compareList: ID[];
   searchFilters: SearchFilter;
@@ -29,7 +29,7 @@ export interface Actions {
   ) => void;
   saveModel: (ds: DataModel) => void;
   saveCurUser: (ds: string) => void;
-  setIntervention: (curTech: Intervention) => void;
+  setIntervention: (curIntervention: Intervention) => void;
   bookmark: (id: ID) => void;
   compare: (id: ID) => void;
   setCompareList: (ids: ID[]) => void;
@@ -66,7 +66,8 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
     ldb.set(CUR_USER_KEY, curUser);
     update({ curUser });
   },
-  setIntervention: (curTech: Intervention) => update({ curTech: () => curTech }),
+  setIntervention: (curIntervention: Intervention) =>
+    update({ curIntervention: () => curIntervention }),
   bookmark: (id: ID) =>
     update({
       bookmarks: (bookmarks = []) => {
@@ -120,7 +121,7 @@ const app = {
   initial: {
     page: Dashboards.HOME,
     model: defaultModel,
-    curTech: undefined,
+    curIntervention: undefined,
     bookmarks: [],
     compareList: [],
     curUser: 'mod',

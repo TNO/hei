@@ -24,10 +24,31 @@ import {
 
 export const InterventionPage: MeiosisComponent = () => {
   const initInterventionForm = (interventions: Intervention[], id: string, users: User[]) => {
+    const added = new Set<string>();
     const interventionOptions = interventions
-      .filter((t) => t.id !== id)
+      .filter((t) => {
+        if (added.has(t.intervention)) return false;
+        added.add(t.intervention);
+        return t.id !== id;
+      })
       .map((t) => ({ id: t.id, label: t.intervention }));
     return interventionForm(users, interventionOptions);
+  };
+
+  const suggestSimilarInt = (intervention: Intervention, interventions: Intervention[]) => {
+    const { mainCap, specificCap } = intervention;
+    const sc = new Set<number>(specificCap instanceof Array ? specificCap : [specificCap]);
+    return interventions
+      .filter(
+        (i) =>
+          i.id !== intervention.id &&
+          i.mainCap === mainCap &&
+          i.specificCap &&
+          (i.specificCap instanceof Array
+            ? i.specificCap.some((s) => sc.has(s))
+            : sc.has(i.specificCap))
+      )
+      .map((s) => s.id);
   };
 
   let id = '';
@@ -40,29 +61,29 @@ export const InterventionPage: MeiosisComponent = () => {
   return {
     oninit: ({
       attrs: {
-        state: { model, curTech = {} as Intervention },
+        state: { model, curIntervention = {} as Intervention },
         actions: { setPage, setIntervention },
       },
     }) => {
       const { interventions: technologies = [], users = [] } = model;
       setPage(Dashboards.INTERVENTION);
-      id = m.route.param('id') || curTech.id || '';
+      id = m.route.param('id') || curIntervention.id || '';
       isEditing = (m.route.param('edit') as unknown as boolean) === true ? true : false;
       form = initInterventionForm(technologies, id, users);
       const found =
-        id === curTech.id
-          ? curTech
+        id === curIntervention.id
+          ? curIntervention
           : technologies.filter((t) => t.id === id).shift() || technologies[0];
       allInterventions = found
         ? technologies.filter((t) => t.intervention === found.intervention)
         : [];
-      if (found !== curTech) setIntervention(found);
+      if (found !== curIntervention) setIntervention(found);
       window.scrollTo({ top: 0, left: 0 });
     },
     view: ({
       attrs: {
         state: {
-          curTech = {} as Intervention,
+          curIntervention = {} as Intervention,
           bookmarks,
           compareList = [],
           model = defaultModel,
@@ -71,32 +92,40 @@ export const InterventionPage: MeiosisComponent = () => {
         actions: { saveModel, changePage, setIntervention, bookmark, compare },
       },
     }) => {
-      const { users, interventions: technologies } = model;
-      if (!curTech.id) {
-        form = initInterventionForm(technologies, id, users);
-        const found = technologies.filter((t) => t.id === id).shift() || technologies[0];
+      id = m.route.param('id') || curIntervention.id || '';
+      const { users, interventions } = model;
+      if (!curIntervention.id || curIntervention.id !== id) {
+        form = initInterventionForm(interventions, id, users);
+        const found = interventions.filter((t) => t.id === id).shift() || interventions[0];
         if (found) {
-          allInterventions = technologies.filter((t) => t.intervention === found.intervention);
+          allInterventions = interventions.filter((t) => t.intervention === found.intervention);
           setIntervention(found);
         }
         return;
       }
-      isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
-      const selectedForComparison = compareList.indexOf(curTech.id) >= 0;
-      const ownerId = curTech.owner;
-      const updated = curTech.updated ? new Date(curTech.updated) : undefined;
+      // interventions.forEach((i) => {
+      //   i.similar = suggestSimilarInt(i, interventions);
+      // });
+      // saveModel({ ...model, interventions });
+      isBookmarked = bookmarks.indexOf(curIntervention.id) >= 0;
+      const selectedForComparison = compareList.indexOf(curIntervention.id) >= 0;
+      const ownerId = curIntervention.owner;
+      const updated = curIntervention.updated ? new Date(curIntervention.updated) : undefined;
       const owner = users.filter((u) => u.id === ownerId).shift();
-      const usedLiterature = curTech.literature;
+      const usedLiterature = curIntervention.literature;
 
-      const { md2html: md } = resolveRefs(curTech.literature);
+      const { md2html: md } = resolveRefs(curIntervention.literature);
       const mailtoLink =
-        owner && `mailto:${owner.email}?subject=${curTech.intervention.replace(/ /g, '%20')}`;
+        owner &&
+        `mailto:${owner.email}?subject=${curIntervention.intervention.replace(/ /g, '%20')}`;
       const similarTech =
-        curTech.similar &&
-        curTech.similar.length > 0 &&
-        technologies.filter((t) => curTech.similar.indexOf(t.id) >= 0);
+        curIntervention.similar &&
+        curIntervention.similar.length > 0 &&
+        interventions.filter((t) => curIntervention.similar.indexOf(t.id) >= 0);
 
-      const filteredSpecCapOpt = specificCapabilityOptions.filter((c) => c.mc === curTech.mainCap);
+      const filteredSpecCapOpt = specificCapabilityOptions.filter(
+        (c) => c.mc === curIntervention.mainCap
+      );
 
       return [
         m(
@@ -109,22 +138,43 @@ export const InterventionPage: MeiosisComponent = () => {
                 label: isEditing ? 'Save' : 'Edit',
                 disabled: isEditing && !formValid,
                 iconName: isEditing ? 'save' : 'edit',
-                onclick: () => (isEditing = !isEditing),
+                onclick: () => {
+                  // if (
+                  //   !isEditing &&
+                  //   (!curIntervention.similar || curIntervention.similar.length === 0)
+                  // ) {
+                  //   curIntervention.similar = suggestSimilarInt(
+                  //     curIntervention,
+                  //     interventions
+                  //   );
+                  // }
+                  isEditing = !isEditing;
+                },
               }),
 
               isEditing
-                ? m(FlatButton, {
-                    className: 'right',
-                    label: 'Delete',
-                    iconName: 'delete',
-                    modalId: 'deleteIntervention',
-                  })
+                ? [
+                    m(FlatButton, {
+                      className: 'right',
+                      label: 'Delete',
+                      iconName: 'delete',
+                      modalId: 'deleteIntervention',
+                    }),
+                    m(FlatButton, {
+                      className: 'right',
+                      label: 'Suggest similar',
+                      iconName: 'auto_awesome',
+                      onclick: () => {
+                        curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
+                      },
+                    }),
+                  ]
                 : m(FlatButton, {
                     className: 'right no-print',
                     label: 'Duplicate',
                     iconName: 'content_copy',
                     onclick: () => {
-                      const clone = JSON.parse(JSON.stringify(curTech)) as Intervention;
+                      const clone = JSON.parse(JSON.stringify(curIntervention)) as Intervention;
                       clone.intervention += ' (COPY)';
                       clone.id = uuid4();
                       model.interventions.push(clone);
@@ -139,14 +189,14 @@ export const InterventionPage: MeiosisComponent = () => {
                 '.col.s12',
                 m(LayoutForm, {
                   form,
-                  obj: curTech,
+                  obj: curIntervention,
                   onchange: (isValid) => {
                     formValid = isValid;
                     if (!isValid) {
                       return;
                     }
                     model.interventions = model.interventions.map((t) =>
-                      t.id === curTech.id ? curTech : t
+                      t.id === curIntervention.id ? curIntervention : t
                     );
                     saveModel(model);
                   },
@@ -154,12 +204,12 @@ export const InterventionPage: MeiosisComponent = () => {
               )
             : [
                 m('h3', [
-                  curTech.intervention,
+                  curIntervention.intervention,
                   m(
                     'a.btn-flat.btn-large.clean',
                     {
                       style: 'padding: 0 5px',
-                      onclick: () => bookmark(curTech.id),
+                      onclick: () => bookmark(curIntervention.id),
                     },
                     m(Icon, {
                       iconName: isBookmarked ? 'star' : 'star_border',
@@ -170,7 +220,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     'a.btn-flat.btn-large.clean',
                     {
                       style: 'padding: 0 5px',
-                      onclick: () => compare(curTech.id),
+                      onclick: () => compare(curIntervention.id),
                     },
                     m(Icon, {
                       iconName: 'balance',
@@ -178,7 +228,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     })
                   ),
                 ]),
-                curTech.application && m('h4', md(curTech.application)),
+                curIntervention.application && m('h4', md(curIntervention.application)),
                 m(
                   '.col.s12.m6',
                   m(
@@ -190,56 +240,58 @@ export const InterventionPage: MeiosisComponent = () => {
                           ...allInterventions.map((t, i) =>
                             m(FlatButton, {
                               className:
-                                t.id === curTech.id ? 'bold grey lighten-3' : 'grey lighten-3',
+                                t.id === curIntervention.id
+                                  ? 'bold grey lighten-3'
+                                  : 'grey lighten-3',
                               label:
                                 getOptionsLabel(mainCapabilityOptions, t.mainCap, false) ||
                                 `v${i + 1}`,
-                              onclick: () => setIntervention(t),
+                              onclick: () => changePage(Dashboards.INTERVENTION, { id: t.id }),
                             })
                           ),
                         ]),
                     m('section', [
-                      curTech.desc && m('p', curTech.desc),
-                      curTech.category &&
+                      curIntervention.desc && m('p', curIntervention.desc),
+                      curIntervention.category &&
                         m('p', [
                           m('span.bold', 'Category: '),
-                          getOptionsLabel(interventionCategoryOptions, curTech.category),
+                          getOptionsLabel(interventionCategoryOptions, curIntervention.category),
                         ]),
-                      curTech.mainCap &&
+                      curIntervention.mainCap &&
                         m('p', [
                           m('span.bold', 'Main capability: '),
                           `${getOptionsLabel(
                             mainCapabilityOptions,
-                            curTech.mainCap,
+                            curIntervention.mainCap,
                             false
                           )} ${getOptionsLabel(
                             hpeClassificationOptions,
-                            curTech.hpeClassification,
+                            curIntervention.hpeClassification,
                             false
                           )}`,
                         ]),
-                      curTech.specificCap &&
+                      curIntervention.specificCap &&
                         m('p', [
                           m('span.bold', 'Specific capability: '),
                           joinListWithAnd(
-                            optionsToTxt(curTech.specificCap, filteredSpecCapOpt, false)
+                            optionsToTxt(curIntervention.specificCap, filteredSpecCapOpt, false)
                           ) + '.',
                         ]),
-                      curTech.invasive &&
+                      curIntervention.invasive &&
                         m('p', [
                           m('span.bold', 'Invasive: '),
-                          getOptionsLabel(invasivenessOptions, curTech.invasive) + '.',
+                          getOptionsLabel(invasivenessOptions, curIntervention.invasive) + '.',
                         ]),
-                      curTech.maturity &&
+                      curIntervention.maturity &&
                         m('p', [
                           m('span.bold', 'Maturity: '),
-                          getOptionsLabel(maturityOptions, curTech.maturity) + '.',
+                          getOptionsLabel(maturityOptions, curIntervention.maturity) + '.',
                         ]),
-                      typeof curTech.booster !== 'undefined' &&
+                      typeof curIntervention.booster !== 'undefined' &&
                         m('p', [
                           m('span.bold', 'Can be used as booster: '),
                           `${
-                            curTech.booster
+                            curIntervention.booster
                               ? 'Yes, the intervention can be applied quickly (approx. < 1 hour)'
                               : 'No, the intervention can not be applied quickly (approx. < 1 hour)'
                           }.`,
@@ -247,49 +299,54 @@ export const InterventionPage: MeiosisComponent = () => {
                     ])
                   )
                 ),
-                curTech.url &&
+                curIntervention.url &&
                   m(
                     '.col.s6.m6',
                     m('img.responsive-img', {
-                      src: resolveImg(curTech.url, curTech.img),
-                      alt: curTech.intervention,
+                      src: resolveImg(curIntervention.url, curIntervention.img),
+                      alt: curIntervention.intervention,
                     })
                   ),
                 m(
                   '.col.s12',
                   m('.row.bottom-margin0', [
                     m('h5.separator', 'How it works'),
-                    curTech.mechanism &&
-                      m('p', [m('span.bold', 'Mechanism: '), md(curTech.mechanism)]),
-                    curTech.examples &&
-                      m('p', [m('span.bold', 'Examples: '), md(curTech.examples)]),
-                    curTech.incubation &&
-                      m('p', [m('span.bold', 'Incubation: '), md(curTech.incubation)]),
-                    curTech.effectDuration &&
-                      m('p', [m('span.bold', 'Effect duration: '), md(curTech.effectDuration)]),
+                    curIntervention.mechanism &&
+                      m('p', [m('span.bold', 'Mechanism: '), md(curIntervention.mechanism)]),
+                    curIntervention.examples &&
+                      m('p', [m('span.bold', 'Examples: '), md(curIntervention.examples)]),
+                    curIntervention.incubation &&
+                      m('p', [m('span.bold', 'Incubation: '), md(curIntervention.incubation)]),
+                    curIntervention.effectDuration &&
+                      m('p', [
+                        m('span.bold', 'Effect duration: '),
+                        md(curIntervention.effectDuration),
+                      ]),
                     m('h5.separator', 'Keep in mind'),
-                    curTech.practical &&
+                    curIntervention.practical &&
                       m('p', [
                         m(
                           'span.bold[title=This information is not medical advice, please read the disclaimer!]',
                           m.trust('Practical execution<sup class="red-text">*</sup>: ')
                         ),
-                        md(curTech.practical),
+                        md(curIntervention.practical),
                       ]),
-                    curTech.sideEffects &&
+                    curIntervention.sideEffects &&
                       m('p', [
                         m('span.bold', 'Possible side-effects: '),
-                        md(resolveChoice(curTech.hasSideEffects, curTech.sideEffects)),
+                        md(
+                          resolveChoice(curIntervention.hasSideEffects, curIntervention.sideEffects)
+                        ),
                       ]),
-                    curTech.diff &&
+                    curIntervention.diff &&
                       m('p', [
                         m('span.bold', 'Individual differences: '),
-                        md(resolveChoice(curTech.hasIndDiff, curTech.diff)),
+                        md(resolveChoice(curIntervention.hasIndDiff, curIntervention.diff)),
                       ]),
-                    curTech.ethical &&
+                    curIntervention.ethical &&
                       m('p', [
                         m('span.bold', 'Ethical considerations: '),
-                        md(resolveChoice(curTech.hasEthical, curTech.ethical)),
+                        md(resolveChoice(curIntervention.hasEthical, curIntervention.ethical)),
                       ]),
                     similarTech &&
                       m(
@@ -303,25 +360,26 @@ export const InterventionPage: MeiosisComponent = () => {
                             'a',
                             {
                               href: routingSvc.href(Dashboards.INTERVENTION, `?id=${s.id}`),
+                              onclick: () => changePage(Dashboards.INTERVENTION, { id: s.id }),
                             },
                             s.intervention + (i < similarTech.length - 1 ? ', ' : '.')
                           )
                         )
                       ),
-                    curTech.evidenceDir &&
+                    curIntervention.evidenceDir &&
                       m('p', [
                         m('span.bold', 'Evidence indication: '),
-                        getOptionsLabel(evidenceDirOptions, curTech.evidenceDir) + '.',
+                        getOptionsLabel(evidenceDirOptions, curIntervention.evidenceDir) + '.',
                       ]),
-                    curTech.evidenceScore &&
+                    curIntervention.evidenceScore &&
                       m('p', [
                         m('span.bold', 'Quality of evidence: '),
-                        getOptionsLabel(evidenceLevelOptions, curTech.evidenceScore) + '.',
+                        getOptionsLabel(evidenceLevelOptions, curIntervention.evidenceScore) + '.',
                       ]),
-                    curTech.availability &&
+                    curIntervention.availability &&
                       m('p', [
                         m('span.bold', 'Availability: '),
-                        getOptionsLabel(availabilityOptions, curTech.availability) + '.',
+                        getOptionsLabel(availabilityOptions, curIntervention.availability) + '.',
                       ]),
                     m('h5.separator', 'References'),
                   ])
@@ -367,14 +425,16 @@ export const InterventionPage: MeiosisComponent = () => {
         ),
         m(ModalPanel, {
           id: 'deleteIntervention',
-          title: `Delete ${curTech.intervention}?`,
-          description: `Are you sure that you want to delete ${curTech.intervention}?`,
+          title: `Delete ${curIntervention.intervention}?`,
+          description: `Are you sure that you want to delete ${curIntervention.intervention}?`,
           buttons: [
             {
               label: 'Yes',
               iconName: 'delete',
               onclick: () => {
-                model.interventions = model.interventions.filter((t) => t.id !== curTech.id);
+                model.interventions = model.interventions.filter(
+                  (t) => t.id !== curIntervention.id
+                );
                 saveModel(model);
                 changePage(Dashboards.INTERVENTIONS);
               },
