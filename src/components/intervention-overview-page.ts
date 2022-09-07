@@ -253,7 +253,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
             m(
               '.row.search-filters',
               m(
-                '.col.s12.m4',
+                '.col.s12.m3',
                 {
                   style: 'height: 81px',
                 },
@@ -269,13 +269,12 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 })
               ),
               m(
-                '.col.s6.m2',
-                {
-                  style: 'height: 81px',
-                },
+                '.col.s6.m3',
+
                 m(FlatButton, {
                   modalId: 'search',
                   iconName: 'manage_search',
+                  iconClass: 'large-icon',
                   label: 'Adv.search',
                 })
               ),

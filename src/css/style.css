@@ -665,3 +665,8 @@ a.clean.btn-small:hover {
 #search .modal-content {
   overflow-y: visible;
 }
+
+a > i.large-icon {
+  font-size: 2.5rem;
+  vertical-align: middle;
+}
