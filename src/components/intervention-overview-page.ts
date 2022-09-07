@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { FlatButton, Icon, ModalPanel, Switch, uniqueId } from 'mithril-materialized';
+import { FlatButton, Icon, ModalPanel, uniqueId } from 'mithril-materialized';
 import { LayoutForm, UIForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import {
@@ -270,7 +270,6 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
               ),
               m(
                 '.col.s6.m3',
-
                 m(FlatButton, {
                   modalId: 'search',
                   iconName: 'manage_search',
@@ -278,15 +277,22 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   label: 'Adv.search',
                 })
               ),
-              m('.col.s6.m3', [
-                m(Switch, {
-                  label: 'Bookmarked?',
-                  right: 'Yes',
-                  onchange: (v) => {
-                    setSearchFilters({ bookmarked: v });
-                  },
-                }),
-              ]),
+              m(FlatButton, {
+                label: 'Bookmarked',
+                className: 'col s6 m3',
+                iconName: bookmarked ? 'star' : 'star_border',
+                iconClass: 'large-icon amber-text',
+                onclick: () => {
+                  setSearchFilters({ bookmarked: !bookmarked });
+                },
+              }),
+              // m(InputCheckbox, {
+              //   label: 'Bookmarked',
+              //   className: 'col s6 m3',
+              //   onchange: (v) => {
+              //     setSearchFilters({ bookmarked: v });
+              //   },
+              // }),
               curUser &&
                 curUser === 'admin' &&
                 m(
