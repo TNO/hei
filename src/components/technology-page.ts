@@ -55,6 +55,7 @@ export const TechnologyPage: MeiosisComponent = () => {
           : technologies.filter((t) => t.id === id).shift() || technologies[0];
       allTechnologies = found ? technologies.filter((t) => t.technology === found.technology) : [];
       if (found !== curTech) setTechnology(found);
+      window.scrollTo({ top: 0, left: 0 });
     },
     view: ({
       attrs: {
