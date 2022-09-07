@@ -15,7 +15,7 @@ import {
   MATURITY,
   SPECIFIC_CAPABILITY,
   STATUS,
-  TECHNOLOGY_CATEGORY,
+  INTERVENTION_CATEGORY,
   User,
 } from '../models';
 
@@ -87,16 +87,18 @@ export const getOptionsLabel = <T>(
 };
 
 /** Join a list of items with a comma, and use AND for the last item in the list. */
-export const joinListWithAnd = (arr: string[] = [], and = 'and', prefix = '') =>
-  arr.length === 0
+export const joinListWithAnd = (arr: string[] = [], and = 'and', prefix = '') => {
+  const terms = arr.filter((term) => term);
+  return terms.length === 0
     ? ''
     : prefix +
-      (arr.length === 1
-        ? arr[0]
-        : `${arr
-            .slice(0, arr.length - 1)
-            .map((t, i) => (i === 0 ? t : t.toLowerCase()))
-            .join(', ')} ${and} ${arr[arr.length - 1].toLowerCase()}`);
+        (terms.length === 1
+          ? terms[0]
+          : `${terms
+              .slice(0, terms.length - 1)
+              .map((t, i) => (i === 0 || typeof t === 'undefined' ? t : t.toLowerCase()))
+              .join(', ')} ${and} ${terms[terms.length - 1].toLowerCase()}`);
+};
 
 /** Convert a list of options to text (label + title?) */
 export const optionsToTxt = <T extends string | number>(
@@ -134,18 +136,18 @@ export const resolveChoice = (choice?: CHOICE, text?: string) =>
     ? NoYesUnknown[1].label
     : text;
 
-export const technologyCategoryOptions = [
-  { id: TECHNOLOGY_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
-  { id: TECHNOLOGY_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
+export const interventionCategoryOptions = [
+  { id: INTERVENTION_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
+  { id: INTERVENTION_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
   {
-    id: TECHNOLOGY_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
+    id: INTERVENTION_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
     label: 'Pharmacological substances, supplements and nutrition',
     title: '',
   },
-  { id: TECHNOLOGY_CATEGORY.TRAINING, label: 'Training', title: '' },
-  { id: TECHNOLOGY_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
-  { id: TECHNOLOGY_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
-  { id: TECHNOLOGY_CATEGORY.OTHER, label: 'Other', title: '' },
+  { id: INTERVENTION_CATEGORY.TRAINING, label: 'Training', title: '' },
+  { id: INTERVENTION_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
+  { id: INTERVENTION_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
+  { id: INTERVENTION_CATEGORY.OTHER, label: 'Other', title: '' },
 ];
 
 export const hpeClassificationOptions = [
@@ -153,18 +155,18 @@ export const hpeClassificationOptions = [
     id: HPE_CLASSIFICATION.OPTIMIZATION,
     label: 'Optimization',
     title:
-      'The technology improves human performance on a specific capability within biological limits',
+      'The intervention improves human performance on a specific capability within biological limits',
   },
   {
     id: HPE_CLASSIFICATION.ENHANCEMENT,
     label: 'Enhancement',
     title:
-      'The technology improves human performance on a specific capability above biological limits',
+      'The intervention improves human performance on a specific capability above biological limits',
   },
   {
     id: HPE_CLASSIFICATION.DEGRADATION,
     label: 'Degradation',
-    title: 'The technology decreases human performance on a specific capability',
+    title: 'The intervention decreases human performance on a specific capability',
   },
 ];
 
@@ -521,13 +523,13 @@ export const maturityOptions = [
     id: MATURITY.MEDIUM,
     label: 'Medium',
     title:
-      'A small body of research exists indicating effectiveness of the technology. Low TRL level applications',
+      'A small body of research exists indicating effectiveness of the intervention. Low TRL level applications',
   },
   {
     id: MATURITY.HIGH,
     label: 'High',
     title:
-      'One or more meta-analyses indicate effectiveness. The technology is already applied in practice',
+      'One or more meta-analyses indicate effectiveness. The intervention is already applied in practice',
   },
 ];
 
@@ -535,12 +537,12 @@ export const effectDirectionOptions = [
   {
     id: EFFECT_DIRECTION.NEGATIVE,
     label: 'Negative',
-    title: 'The technology decreases a subjects capability level',
+    title: 'The intervention decreases a subjects capability level',
   },
   {
     id: EFFECT_DIRECTION.POSITIVE,
     label: 'Positive',
-    title: 'The technology increases a subjects capability level',
+    title: 'The intervention increases a subjects capability level',
   },
 ];
 
@@ -607,8 +609,8 @@ export const availabilityOptions = [
 ];
 
 export const boosterOptions = [
-  { id: 1, label: 'Yes', title: 'The technology can be applied quickly (approx. < 1 hour)' },
-  { id: 2, label: 'No', title: 'The technology can not be applied quickly (approx. < 1 hour)' },
+  { id: 1, label: 'Yes', title: 'The intervention can be applied quickly (approx. < 1 hour)' },
+  { id: 2, label: 'No', title: 'The intervention can not be applied quickly (approx. < 1 hour)' },
 ];
 
 const literatureTypeOptions = [
@@ -653,16 +655,16 @@ const literatureForm = [
   },
 ] as UIForm;
 
-export const technologyForm = (
+export const interventionForm = (
   users: User[],
-  technologyOptions: Array<{ id: string; label: string }>
+  interventionOptions: Array<{ id: string; label: string }>
 ) => {
   return [
     { id: 'id', type: 'none', autogenerate: 'id' },
     { id: 'updated', type: 'none', autogenerate: 'timestamp' },
     {
-      id: 'technology',
-      label: 'Technology title',
+      id: 'intervention',
+      label: 'Intervention title',
       required: true,
       type: 'text',
       className: 'col s6 m8',
@@ -672,7 +674,7 @@ export const technologyForm = (
       label: 'Category',
       type: 'select',
       multiple: true,
-      options: technologyCategoryOptions,
+      options: interventionCategoryOptions,
       className: 'col s6 m4',
     },
     {
@@ -795,10 +797,10 @@ export const technologyForm = (
     },
     {
       id: 'similar',
-      label: 'Similar technologies',
+      label: 'Similar interventions',
       type: 'select',
       multiple: true,
-      options: technologyOptions,
+      options: interventionOptions,
       className: 'col s12',
     },
     {

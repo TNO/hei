@@ -2,7 +2,7 @@ import m from 'mithril';
 import { FlatButton, Icon, ModalPanel, uuid4 } from 'mithril-materialized';
 import { UIForm, LayoutForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
-import { Dashboards, defaultModel, Technology, User } from '../models';
+import { Dashboards, defaultModel, Intervention, User } from '../models';
 import { MeiosisComponent, routingSvc } from '../services';
 import {
   availabilityOptions,
@@ -14,68 +14,70 @@ import {
   joinListWithAnd,
   mainCapabilityOptions,
   maturityOptions,
-  technologyCategoryOptions,
-  technologyForm,
+  interventionCategoryOptions,
+  interventionForm,
   resolveRefs,
   resolveChoice,
   optionsToTxt,
   specificCapabilityOptions,
 } from '../utils';
 
-export const TechnologyPage: MeiosisComponent = () => {
-  const initTechForm = (technologies: Technology[], id: string, users: User[]) => {
-    const technologyOptions = technologies
+export const InterventionPage: MeiosisComponent = () => {
+  const initInterventionForm = (interventions: Intervention[], id: string, users: User[]) => {
+    const interventionOptions = interventions
       .filter((t) => t.id !== id)
-      .map((t) => ({ id: t.id, label: t.technology }));
-    return technologyForm(users, technologyOptions);
+      .map((t) => ({ id: t.id, label: t.intervention }));
+    return interventionForm(users, interventionOptions);
   };
 
   let id = '';
   let isEditing = false;
   let form: UIForm = [];
-  let allTechnologies = [] as Technology[];
+  let allInterventions = [] as Intervention[];
   let isBookmarked = false;
   let formValid = false;
 
   return {
     oninit: ({
       attrs: {
-        state: { model, curTech = {} as Technology },
-        actions: { setPage, setTechnology },
+        state: { model, curTech = {} as Intervention },
+        actions: { setPage, setIntervention },
       },
     }) => {
-      const { technologies = [], users = [] } = model;
-      setPage(Dashboards.TECHNOLOGY);
+      const { interventions: technologies = [], users = [] } = model;
+      setPage(Dashboards.INTERVENTION);
       id = m.route.param('id') || curTech.id || '';
       isEditing = (m.route.param('edit') as unknown as boolean) === true ? true : false;
-      form = initTechForm(technologies, id, users);
+      form = initInterventionForm(technologies, id, users);
       const found =
         id === curTech.id
           ? curTech
           : technologies.filter((t) => t.id === id).shift() || technologies[0];
-      allTechnologies = found ? technologies.filter((t) => t.technology === found.technology) : [];
-      if (found !== curTech) setTechnology(found);
+      allInterventions = found
+        ? technologies.filter((t) => t.intervention === found.intervention)
+        : [];
+      if (found !== curTech) setIntervention(found);
       window.scrollTo({ top: 0, left: 0 });
     },
     view: ({
       attrs: {
         state: {
-          curTech = {} as Technology,
+          curTech = {} as Intervention,
           bookmarks,
           compareList = [],
           model = defaultModel,
           curUser,
         },
-        actions: { saveModel, changePage, setTechnology, bookmark, compare },
+        actions: { saveModel, changePage, setIntervention, bookmark, compare },
       },
     }) => {
-      const { users, technologies } = model;
+      const { users, interventions: technologies } = model;
       if (!curTech.id) {
-        form = initTechForm(technologies, id, users);
+        form = initInterventionForm(technologies, id, users);
         const found = technologies.filter((t) => t.id === id).shift() || technologies[0];
         if (found) {
-          allTechnologies = technologies.filter((t) => t.technology === found.technology);
-          setTechnology(found);
+          allInterventions = technologies.filter((t) => t.intervention === found.intervention);
+          setIntervention(found);
         }
         return;
       }
@@ -88,15 +90,17 @@ export const TechnologyPage: MeiosisComponent = () => {
 
       const { md2html: md } = resolveRefs(curTech.literature);
       const mailtoLink =
-        owner && `mailto:${owner.email}?subject=${curTech.technology.replace(/ /g, '%20')}`;
+        owner && `mailto:${owner.email}?subject=${curTech.intervention.replace(/ /g, '%20')}`;
       const similarTech =
         curTech.similar &&
         curTech.similar.length > 0 &&
         technologies.filter((t) => curTech.similar.indexOf(t.id) >= 0);
 
+      const filteredSpecCapOpt = specificCapabilityOptions.filter((c) => c.mc === curTech.mainCap);
+
       return [
         m(
-          '.row.technology-page',
+          '.row.intervention-page',
           { style: 'height: 95vh' },
           curUser &&
             curUser === 'admin' && [
@@ -113,20 +117,20 @@ export const TechnologyPage: MeiosisComponent = () => {
                     className: 'right',
                     label: 'Delete',
                     iconName: 'delete',
-                    modalId: 'deleteTechnology',
+                    modalId: 'deleteIntervention',
                   })
                 : m(FlatButton, {
                     className: 'right no-print',
                     label: 'Duplicate',
                     iconName: 'content_copy',
                     onclick: () => {
-                      const clone = JSON.parse(JSON.stringify(curTech)) as Technology;
-                      clone.technology += ' (COPY)';
+                      const clone = JSON.parse(JSON.stringify(curTech)) as Intervention;
+                      clone.intervention += ' (COPY)';
                       clone.id = uuid4();
-                      model.technologies.push(clone);
+                      model.interventions.push(clone);
                       isEditing = true;
-                      setTechnology(clone);
-                      changePage(Dashboards.TECHNOLOGY, { id: clone.id });
+                      setIntervention(clone);
+                      changePage(Dashboards.INTERVENTION, { id: clone.id });
                     },
                   }),
             ],
@@ -141,7 +145,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                     if (!isValid) {
                       return;
                     }
-                    model.technologies = model.technologies.map((t) =>
+                    model.interventions = model.interventions.map((t) =>
                       t.id === curTech.id ? curTech : t
                     );
                     saveModel(model);
@@ -150,7 +154,7 @@ export const TechnologyPage: MeiosisComponent = () => {
               )
             : [
                 m('h3', [
-                  curTech.technology,
+                  curTech.intervention,
                   m(
                     'a.btn-flat.btn-large.clean',
                     {
@@ -179,18 +183,18 @@ export const TechnologyPage: MeiosisComponent = () => {
                   '.col.s12.m6',
                   m(
                     '.row.bottom-margin0',
-                    allTechnologies.length === 1
+                    allInterventions.length === 1
                       ? m('h5.separator', 'Description')
                       : m('h5.separator.button-row', [
                           'Description',
-                          ...allTechnologies.map((t, i) =>
+                          ...allInterventions.map((t, i) =>
                             m(FlatButton, {
                               className:
                                 t.id === curTech.id ? 'bold grey lighten-3' : 'grey lighten-3',
                               label:
                                 getOptionsLabel(mainCapabilityOptions, t.mainCap, false) ||
                                 `v${i + 1}`,
-                              onclick: () => setTechnology(t),
+                              onclick: () => setIntervention(t),
                             })
                           ),
                         ]),
@@ -199,7 +203,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                       curTech.category &&
                         m('p', [
                           m('span.bold', 'Category: '),
-                          getOptionsLabel(technologyCategoryOptions, curTech.category),
+                          getOptionsLabel(interventionCategoryOptions, curTech.category),
                         ]),
                       curTech.mainCap &&
                         m('p', [
@@ -218,7 +222,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                         m('p', [
                           m('span.bold', 'Specific capability: '),
                           joinListWithAnd(
-                            optionsToTxt(curTech.specificCap, specificCapabilityOptions, false)
+                            optionsToTxt(curTech.specificCap, filteredSpecCapOpt, false)
                           ) + '.',
                         ]),
                       curTech.invasive &&
@@ -236,8 +240,8 @@ export const TechnologyPage: MeiosisComponent = () => {
                           m('span.bold', 'Can be used as booster: '),
                           `${
                             curTech.booster
-                              ? 'Yes, the technology can be applied quickly (approx. < 1 hour)'
-                              : 'No, the technology can not be applied quickly (approx. < 1 hour)'
+                              ? 'Yes, the intervention can be applied quickly (approx. < 1 hour)'
+                              : 'No, the intervention can not be applied quickly (approx. < 1 hour)'
                           }.`,
                         ]),
                     ])
@@ -248,7 +252,7 @@ export const TechnologyPage: MeiosisComponent = () => {
                     '.col.s6.m6',
                     m('img.responsive-img', {
                       src: resolveImg(curTech.url, curTech.img),
-                      alt: curTech.technology,
+                      alt: curTech.intervention,
                     })
                   ),
                 m(
@@ -292,15 +296,15 @@ export const TechnologyPage: MeiosisComponent = () => {
                         'p',
                         m(
                           'span.bold',
-                          `Similar technolog${similarTech.length > 1 ? 'ies' : 'y'}: `
+                          `Similar intervention${similarTech.length > 1 ? 's' : ''}: `
                         ),
                         similarTech.map((s, i) =>
                           m(
                             'a',
                             {
-                              href: routingSvc.href(Dashboards.TECHNOLOGY, `?id=${s.id}`),
+                              href: routingSvc.href(Dashboards.INTERVENTION, `?id=${s.id}`),
                             },
-                            s.technology + (i < similarTech.length - 1 ? ', ' : '.')
+                            s.intervention + (i < similarTech.length - 1 ? ', ' : '.')
                           )
                         )
                       ),
@@ -362,17 +366,17 @@ export const TechnologyPage: MeiosisComponent = () => {
               ]
         ),
         m(ModalPanel, {
-          id: 'deleteTechnology',
-          title: `Delete ${curTech.technology}?`,
-          description: `Are you sure that you want to delete ${curTech.technology}?`,
+          id: 'deleteIntervention',
+          title: `Delete ${curTech.intervention}?`,
+          description: `Are you sure that you want to delete ${curTech.intervention}?`,
           buttons: [
             {
               label: 'Yes',
               iconName: 'delete',
               onclick: () => {
-                model.technologies = model.technologies.filter((t) => t.id !== curTech.id);
+                model.interventions = model.interventions.filter((t) => t.id !== curTech.id);
                 saveModel(model);
-                changePage(Dashboards.TECHNOLOGIES);
+                changePage(Dashboards.INTERVENTIONS);
               },
             },
             { label: 'No', iconName: 'cancel' },

@@ -1,18 +1,18 @@
 export type DataModel = {
   version: number;
   lastUpdate: number;
-  technologies: Technology[];
+  interventions: Intervention[];
   users: User[];
 };
 
 export const defaultModel = {
   version: 1,
   lastUpdate: new Date().valueOf(),
-  technologies: [],
+  interventions: [],
   users: [],
 } as DataModel;
 
-export enum TECHNOLOGY_CATEGORY {
+export enum INTERVENTION_CATEGORY {
   HARDWARE = 1,
   BIO_ENHANCEMENT,
   PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
@@ -240,18 +240,18 @@ export type Measurement = {
   url?: string;
 };
 
-export type Technology = {
+export type Intervention = {
   id: ID;
   owner: ID;
   /** Epoch time when last updated */
   updated: number;
   // reviewer: ID[];
   status: STATUS;
-  technology: string;
+  intervention: string;
   desc?: string;
   /** Specific application */
   application: string;
-  category: TECHNOLOGY_CATEGORY;
+  category: INTERVENTION_CATEGORY;
   hpeClassification: HPE_CLASSIFICATION;
   /** Similar technologies */
   similar: ID[];

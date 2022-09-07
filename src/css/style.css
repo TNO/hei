@@ -617,10 +617,10 @@ ul.projects > li > span.project-id {
   font-weight: bold;
 }
 .users > h4,
-.technology-page > h3 {
+.intervention-page > h3 {
   margin-top: 0;
 }
-.technology-overview-page {
+.intervention-overview-page {
   left: 0;
   position: absolute;
   margin: 0 20px;

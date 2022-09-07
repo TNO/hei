@@ -29,8 +29,8 @@ const lexicon = [
   ...toLexicon(invasivenessOptions, 'Invasiveness'),
   ...toLexicon(maturityOptions, 'Maturity'),
   ...toLexicon(ethicalConsiderationsOptions, 'Ethical considerations'),
-  { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
-  { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
+  { a: 'Booster', b: 'The intervention can be applied quickly (approx. < 1 hour).' },
+  { a: 'Booster', b: 'The intervention can be applied quickly (approx. < 1 hour).' },
   {
     a: 'Quality of evidence',
     b: 'Is based on what the type of research, e.g. meta-analyses, large or small sample sizes, randomized controlled trials, controlled environments, peer-reviewed.',
@@ -38,7 +38,7 @@ const lexicon = [
   { a: 'Evidence indication', b: 'Whether an effect is present, absent, or undecided.' },
   {
     a: 'Effect direction',
-    b: 'Whether the technology increases or decreases a subjects capability level.',
+    b: 'Whether the intervention increases or decreases a subjects capability level.',
   },
   {
     a: 'HCSE',

@@ -36,7 +36,7 @@ export const HomePage: MeiosisComponent = () => {
     view: ({
       attrs: {
         state: { model = defaultModel },
-        actions: { saveModel },
+        actions: { saveModel, changePage },
       },
     }) => [
       m('div', { style: 'position: relative;' }, [
@@ -110,10 +110,10 @@ export const HomePage: MeiosisComponent = () => {
                       e.target.result &&
                       (JSON.parse(e.target.result.toString()) as DataModel);
                     result && result.version && saveModel(result);
+                    changePage(Dashboards.INTERVENTIONS);
                   };
                   const data = files && files.item(0);
                   data && reader.readAsText(data);
-                  routingSvc.switchTo(Dashboards.OVERVIEW);
                 };
                 fileInput.click();
               },
@@ -165,7 +165,7 @@ export const HomePage: MeiosisComponent = () => {
                   m('h5.center', 'Prepare'),
                   m(
                     'p.light',
-                    'Create or select the technologies that are important for your mission.'
+                    'Create or select the interventions that are important for your mission.'
                   ),
                 ])
               ),
@@ -176,7 +176,7 @@ export const HomePage: MeiosisComponent = () => {
                   m('h5.center', 'Assess'),
                   m(
                     'p.light',
-                    `Determine for each technologies how important it is, and your current performance, so you can prioritise and focus on the ones you really need.`
+                    `Determine for each intervention how important it is, and your current performance, so you can prioritise and focus on the ones you really need.`
                   ),
                 ])
               ),
@@ -187,7 +187,7 @@ export const HomePage: MeiosisComponent = () => {
                   m('h5.center', 'Compare'),
                   m(
                     'p.light',
-                    'Compare and select technologies so you can choose the one that fits best with your needs.'
+                    'Compare and select interventions so you can choose the one that fits best with your needs.'
                   ),
                 ])
               ),

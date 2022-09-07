@@ -5,12 +5,12 @@ import { Layout } from '../components/layout';
 import {
   AboutPage,
   HomePage,
-  TechnologyPage,
+  InterventionPage,
   SettingsPage,
   AllWordsPage,
   ComparisonPage,
 } from '../components';
-import { TechnologyOverviewPage } from '../components/technology-overview-page';
+import { InterventionOverviewPage } from '../components/intervention-overview-page';
 
 class RoutingService {
   private dashboards!: ReadonlyArray<IDashboard>;
@@ -100,21 +100,21 @@ export const routingSvc: RoutingService = new RoutingService([
     component: HomePage,
   },
   {
-    id: Dashboards.TECHNOLOGIES,
+    id: Dashboards.INTERVENTIONS,
     title: 'OVERVIEW',
     icon: 'dashboard',
     // icon: 'display_settings',
     route: '/overview',
     visible: true,
-    component: TechnologyOverviewPage,
+    component: InterventionOverviewPage,
   },
   {
-    id: Dashboards.TECHNOLOGY,
-    title: 'TECHNOLOGY',
+    id: Dashboards.INTERVENTION,
+    title: 'INTERVENTION',
     icon: 'lightbulb',
-    route: '/technology',
+    route: '/intervention',
     visible: true,
-    component: TechnologyPage,
+    component: InterventionPage,
   },
   {
     id: Dashboards.COMPARE,

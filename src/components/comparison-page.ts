@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { CHOICE, Dashboards, DataModel, Technology } from '../models';
+import { CHOICE, Dashboards, DataModel, Intervention } from '../models';
 import { MeiosisComponent } from '../services';
 import { Chips } from 'mithril-materialized';
 import {
@@ -15,29 +15,29 @@ import {
   NoYesUnknown,
   optionsToTxt,
   specificCapabilityOptions,
-  technologyCategoryOptions,
+  interventionCategoryOptions,
 } from '../utils';
 import { render } from 'mithril-ui-form';
 
 export const ComparisonPage: MeiosisComponent = () => {
   let isInitialized = false;
-  let technologyLookup = {} as Record<string, { name: string; technology?: Technology }>;
+  let interventionLookup = {} as Record<string, { name: string; technology?: Intervention }>;
   let autocompleteData = {} as Record<string, null>;
 
-  const toName = (t: Technology) =>
-    `${t.technology}: ${getOptionsLabel(mainCapabilityOptions, t.mainCap, false)}`;
+  const toName = (t: Intervention) =>
+    `${t.intervention}: ${getOptionsLabel(mainCapabilityOptions, t.mainCap, false)}`;
 
   const initialize = (model: DataModel) => {
-    const { technologies } = model;
+    const { interventions: technologies } = model;
     if (technologies.length === 0) return;
     technologies.forEach((cur) => {
       let counter = 1;
       let name = toName(cur);
-      while (technologyLookup[name]) {
+      while (interventionLookup[name]) {
         name = `${toName(cur)} (${counter++})`;
       }
-      technologyLookup[cur.id] = { name, technology: cur };
-      technologyLookup[name] = { name: cur.id };
+      interventionLookup[cur.id] = { name, technology: cur };
+      interventionLookup[name] = { name: cur.id };
       autocompleteData[name] = null;
     });
     isInitialized = true;
@@ -58,38 +58,41 @@ export const ComparisonPage: MeiosisComponent = () => {
       },
     }) => {
       if (!isInitialized) initialize(model);
-      const selectedTechnologies = compareList.map(
-        (c) => technologyLookup[c].technology
-      ) as Technology[];
+      const selectedInterventions = compareList.map(
+        (c) => interventionLookup[c].technology
+      ) as Intervention[];
       return m('.row.compare', { style: 'height: 92vh' }, [
         m('.col.s12', [
           m(Chips, {
             label: 'Selected for comparison',
-            secondaryPlaceholder: 'Add a technology',
+            secondaryPlaceholder: 'Add an intervention',
             autocompleteOptions: {
               data: autocompleteData,
               minLength: 3,
             },
-            data: compareList.map((id) => ({ tag: technologyLookup[id].name })),
+            data: compareList.map((id) => ({ tag: interventionLookup[id].name })),
             onchange: (chips) => {
               console.log(chips);
-              const ids = chips.filter((c) => c.tag).map((c) => technologyLookup[c.tag].name);
+              const ids = chips.filter((c) => c.tag).map((c) => interventionLookup[c.tag].name);
               if (ids.length !== compareList.length) setCompareList(ids);
             },
           }),
         ]),
         compareList.length > 0 &&
           m('table', [
-            m('tr', [m('th', 'Aspect'), ...selectedTechnologies.map((t) => m('th', t.technology))]),
+            m('tr', [
+              m('th', 'Aspect'),
+              ...selectedInterventions.map((t) => m('th', t.intervention)),
+            ]),
             m('tr', [
               m('td', m('b', 'Category')),
-              ...selectedTechnologies.map((t) =>
-                m('td', getOptionsLabel(technologyCategoryOptions, t.category, false))
+              ...selectedInterventions.map((t) =>
+                m('td', getOptionsLabel(interventionCategoryOptions, t.category, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Capability')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m(
                   'td',
                   `${getOptionsLabel(mainCapabilityOptions, t.mainCap, false)} ${getOptionsLabel(
@@ -102,33 +105,33 @@ export const ComparisonPage: MeiosisComponent = () => {
             ]),
             m('tr', [
               m('td', m('b', 'Specific cap.')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', joinListWithAnd(optionsToTxt(t.specificCap, specificCapabilityOptions)))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Description')),
-              ...selectedTechnologies.map((t) => m('td', t.desc)),
+              ...selectedInterventions.map((t) => m('td', t.desc)),
             ]),
             m('tr', [
               m('td', m('b', 'Invasive')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', getOptionsLabel(invasivenessOptions, t.invasive, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Maturity')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', getOptionsLabel(maturityOptions, t.maturity, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Booster')),
-              ...selectedTechnologies.map((t) => m('td', t.booster ? 'Yes' : 'No')),
+              ...selectedInterventions.map((t) => m('td', t.booster ? 'Yes' : 'No')),
             ]),
             m('tr', [
               m('td', m('b', 'Side effects')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m(
                   'td',
                   { className: t.hasSideEffects === CHOICE.YES && t.sideEffects ? 'tooltip' : '' },
@@ -141,7 +144,7 @@ export const ComparisonPage: MeiosisComponent = () => {
             ]),
             m('tr', [
               m('td', m('b', 'Ind. diff.')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', { className: t.hasIndDiff === CHOICE.YES && t.diff ? 'tooltip' : '' }, [
                   getOptionsLabel(NoYesUnknown, t.hasIndDiff, false),
                   t.diff && m('span.tooltiptext', render(t.diff, true)),
@@ -150,7 +153,7 @@ export const ComparisonPage: MeiosisComponent = () => {
             ]),
             m('tr', [
               m('td', m('b', 'Ethical')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', { className: t.hasEthical === CHOICE.YES && t.ethical ? 'tooltip' : '' }, [
                   getOptionsLabel(NoYesUnknown, t.hasEthical, false),
                   t.ethical && m('span.tooltiptext', render(t.ethical, true)),
@@ -159,37 +162,37 @@ export const ComparisonPage: MeiosisComponent = () => {
             ]),
             m('tr', [
               m('td', m('b', 'Evidence indication')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', getOptionsLabel(evidenceDirOptions, t.evidenceDir, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Quality of evidence')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', getOptionsLabel(evidenceLevelOptions, t.evidenceScore, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Availability')),
-              ...selectedTechnologies.map((t) =>
+              ...selectedInterventions.map((t) =>
                 m('td', getOptionsLabel(availabilityOptions, t.availability, false))
               ),
             ]),
             m('tr', [
               m('td', m('b', 'Incubation')),
-              ...selectedTechnologies.map((t) => m('td', t.incubation)),
+              ...selectedInterventions.map((t) => m('td', t.incubation)),
             ]),
             m('tr', [
               m('td', m('b', 'Effect duration')),
-              ...selectedTechnologies.map((t) => m('td', t.effectDuration)),
+              ...selectedInterventions.map((t) => m('td', t.effectDuration)),
             ]),
             m('tr', [
               m('td', m('b', 'Examples')),
-              ...selectedTechnologies.map((t) => m('td', t.examples)),
+              ...selectedInterventions.map((t) => m('td', t.examples)),
             ]),
             m('tr', [
               m('td', m('b', 'Practical')),
-              ...selectedTechnologies.map((t) => m('td', t.practical)),
+              ...selectedInterventions.map((t) => m('td', t.practical)),
             ]),
           ]),
       ]);

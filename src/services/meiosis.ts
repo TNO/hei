@@ -1,7 +1,7 @@
 import m, { FactoryComponent } from 'mithril';
 import { meiosisSetup } from 'meiosis-setup';
 import { routingSvc } from '.';
-import { Dashboards, DataModel, defaultModel, ID, SearchFilter, Technology } from '../models';
+import { Dashboards, DataModel, defaultModel, ID, SearchFilter, Intervention } from '../models';
 import { ldb } from '../utils/local-ldb';
 import { MeiosisCell, Update } from 'meiosis-setup/types';
 
@@ -14,7 +14,7 @@ export interface State {
   page: Dashboards;
   model: DataModel;
   curUser?: string;
-  curTech?: Technology;
+  curTech?: Intervention;
   bookmarks: ID[];
   compareList: ID[];
   searchFilters: SearchFilter;
@@ -29,7 +29,7 @@ export interface Actions {
   ) => void;
   saveModel: (ds: DataModel) => void;
   saveCurUser: (ds: string) => void;
-  setTechnology: (curTech: Technology) => void;
+  setIntervention: (curTech: Intervention) => void;
   bookmark: (id: ID) => void;
   compare: (id: ID) => void;
   setCompareList: (ids: ID[]) => void;
@@ -54,8 +54,10 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
   saveModel: (model) => {
     model.lastUpdate = Date.now();
     model.version = model.version ? ++model.version : 1;
-    if (model.technologies)
-      model.technologies.sort((a, b) => (a.technology || '').localeCompare(b.technology || ''));
+    if (model.interventions)
+      model.interventions.sort((a, b) =>
+        (a.intervention || '').localeCompare(b.intervention || '')
+      );
     ldb.set(MODEL_KEY, JSON.stringify(model));
     // console.log(JSON.stringify(model, null, 2));
     update({ model: () => model });
@@ -64,7 +66,7 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
     ldb.set(CUR_USER_KEY, curUser);
     update({ curUser });
   },
-  setTechnology: (curTech: Technology) => update({ curTech: () => curTech }),
+  setIntervention: (curTech: Intervention) => update({ curTech: () => curTech }),
   bookmark: (id: ID) =>
     update({
       bookmarks: (bookmarks = []) => {
@@ -93,7 +95,7 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
     update({ compareList: () => ids });
   },
   setSearchFilters: (searchFilters: Partial<SearchFilter>) => {
-    console.log(JSON.stringify(searchFilters, null, 2));
+    // console.log(JSON.stringify(searchFilters, null, 2));
     update({ searchFilters });
   },
 });
