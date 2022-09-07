@@ -16,17 +16,22 @@ This platform is intended for informational purposes only and it does not provid
 
 ###### Ministry of Defence employee
 
-If you work for the Ministry of Defence, you can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention. 
+In order to use this platform, you will need to upload a configuration file (JSON) on the home page. You can request the latest version of this configuration file by contacting the HCSE program leader. Without this file, there will be no interventions displayed on the platform.
 
-By selecting ‘Compare’, recognizable by the <i class="material-icons">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE (Human-Centered Software Engineering) technologies, you can contact the expert that is listed at the bottom of each intervention page.
+You can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention.
 
-##### TNO researcher
+By selecting ‘Compare’, recognizable by the <i class="material-icons">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE (Human Capability & Survivability Enhancement) technologies, you can contact the expert that is listed at the bottom of each intervention page.
 
-If you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to Administrator. This allows you to add and change technologies. Remember that the changes will only be saved locally on your own PC. If you  want to implement your changes in the master file, do the following:
+###### TNO researcher
+
+If you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to TNO researcher. This allows you to add and change technologies using the button "Add new intervention". Remember that the changes will only be saved locally on your own PC. If you want to implement your changes in the master file, do the following:
 
 1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder
 2. Implement you changes or additions to the platform
-3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.`;
+3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.
+
+**HCSE program leader:** [Olaf Binsch](mailto:olaf.binsch@tno.nl)<br>**Email:** olaf.binsch@tno.nl 
+`;
 
 export const AboutPage: MeiosisComponent = () => {
   return {
