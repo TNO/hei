@@ -327,7 +327,9 @@ export const InterventionPage: MeiosisComponent = () => {
                       m('p', [
                         m(
                           'span.bold[title=This information is not medical advice, please read the disclaimer!]',
-                          m.trust('Practical execution<sup class="red-text">*</sup>: ')
+                          m.trust(
+                            'Practical execution<sup class="red-text" style="font-size:1rem">*</sup>: '
+                          )
                         ),
                         md(curIntervention.practical),
                       ]),
@@ -411,15 +413,14 @@ export const InterventionPage: MeiosisComponent = () => {
                 owner &&
                   m(
                     '.col.s12.m4',
-                    m('p', [m('span.bold', 'Expert: '), owner.name + '.']),
+                    m('p', [m('span.bold', 'Expert: '), owner.name]),
                     m('p', [m('span.bold', 'Email: '), m('a', { href: mailtoLink }, owner.email)]),
                     owner.phone &&
                       m('p', [
                         m('span.bold', 'Phone: '),
                         m('a', { href: `tel:${owner.phone}` }, owner.phone),
                       ]),
-                    updated &&
-                      m('p', [m('span.bold', 'Last update: '), updated.toDateString() + '.'])
+                    updated && m('p', [m('span.bold', 'Last update: '), updated.toDateString()])
                   ),
               ]
         ),
