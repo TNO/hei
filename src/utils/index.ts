@@ -663,6 +663,7 @@ export const technologyForm = (
     {
       id: 'technology',
       label: 'Technology title',
+      required: true,
       type: 'text',
       className: 'col s6 m8',
     },
@@ -717,6 +718,7 @@ export const technologyForm = (
     {
       id: 'mainCap',
       label: 'Main capability',
+      required: true,
       type: 'select',
       className: 'col s6 m3',
       options: mainCapabilityOptions,

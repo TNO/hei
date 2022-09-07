@@ -35,6 +35,7 @@ export const TechnologyPage: MeiosisComponent = () => {
   let form: UIForm = [];
   let allTechnologies = [] as Technology[];
   let isBookmarked = false;
+  let formValid = false;
 
   return {
     oninit: ({
@@ -101,6 +102,7 @@ export const TechnologyPage: MeiosisComponent = () => {
               m(FlatButton, {
                 className: 'right no-print',
                 label: isEditing ? 'Save' : 'Edit',
+                disabled: isEditing && !formValid,
                 iconName: isEditing ? 'save' : 'edit',
                 onclick: () => (isEditing = !isEditing),
               }),
@@ -133,7 +135,11 @@ export const TechnologyPage: MeiosisComponent = () => {
                 m(LayoutForm, {
                   form,
                   obj: curTech,
-                  onchange: () => {
+                  onchange: (isValid) => {
+                    formValid = isValid;
+                    if (!isValid) {
+                      return;
+                    }
                     model.technologies = model.technologies.map((t) =>
                       t.id === curTech.id ? curTech : t
                     );
