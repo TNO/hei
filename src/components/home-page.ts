@@ -176,7 +176,7 @@ export const HomePage: MeiosisComponent = () => {
                 m(
                   '.col.s12.m4',
                   m('.icon-block', [
-                    m('.center', m(Icon, { iconName: 'lightbulb' })),
+                    m('.center', m(Icon, { iconName: 'visibility' })),
                     m('h5.center', 'Assess'),
                     m(
                       'p.light',
