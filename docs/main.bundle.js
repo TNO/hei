@@ -15705,7 +15705,7 @@ var HomePage = function () {
                                 (0, mithril_1.default)('p.light', 'Create or select the interventions that are important for your mission.'),
                             ])),
                             (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('.icon-block', [
-                                (0, mithril_1.default)('.center', (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'lightbulb' })),
+                                (0, mithril_1.default)('.center', (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' })),
                                 (0, mithril_1.default)('h5.center', 'Assess'),
                                 (0, mithril_1.default)('p.light', "Determine for each intervention how important it is, and your current performance, so you can prioritise and focus on the ones you really need."),
                             ])),
