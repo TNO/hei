@@ -689,13 +689,13 @@ export const interventionForm = (
       type: 'tags',
       className: 'col s12',
     },
-    {
-      id: 'owner',
-      label: 'Owner',
-      type: 'select',
-      options: users.map((u) => ({ id: u.id, label: u.name })),
-      className: 'col s12',
-    },
+    // {
+    //   id: 'owner',
+    //   label: 'Owner',
+    //   type: 'select',
+    //   options: users.map((u) => ({ id: u.id, label: u.name })),
+    //   className: 'col s12',
+    // },
     // {
     //   id: 'status',
     //   label: 'Status',
@@ -711,12 +711,6 @@ export const interventionForm = (
     //   options: users.map((u) => ({ id: u.id, label: u.name })),
     //   className: 'col s4',
     // },
-    {
-      id: 'application',
-      label: 'Specific application',
-      type: 'textarea',
-      className: 'col s12',
-    },
     {
       id: 'mainCap',
       label: 'Main capability',
@@ -900,9 +894,17 @@ export const interventionForm = (
       id: 'evidenceScore',
       label: 'Evidence quality',
       type: 'select',
-      className: 'col s12 m5',
+      className: 'col s12 m2',
       options: evidenceLevelOptions,
     },
+    {
+      id: 'owner',
+      label: 'Owner',
+      type: 'select',
+      options: users.map((u) => ({ id: u.id, label: u.name })),
+      className: 'col s12 m3',
+    },
+
     // {
     //   id: 'evidenceScore',
     //   label: 'Quality of evidence',
