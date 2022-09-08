@@ -38,7 +38,7 @@ export const HomePage: MeiosisComponent = () => {
         actions: { saveModel, changePage },
       },
     }) => {
-      const isCleared = model.interventions.length === 0;
+      const isCleared = !model.interventions || model.interventions.length === 0;
 
       return [
         m('div', { style: 'position: relative;' }, [

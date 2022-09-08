@@ -15583,7 +15583,7 @@ var HomePage = function () {
         },
         view: function (_a) {
             var _b = _a.attrs, _c = _b.state.model, model = _c === void 0 ? models_1.defaultModel : _c, _d = _b.actions, saveModel = _d.saveModel, changePage = _d.changePage;
-            var isCleared = model.interventions.length === 0;
+            var isCleared = !model.interventions || model.interventions.length === 0;
             return [
                 (0, mithril_1.default)('div', { style: 'position: relative;' }, [
                     // m(
