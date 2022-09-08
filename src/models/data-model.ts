@@ -249,8 +249,6 @@ export type Intervention = {
   status: STATUS;
   intervention: string;
   desc?: string;
-  /** Specific application */
-  application: string;
   category: INTERVENTION_CATEGORY;
   hpeClassification: HPE_CLASSIFICATION;
   /** Similar technologies */
