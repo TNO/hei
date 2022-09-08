@@ -57,6 +57,11 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
   const evidenceDirOpt = toOptions(evidenceDirOptions);
   const evidenceQualityOpt = toOptions(evidenceLevelOptions);
   const boosterOpt = toOptions(boosterOptions);
+  const specificCognitiveCapabilityOpt = toOptions(specificCognitiveCapabilityOptions);
+  const specificPhysicalCapabilityOpt = toOptions(specificPhysicalCapabilityOptions);
+  const specificMentalCapabilityOpt = toOptions(specificMentalCapabilityOptions);
+  const specificSocialCapabilityOpt = toOptions(specificSocialCapabilityOptions);
+  const specificPersonalityCapabilityOpt = toOptions(specificPersonalityCapabilityOptions);
 
   const toInterventions = (allInterventions: Intervention[]) =>
     Object.values(
@@ -258,6 +263,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   style: 'height: 81px',
                 },
                 m(TextInputWithClear, {
+                  key: searchFilter || 'searchKey',
                   label: 'Search',
                   iconName: 'search',
                   className: 'bottom-margin0',
@@ -275,6 +281,9 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   iconName: 'manage_search',
                   iconClass: 'large-icon',
                   label: 'Adv.search',
+                  onclick: () => {
+                    setSearchFilters({ searchFilter: '' });
+                  },
                 })
               ),
               m(FlatButton, {
@@ -553,16 +562,13 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           id: 'search',
           title: 'Advanced search',
           description: m(
-            '.row',
-            {
-              style: 'max-height: 100%; height: calc(100% - 56px); overflow-y: scroll',
-            },
+            '#adv-search.row',
             m(LayoutForm, {
               form: [
                 {
                   id: 'mainCapFilter',
                   label: 'Main capability',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: mainCapOpt,
                   description: mainCapFilter
                     ? mainCapOpt.filter((o) => +o.id === mainCapFilter).shift()?.title
@@ -571,9 +577,10 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'specificCapFilter',
                   label: 'Specific capabilities',
+                  placeholder: 'Choose main capability first',
                   type: 'select',
                   options: specificCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   disabled: true,
                   show: ['mainCapFilter = 0', '!mainCapFilter'],
                 },
@@ -581,46 +588,46 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   id: 'specificCapFilter',
                   label: 'Specific cognitive capabilities',
                   type: 'select',
-                  options: specificCognitiveCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  options: specificCognitiveCapabilityOpt,
+                  className: 'col s12 m6 l4',
                   show: 'mainCapFilter = 1',
                 },
                 {
                   id: 'specificCapFilter',
                   label: 'Specific physical capabilities',
                   type: 'select',
-                  options: specificPhysicalCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  options: specificPhysicalCapabilityOpt,
+                  className: 'col s12 m6 l4',
                   show: 'mainCapFilter = 2',
                 },
                 {
                   id: 'specificCapFilter',
                   label: 'Specific mental capabilities',
                   type: 'select',
-                  options: specificMentalCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  options: specificMentalCapabilityOpt,
+                  className: 'col s12 m6 l4',
                   show: 'mainCapFilter = 3',
                 },
                 {
                   id: 'specificCapFilter',
                   label: 'Specific social capabilities',
                   type: 'select',
-                  options: specificSocialCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  options: specificSocialCapabilityOpt,
+                  className: 'col s12 m6 l4',
                   show: 'mainCapFilter = 4',
                 },
                 {
                   id: 'specificCapFilter',
                   label: 'Specific personality capabilities',
                   type: 'select',
-                  options: specificPersonalityCapabilityOptions,
-                  className: 'col s12 m6 l3',
+                  options: specificPersonalityCapabilityOpt,
+                  className: 'col s12 m6 l4',
                   show: 'mainCapFilter = 5',
                 },
                 {
                   id: 'categoryFilter',
                   label: 'Category',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: techCatOpt,
                   description: categoryFilter
                     ? techCatOpt.filter((o) => +o.id === categoryFilter).shift()?.title
@@ -629,7 +636,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'invasivenessFilter',
                   label: 'Invasiveness',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: invasivenessOpt,
                   description: invasivenessFilter
                     ? invasivenessOpt.filter((o) => +o.id === invasivenessFilter).shift()?.title
@@ -638,7 +645,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'maturityFilter',
                   label: 'Maturity',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: maturityOpt,
                   description: maturityFilter
                     ? maturityOpt.filter((o) => +o.id === maturityFilter).shift()?.title
@@ -647,7 +654,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'availabilityFilter',
                   label: 'Availability',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: availabilityOpt,
                   // description: availabilityFilter
                   //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
@@ -656,7 +663,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'boosterFilter',
                   label: 'Booster',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: boosterOpt,
                   // description: boosterFilter
                   //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
@@ -665,7 +672,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'ethicalFilter',
                   label: 'Ethical considerations',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: ethicalOpt,
                   description: ethicalFilter
                     ? ethicalOpt.filter((o) => +o.id === ethicalFilter).shift()?.title
@@ -674,7 +681,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'evidenceDirFilter',
                   label: 'Evidence indication',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: evidenceDirOpt,
                   description: evidenceDirFilter
                     ? evidenceDirOpt.filter((o) => +o.id === evidenceDirFilter).shift()?.title
@@ -683,7 +690,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                 {
                   id: 'evidenceQualityFilter',
                   label: 'Evidence quality',
-                  className: 'col s12 m6 l3',
+                  className: 'col s12 m6 l4',
                   options: evidenceQualityOpt,
                   description: evidenceQualityFilter
                     ? evidenceQualityOpt.filter((o) => +o.id === evidenceQualityFilter).shift()
