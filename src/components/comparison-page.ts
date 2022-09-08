@@ -61,7 +61,7 @@ export const ComparisonPage: MeiosisComponent = () => {
       const selectedInterventions = compareList.map(
         (c) => interventionLookup[c].technology
       ) as Intervention[];
-      return m('.row.compare', { style: 'height: 92vh' }, [
+      return m('.row.compare', { style: 'height: 85vh' }, [
         m('.col.s12', [
           m(Chips, {
             label: 'Selected for comparison',
@@ -74,7 +74,7 @@ export const ComparisonPage: MeiosisComponent = () => {
             onchange: (chips) => {
               console.log(chips);
               const ids = chips.filter((c) => c.tag).map((c) => interventionLookup[c.tag].name);
-              if (ids.length !== compareList.length) setCompareList(ids);
+              setCompareList(ids);
             },
           }),
         ]),
@@ -106,7 +106,10 @@ export const ComparisonPage: MeiosisComponent = () => {
             m('tr', [
               m('td', m('b', 'Specific cap.')),
               ...selectedInterventions.map((t) =>
-                m('td', joinListWithAnd(optionsToTxt(t.specificCap, specificCapabilityOptions)))
+                m(
+                  'td',
+                  joinListWithAnd(optionsToTxt(t.specificCap, specificCapabilityOptions, false))
+                )
               ),
             ]),
             m('tr', [

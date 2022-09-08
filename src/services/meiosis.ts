@@ -93,6 +93,7 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
       },
     }),
   setCompareList: (ids: ID[]) => {
+    ldb.set(COMPARE_LIST_KEY, JSON.stringify(ids));
     update({ compareList: () => ids });
   },
   setSearchFilters: (searchFilters: Partial<SearchFilter>) => {
