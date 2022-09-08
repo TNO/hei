@@ -1,513 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 1605:
-/***/ ((module, exports, __webpack_require__) => {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
-// This work is free. You can redistribute it and/or modify it
-// under the terms of the WTFPL, Version 2
-// For more information see LICENSE.txt or http://www.wtfpl.net/
-//
-// For more information, the home page:
-// http://pieroxy.net/blog/pages/lz-string/testing.html
-//
-// LZ-based compression algorithm, version 1.4.4
-var LZString = (function() {
-
-// private property
-var f = String.fromCharCode;
-var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-var baseReverseDic = {};
-
-function getBaseValue(alphabet, character) {
-  if (!baseReverseDic[alphabet]) {
-    baseReverseDic[alphabet] = {};
-    for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
-    }
-  }
-  return baseReverseDic[alphabet][character];
-}
-
-var LZString = {
-  compressToBase64 : function (input) {
-    if (input == null) return "";
-    var res = LZString._compress(input, 6, function(a){return keyStrBase64.charAt(a);});
-    switch (res.length % 4) { // To produce valid Base64
-    default: // When could this happen ?
-    case 0 : return res;
-    case 1 : return res+"===";
-    case 2 : return res+"==";
-    case 3 : return res+"=";
-    }
-  },
-
-  decompressFromBase64 : function (input) {
-    if (input == null) return "";
-    if (input == "") return null;
-    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
-  },
-
-  compressToUTF16 : function (input) {
-    if (input == null) return "";
-    return LZString._compress(input, 15, function(a){return f(a+32);}) + " ";
-  },
-
-  decompressFromUTF16: function (compressed) {
-    if (compressed == null) return "";
-    if (compressed == "") return null;
-    return LZString._decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
-  },
-
-  //compress into uint8array (UCS-2 big endian format)
-  compressToUint8Array: function (uncompressed) {
-    var compressed = LZString.compress(uncompressed);
-    var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
-
-    for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
-      var current_value = compressed.charCodeAt(i);
-      buf[i*2] = current_value >>> 8;
-      buf[i*2+1] = current_value % 256;
-    }
-    return buf;
-  },
-
-  //decompress from uint8array (UCS-2 big endian format)
-  decompressFromUint8Array:function (compressed) {
-    if (compressed===null || compressed===undefined){
-        return LZString.decompress(compressed);
-    } else {
-        var buf=new Array(compressed.length/2); // 2 bytes per character
-        for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
-          buf[i]=compressed[i*2]*256+compressed[i*2+1];
-        }
-
-        var result = [];
-        buf.forEach(function (c) {
-          result.push(f(c));
-        });
-        return LZString.decompress(result.join(''));
-
-    }
-
-  },
-
-
-  //compress into a string that is already URI encoded
-  compressToEncodedURIComponent: function (input) {
-    if (input == null) return "";
-    return LZString._compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
-  },
-
-  //decompress from an output of compressToEncodedURIComponent
-  decompressFromEncodedURIComponent:function (input) {
-    if (input == null) return "";
-    if (input == "") return null;
-    input = input.replace(/ /g, "+");
-    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
-  },
-
-  compress: function (uncompressed) {
-    return LZString._compress(uncompressed, 16, function(a){return f(a);});
-  },
-  _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
-    if (uncompressed == null) return "";
-    var i, value,
-        context_dictionary= {},
-        context_dictionaryToCreate= {},
-        context_c="",
-        context_wc="",
-        context_w="",
-        context_enlargeIn= 2, // Compensate for the first entry which should not count
-        context_dictSize= 3,
-        context_numBits= 2,
-        context_data=[],
-        context_data_val=0,
-        context_data_position=0,
-        ii;
-
-    for (ii = 0; ii < uncompressed.length; ii += 1) {
-      context_c = uncompressed.charAt(ii);
-      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
-        context_dictionary[context_c] = context_dictSize++;
-        context_dictionaryToCreate[context_c] = true;
-      }
-
-      context_wc = context_w + context_c;
-      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
-        context_w = context_wc;
-      } else {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
-          if (context_w.charCodeAt(0)<256) {
-            for (i=0 ; i<context_numBits ; i++) {
-              context_data_val = (context_data_val << 1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-            }
-            value = context_w.charCodeAt(0);
-            for (i=0 ; i<8 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-              value = value >> 1;
-            }
-          } else {
-            value = 1;
-            for (i=0 ; i<context_numBits ; i++) {
-              context_data_val = (context_data_val << 1) | value;
-              if (context_data_position ==bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-              value = 0;
-            }
-            value = context_w.charCodeAt(0);
-            for (i=0 ; i<16 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-              value = value >> 1;
-            }
-          }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
-          }
-          delete context_dictionaryToCreate[context_w];
-        } else {
-          value = context_dictionary[context_w];
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
-
-
-        }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
-        }
-        // Add wc to the dictionary.
-        context_dictionary[context_wc] = context_dictSize++;
-        context_w = String(context_c);
-      }
-    }
-
-    // Output the code for w.
-    if (context_w !== "") {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
-        if (context_w.charCodeAt(0)<256) {
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-          }
-          value = context_w.charCodeAt(0);
-          for (i=0 ; i<8 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
-        } else {
-          value = 1;
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1) | value;
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = 0;
-          }
-          value = context_w.charCodeAt(0);
-          for (i=0 ; i<16 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
-        }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
-        }
-        delete context_dictionaryToCreate[context_w];
-      } else {
-        value = context_dictionary[context_w];
-        for (i=0 ; i<context_numBits ; i++) {
-          context_data_val = (context_data_val << 1) | (value&1);
-          if (context_data_position == bitsPerChar-1) {
-            context_data_position = 0;
-            context_data.push(getCharFromInt(context_data_val));
-            context_data_val = 0;
-          } else {
-            context_data_position++;
-          }
-          value = value >> 1;
-        }
-
-
-      }
-      context_enlargeIn--;
-      if (context_enlargeIn == 0) {
-        context_enlargeIn = Math.pow(2, context_numBits);
-        context_numBits++;
-      }
-    }
-
-    // Mark the end of the stream
-    value = 2;
-    for (i=0 ; i<context_numBits ; i++) {
-      context_data_val = (context_data_val << 1) | (value&1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data_position = 0;
-        context_data.push(getCharFromInt(context_data_val));
-        context_data_val = 0;
-      } else {
-        context_data_position++;
-      }
-      value = value >> 1;
-    }
-
-    // Flush the last char
-    while (true) {
-      context_data_val = (context_data_val << 1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data.push(getCharFromInt(context_data_val));
-        break;
-      }
-      else context_data_position++;
-    }
-    return context_data.join('');
-  },
-
-  decompress: function (compressed) {
-    if (compressed == null) return "";
-    if (compressed == "") return null;
-    return LZString._decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
-  },
-
-  _decompress: function (length, resetValue, getNextValue) {
-    var dictionary = [],
-        next,
-        enlargeIn = 4,
-        dictSize = 4,
-        numBits = 3,
-        entry = "",
-        result = [],
-        i,
-        w,
-        bits, resb, maxpower, power,
-        c,
-        data = {val:getNextValue(0), position:resetValue, index:1};
-
-    for (i = 0; i < 3; i += 1) {
-      dictionary[i] = i;
-    }
-
-    bits = 0;
-    maxpower = Math.pow(2,2);
-    power=1;
-    while (power!=maxpower) {
-      resb = data.val & data.position;
-      data.position >>= 1;
-      if (data.position == 0) {
-        data.position = resetValue;
-        data.val = getNextValue(data.index++);
-      }
-      bits |= (resb>0 ? 1 : 0) * power;
-      power <<= 1;
-    }
-
-    switch (next = bits) {
-      case 0:
-          bits = 0;
-          maxpower = Math.pow(2,8);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-        c = f(bits);
-        break;
-      case 1:
-          bits = 0;
-          maxpower = Math.pow(2,16);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-        c = f(bits);
-        break;
-      case 2:
-        return "";
-    }
-    dictionary[3] = c;
-    w = c;
-    result.push(c);
-    while (true) {
-      if (data.index > length) {
-        return "";
-      }
-
-      bits = 0;
-      maxpower = Math.pow(2,numBits);
-      power=1;
-      while (power!=maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) {
-          data.position = resetValue;
-          data.val = getNextValue(data.index++);
-        }
-        bits |= (resb>0 ? 1 : 0) * power;
-        power <<= 1;
-      }
-
-      switch (c = bits) {
-        case 0:
-          bits = 0;
-          maxpower = Math.pow(2,8);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-
-          dictionary[dictSize++] = f(bits);
-          c = dictSize-1;
-          enlargeIn--;
-          break;
-        case 1:
-          bits = 0;
-          maxpower = Math.pow(2,16);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-          dictionary[dictSize++] = f(bits);
-          c = dictSize-1;
-          enlargeIn--;
-          break;
-        case 2:
-          return result.join('');
-      }
-
-      if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
-        numBits++;
-      }
-
-      if (dictionary[c]) {
-        entry = dictionary[c];
-      } else {
-        if (c === dictSize) {
-          entry = w + w.charAt(0);
-        } else {
-          return null;
-        }
-      }
-      result.push(entry);
-
-      // Add w+entry[0] to the dictionary.
-      dictionary[dictSize++] = w + entry.charAt(0);
-      enlargeIn--;
-
-      w = entry;
-
-      if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
-        numBits++;
-      }
-
-    }
-  }
-};
-  return LZString;
-})();
-
-if (true) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () { return LZString; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {}
-
-
-/***/ }),
-
 /***/ 1413:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12885,20 +12378,20 @@ $jscomp.polyfill = function (e, r, p, m) {
 
 /***/ }),
 
-/***/ 3527:
+/***/ 7414:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.meiosisSetup = void 0;
-var setup_1 = __webpack_require__(9274);
+var setup_1 = __webpack_require__(2955);
 Object.defineProperty(exports, "meiosisSetup", ({ enumerable: true, get: function () { return setup_1.meiosisSetup; } }));
 
 
 /***/ }),
 
-/***/ 9274:
+/***/ 2955:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -12908,11 +12401,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.meiosisSetup = void 0;
-const simple_stream_1 = __webpack_require__(6044);
-const util_1 = __webpack_require__(419);
+const simple_stream_1 = __webpack_require__(1020);
+const util_1 = __webpack_require__(696);
 const mergerino_1 = __importDefault(__webpack_require__(8474));
+const assoc = (prop, value, target) => {
+    target[prop] = value;
+    return target;
+};
+const concatIfPresent = (target, source) => source ? target.concat(source) : target;
 const assembleInitialState = (nestedComponents) => nestedComponents
-    ? Object.keys(nestedComponents).reduce((result, key) => (0, util_1.assoc)(key, Object.assign({}, nestedComponents[key].initial, assembleInitialState(nestedComponents[key].nested)), result), {})
+    ? Object.keys(nestedComponents).reduce((result, key) => assoc(key, Object.assign({}, nestedComponents[key].initial, assembleInitialState(nestedComponents[key].nested)), result), {})
     : {};
 const getInitialState = (app) => Object.assign({}, app.initial, assembleInitialState(app.nested));
 const assembleView = (nestedComponents) => nestedComponents
@@ -12920,7 +12418,7 @@ const assembleView = (nestedComponents) => nestedComponents
         const nestedApp = nestedComponents[key];
         if (nestedApp.view !== undefined) {
             const view = nestedApp.view;
-            return (0, util_1.assoc)(key, {
+            return assoc(key, {
                 view: (cell, ...args) => view(cell.nest(key), ...args),
                 nested: assembleView(nestedApp.nested)
             }, result);
@@ -12935,13 +12433,13 @@ const assembleServices = (nestedComponents, getCell = (cell) => cell, getState =
         const nextGetCell = (cell) => getCell(cell).nest(key);
         const nextGetState = (state) => getState(state)[key];
         const nestedApp = nestedComponents[key];
-        return (0, util_1.concatIfPresent)(result, (_a = nestedApp.services) === null || _a === void 0 ? void 0 : _a.map((service) => ({
+        return concatIfPresent(result, (_a = nestedApp.services) === null || _a === void 0 ? void 0 : _a.map((service) => ({
             onchange: (state) => (service.onchange ? service.onchange(nextGetState(state)) : state),
             run: (cell) => service.run(nextGetCell(cell))
         }))).concat(assembleServices(nestedApp.nested, nextGetCell, nextGetState));
     }, [])
     : [];
-const getServices = (app) => (0, util_1.concatIfPresent)([], app.services).concat(assembleServices(app.nested));
+const getServices = (app) => concatIfPresent([], app.services).concat(assembleServices(app.nested));
 const baseSetup = ({ stream, app }) => {
     if (!stream) {
         stream = simple_stream_1.simpleStream;
@@ -13006,7 +12504,7 @@ exports.meiosisSetup = meiosisSetup;
 
 /***/ }),
 
-/***/ 6044:
+/***/ 1020:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -13116,13 +12614,13 @@ exports.dropRepeats = (0, exports.createDropRepeats)();
 
 /***/ }),
 
-/***/ 419:
+/***/ 696:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormValue = exports.concatIfPresent = exports.assoc = exports.get = void 0;
+exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormValue = exports.get = void 0;
 /**
  * Safely gets a property path from an object. The path is an array. If any property along the path
  * is `undefined`, the function returns `undefined`.
@@ -13134,31 +12632,6 @@ exports.updateFormFloatValue = exports.updateFormIntValue = exports.updateFormVa
  */
 const get = (object, path) => path.reduce((obj, key) => (obj == undefined ? undefined : obj[key]), object);
 exports.get = get;
-/**
- * Associates a property value to a target object.
- *
- * @param prop the property name
- * @param value the property value
- * @param result the target object
- *
- * @returns the target object with the associated property
- */
-const assoc = (prop, value, target) => {
-    target[prop] = value;
-    return target;
-};
-exports.assoc = assoc;
-/**
- * Concatenates a source array to a target array only if the source array is present.
- *
- * @param target the target array
- * @param source the source array
- *
- * @returns the target array with the source concatenated if the source is present, otherwise the
- * target array unchanged.
- */
-const concatIfPresent = (target, source) => source ? target.concat(source) : target;
-exports.concatIfPresent = concatIfPresent;
 const intoPath = (path, value) => ({
     [path[0]]: path.length === 1 ? value : intoPath(path.slice(1), value)
 });
@@ -13252,7 +12725,7 @@ const e=Object.assign||((e,t)=>(t&&Object.keys(t).forEach(o=>e[o]=t[o]),e)),t=(e
 
 /***/ }),
 
-/***/ 749:
+/***/ 7648:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15763,7 +15236,7 @@ module.exports = {}.hasOwnProperty
 
 /***/ }),
 
-/***/ 9761:
+/***/ 4965:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15773,11 +15246,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var mithril_1 = __importDefault(__webpack_require__(9402));
-__webpack_require__(749);
+__webpack_require__(7648);
 __webpack_require__(5277);
 __webpack_require__(5503);
-var routing_service_1 = __webpack_require__(8434);
-var register_service_worker_1 = __webpack_require__(6073);
+var routing_service_1 = __webpack_require__(2438);
+var register_service_worker_1 = __webpack_require__(9368);
 console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}));
 (0, register_service_worker_1.registerServiceWorker)({
     onSuccess: function (registration) { return console.log('SW registered: ', registration); },
@@ -15800,7 +15273,7 @@ mithril_1.default.route(document.body, routing_service_1.routingSvc.defaultRoute
 
 /***/ }),
 
-/***/ 8579:
+/***/ 8270:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15821,7 +15294,7 @@ exports.resolveImg = resolveImg;
 
 /***/ }),
 
-/***/ 3701:
+/***/ 4586:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15834,8 +15307,11 @@ exports.AboutPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var mithril_ui_form_1 = __webpack_require__(2771);
-var models_1 = __webpack_require__(249);
-var md = "#### About\n\nThis website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all technologies.\n\n##### Disclaimer\n\nThis platform is intended for informational purposes only and it does not provide medical advice. It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.\n\n##### How to use this platform\n\n###### Ministry of Defence employee\n\nIf you work for the Ministry of Defence, you can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention. \n\nBy selecting \u2018Compare\u2019, recognizable by the <i class=\"material-icons\">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE (Human-Centered Software Engineering) technologies, you can contact the expert that is listed at the bottom of each intervention page.\n\n##### TNO researcher\n\nIf you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to Administrator. This allows you to add and change technologies. Remember that the changes will only be saved locally on your own PC. If you  want to implement your changes in the master file, do the following:\n\n1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder\n2. Implement you changes or additions to the platform\n3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.";
+var models_1 = __webpack_require__(2869);
+var md = function (highlight) {
+    if (highlight === void 0) { highlight = false; }
+    return "#### About\n\nThis website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all interventions.\n\n##### Disclaimer\n\nThis platform is intended for informational purposes only and it does not provide medical advice. It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.\n\n##### How to use this platform\n\n###### Ministry of Defence employee\n\n<p class=\"".concat(highlight ? 'red-text' : '', "\">In order to use this platform, you will need to upload a configuration file (JSON) on the home page. You can request the latest version of this configuration file by contacting the HCSE (Human Capability & Survivability Enhancement) program leader, [Olaf Binsch](mailto:olaf.binsch@tno.nl). Without this file, there will be no interventions displayed on the platform.</p>\n\nYou can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention.\n\nBy selecting \u2018Compare\u2019, recognizable by the <i class=\"material-icons\">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE interventions, you can contact the expert that is listed at the bottom of each intervention page.\n\n###### TNO researcher\n\nIf you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to TNO researcher. This allows you to add and change interventions using the button \"Add new intervention\". Remember that the changes will only be saved locally on your own PC. If you want to implement your changes in the master file, do the following:\n\n1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder\n2. Implement you changes or additions to the platform\n3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.\n\n**HCSE program leader:** [Olaf Binsch](mailto:olaf.binsch@tno.nl)<br>**Email:** olaf.binsch@tno.nl \n");
+};
 var AboutPage = function () {
     return {
         oninit: function (_a) {
@@ -15843,7 +15319,8 @@ var AboutPage = function () {
             return setPage(models_1.Dashboards.ABOUT);
         },
         view: function (_a) {
-            var _b = _a.attrs, curUser = _b.state.curUser, saveCurUser = _b.actions.saveCurUser;
+            var _b = _a.attrs, _c = _b.state, curUser = _c.curUser, model = _c.model, saveCurUser = _b.actions.saveCurUser;
+            var isCleared = !model || !model.interventions || model.interventions.length === 0;
             if (!curUser)
                 saveCurUser('mod');
             return [
@@ -15873,7 +15350,7 @@ var AboutPage = function () {
                     //   className: 'col s6',
                     // }),
                 ]),
-                (0, mithril_1.default)('.row', mithril_1.default.trust((0, mithril_ui_form_1.render)(md))),
+                (0, mithril_1.default)('.row', mithril_1.default.trust((0, mithril_ui_form_1.render)(md(isCleared)))),
             ];
         },
     };
@@ -15883,7 +15360,7 @@ exports.AboutPage = AboutPage;
 
 /***/ }),
 
-/***/ 7469:
+/***/ 1704:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15903,29 +15380,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComparisonPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(249);
+var models_1 = __webpack_require__(2869);
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(2467);
+var utils_1 = __webpack_require__(2090);
 var mithril_ui_form_1 = __webpack_require__(2771);
 var ComparisonPage = function () {
     var isInitialized = false;
-    var technologyLookup = {};
+    var interventionLookup = {};
     var autocompleteData = {};
     var toName = function (t) {
-        return "".concat(t.technology, ": ").concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false));
+        return "".concat(t.intervention, ": ").concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false));
     };
     var initialize = function (model) {
-        var technologies = model.technologies;
+        var technologies = model.interventions;
         if (technologies.length === 0)
             return;
         technologies.forEach(function (cur) {
             var counter = 1;
             var name = toName(cur);
-            while (technologyLookup[name]) {
+            while (interventionLookup[name]) {
                 name = "".concat(toName(cur), " (").concat(counter++, ")");
             }
-            technologyLookup[cur.id] = { name: name, technology: cur };
-            technologyLookup[name] = { name: cur.id };
+            interventionLookup[cur.id] = { name: name, technology: cur };
+            interventionLookup[name] = { name: cur.id };
             autocompleteData[name] = null;
         });
         isInitialized = true;
@@ -15939,62 +15416,63 @@ var ComparisonPage = function () {
             var _b = _a.attrs, _c = _b.state, _d = _c.compareList, compareList = _d === void 0 ? [] : _d, model = _c.model, setCompareList = _b.actions.setCompareList;
             if (!isInitialized)
                 initialize(model);
-            var selectedTechnologies = compareList.map(function (c) { return technologyLookup[c].technology; });
-            return (0, mithril_1.default)('.row.compare', { style: 'height: 92vh' }, [
+            var selectedInterventions = compareList.map(function (c) { return interventionLookup[c].technology; });
+            return (0, mithril_1.default)('.row.compare', { style: 'height: 85vh' }, [
                 (0, mithril_1.default)('.col.s12', [
                     (0, mithril_1.default)(mithril_materialized_1.Chips, {
                         label: 'Selected for comparison',
-                        secondaryPlaceholder: 'Add a technology',
+                        secondaryPlaceholder: 'Add an intervention',
                         autocompleteOptions: {
                             data: autocompleteData,
                             minLength: 3,
                         },
-                        data: compareList.map(function (id) { return ({ tag: technologyLookup[id].name }); }),
+                        data: compareList.map(function (id) { return ({ tag: interventionLookup[id].name }); }),
                         onchange: function (chips) {
                             console.log(chips);
-                            var ids = chips.filter(function (c) { return c.tag; }).map(function (c) { return technologyLookup[c.tag].name; });
-                            if (ids.length !== compareList.length)
-                                setCompareList(ids);
+                            var ids = chips.filter(function (c) { return c.tag; }).map(function (c) { return interventionLookup[c.tag].name; });
+                            setCompareList(ids);
                         },
                     }),
                 ]),
                 compareList.length > 0 &&
                     (0, mithril_1.default)('table', [
-                        (0, mithril_1.default)('tr', __spreadArray([(0, mithril_1.default)('th', 'Aspect')], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('th', t.technology); }), true)),
+                        (0, mithril_1.default)('tr', __spreadArray([
+                            (0, mithril_1.default)('th', 'Aspect')
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('th', t.intervention); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Category'))
-                        ], selectedTechnologies.map(function (t) {
-                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, t.category, false));
+                        ], selectedInterventions.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.interventionCategoryOptions, t.category, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Capability'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, t.hpeClassification, false)));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Specific cap.'))
-                        ], selectedTechnologies.map(function (t) {
-                            return (0, mithril_1.default)('td', (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(t.specificCap, utils_1.specificCapabilityOptions)));
+                        ], selectedInterventions.map(function (t) {
+                            return (0, mithril_1.default)('td', (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(t.specificCap, utils_1.specificCapabilityOptions, false)));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Description'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.desc); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.desc); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Invasive'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, t.invasive, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Maturity'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.maturityOptions, t.maturity, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Booster'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.booster ? 'Yes' : 'No'); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.booster ? 'Yes' : 'No'); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Side effects'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', { className: t.hasSideEffects === models_1.CHOICE.YES && t.sideEffects ? 'tooltip' : '' }, [
                                 (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasSideEffects, false),
                                 t.sideEffects && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.sideEffects, true)),
@@ -16002,7 +15480,7 @@ var ComparisonPage = function () {
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Ind. diff.'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', { className: t.hasIndDiff === models_1.CHOICE.YES && t.diff ? 'tooltip' : '' }, [
                                 (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasIndDiff, false),
                                 t.diff && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.diff, true)),
@@ -16010,7 +15488,7 @@ var ComparisonPage = function () {
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Ethical'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', { className: t.hasEthical === models_1.CHOICE.YES && t.ethical ? 'tooltip' : '' }, [
                                 (0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, t.hasEthical, false),
                                 t.ethical && (0, mithril_1.default)('span.tooltiptext', (0, mithril_ui_form_1.render)(t.ethical, true)),
@@ -16018,31 +15496,31 @@ var ComparisonPage = function () {
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Evidence indication'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, t.evidenceDir, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Quality of evidence'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, t.evidenceScore, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Availability'))
-                        ], selectedTechnologies.map(function (t) {
+                        ], selectedInterventions.map(function (t) {
                             return (0, mithril_1.default)('td', (0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, t.availability, false));
                         }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Incubation'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.incubation); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.incubation); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Effect duration'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.effectDuration); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.effectDuration); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Examples'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.examples); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.examples); }), true)),
                         (0, mithril_1.default)('tr', __spreadArray([
                             (0, mithril_1.default)('td', (0, mithril_1.default)('b', 'Practical'))
-                        ], selectedTechnologies.map(function (t) { return (0, mithril_1.default)('td', t.practical); }), true)),
+                        ], selectedInterventions.map(function (t) { return (0, mithril_1.default)('td', t.practical); }), true)),
                     ]),
             ]);
         },
@@ -16053,7 +15531,7 @@ exports.ComparisonPage = ComparisonPage;
 
 /***/ }),
 
-/***/ 3044:
+/***/ 3754:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16075,38 +15553,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HomePage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var lz_string_1 = __importDefault(__webpack_require__(1605));
 var mithril_materialized_1 = __webpack_require__(6777);
 var background_jpg_1 = __importDefault(__webpack_require__(2868));
-var services_1 = __webpack_require__(1153);
-var models_1 = __webpack_require__(249);
-var utils_1 = __webpack_require__(2467);
+var services_1 = __webpack_require__(3778);
+var models_1 = __webpack_require__(2869);
+var utils_1 = __webpack_require__(2090);
 var mithril_ui_form_1 = __webpack_require__(2771);
 var HomePage = function () {
     var readerAvailable = window.File && window.FileReader && window.FileList && window.Blob;
     return {
         oninit: function (_a) {
-            var _b = _a.attrs.actions, setPage = _b.setPage, saveModel = _b.saveModel, changePage = _b.changePage;
+            var setPage = _a.attrs.actions.setPage;
             setPage(models_1.Dashboards.HOME);
-            var uriModel = mithril_1.default.route.param('model');
-            if (!uriModel) {
-                return;
-            }
-            try {
-                var decompressed = lz_string_1.default.decompressFromEncodedURIComponent(uriModel);
-                if (!decompressed) {
-                    return;
-                }
-                var model = JSON.parse(decompressed);
-                saveModel(model);
-                changePage(models_1.Dashboards.OVERVIEW);
-            }
-            catch (err) {
-                console.error(err);
-            }
+            // const uriModel = m.route.param('model');
+            // if (!uriModel) {
+            //   return;
+            // }
+            // try {
+            //   const decompressed = lz.decompressFromEncodedURIComponent(uriModel);
+            //   if (!decompressed) {
+            //     return;
+            //   }
+            //   const model = JSON.parse(decompressed);
+            //   saveModel(model);
+            //   changePage(Dashboards.OVERVIEW);
+            // } catch (err) {
+            //   console.error(err);
+            // }
         },
         view: function (_a) {
-            var _b = _a.attrs, _c = _b.state.model, model = _c === void 0 ? models_1.defaultModel : _c, saveModel = _b.actions.saveModel;
+            var _b = _a.attrs, _c = _b.state.model, model = _c === void 0 ? models_1.defaultModel : _c, _d = _b.actions, saveModel = _d.saveModel, changePage = _d.changePage;
+            var isCleared = model.interventions.length === 0;
             return [
                 (0, mithril_1.default)('div', { style: 'position: relative;' }, [
                     // m(
@@ -16118,6 +15595,7 @@ var HomePage = function () {
                     (0, mithril_1.default)('.buttons.center', { style: 'margin: 10px auto;' }, [
                         (0, mithril_1.default)(mithril_materialized_1.Button, {
                             iconName: 'clear',
+                            disabled: isCleared,
                             className: 'btn-large',
                             label: 'Clear',
                             modalId: 'clearAll',
@@ -16136,6 +15614,7 @@ var HomePage = function () {
                         (0, mithril_1.default)('a#downloadAnchorElem', { style: 'display:none' }),
                         (0, mithril_1.default)(mithril_materialized_1.Button, {
                             iconName: 'download',
+                            disabled: isCleared,
                             className: 'btn-large',
                             label: 'Download',
                             onclick: function () {
@@ -16174,10 +15653,10 @@ var HomePage = function () {
                                                 e.target.result &&
                                                 JSON.parse(e.target.result.toString());
                                             result && result.version && saveModel(result);
+                                            changePage(models_1.Dashboards.INTERVENTIONS);
                                         };
                                         var data = files && files.item(0);
                                         data && reader.readAsText(data);
-                                        services_1.routingSvc.switchTo(models_1.Dashboards.OVERVIEW);
                                     };
                                     fileInput.click();
                                 },
@@ -16223,17 +15702,17 @@ var HomePage = function () {
                             (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('.icon-block', [
                                 (0, mithril_1.default)('.center', (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'dashboard' })),
                                 (0, mithril_1.default)('h5.center', 'Prepare'),
-                                (0, mithril_1.default)('p.light', 'Create or select the technologies that are important for your mission.'),
+                                (0, mithril_1.default)('p.light', 'Create or select the interventions that are important for your mission.'),
                             ])),
                             (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('.icon-block', [
                                 (0, mithril_1.default)('.center', (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'lightbulb' })),
                                 (0, mithril_1.default)('h5.center', 'Assess'),
-                                (0, mithril_1.default)('p.light', "Determine for each technologies how important it is, and your current performance, so you can prioritise and focus on the ones you really need."),
+                                (0, mithril_1.default)('p.light', "Determine for each intervention how important it is, and your current performance, so you can prioritise and focus on the ones you really need."),
                             ])),
                             (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('.icon-block', [
                                 (0, mithril_1.default)('.center', (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'balance' })),
                                 (0, mithril_1.default)('h5.center', 'Compare'),
-                                (0, mithril_1.default)('p.light', 'Compare and select technologies so you can choose the one that fits best with your needs.'),
+                                (0, mithril_1.default)('p.light', 'Compare and select interventions so you can choose the one that fits best with your needs.'),
                             ])),
                         ]),
                     ])),
@@ -16263,7 +15742,7 @@ exports.HomePage = HomePage;
 
 /***/ }),
 
-/***/ 6224:
+/***/ 9551:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16283,19 +15762,865 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(3701), exports);
-__exportStar(__webpack_require__(3044), exports);
-__exportStar(__webpack_require__(8305), exports);
-__exportStar(__webpack_require__(8826), exports);
-__exportStar(__webpack_require__(4819), exports);
-__exportStar(__webpack_require__(7399), exports);
-__exportStar(__webpack_require__(7469), exports);
-__exportStar(__webpack_require__(5534), exports);
+__exportStar(__webpack_require__(4586), exports);
+__exportStar(__webpack_require__(3754), exports);
+__exportStar(__webpack_require__(3117), exports);
+__exportStar(__webpack_require__(1831), exports);
+__exportStar(__webpack_require__(654), exports);
+__exportStar(__webpack_require__(2747), exports);
+__exportStar(__webpack_require__(1704), exports);
+__exportStar(__webpack_require__(9077), exports);
 
 
 /***/ }),
 
-/***/ 5534:
+/***/ 654:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InterventionOverviewPage = void 0;
+var mithril_1 = __importDefault(__webpack_require__(9402));
+var mithril_materialized_1 = __webpack_require__(6777);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var images_1 = __webpack_require__(8270);
+var models_1 = __webpack_require__(2869);
+var services_1 = __webpack_require__(3778);
+var utils_1 = __webpack_require__(2090);
+var ui_1 = __webpack_require__(34);
+var InterventionOverviewPage = function () {
+    var toOptions = function (opt) {
+        return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
+    };
+    var mainCapOpt = toOptions(utils_1.mainCapabilityOptions);
+    var techCatOpt = toOptions(utils_1.interventionCategoryOptions);
+    var invasivenessOpt = toOptions(utils_1.invasivenessOptions);
+    var maturityOpt = toOptions(utils_1.maturityOptions);
+    var availabilityOpt = toOptions(utils_1.availabilityOptions);
+    var ethicalOpt = toOptions(utils_1.ethicalConsiderationsOptions);
+    var evidenceDirOpt = toOptions(utils_1.evidenceDirOptions);
+    var evidenceQualityOpt = toOptions(utils_1.evidenceLevelOptions);
+    var boosterOpt = toOptions(utils_1.boosterOptions);
+    var specificCognitiveCapabilityOpt = toOptions(utils_1.specificCognitiveCapabilityOptions);
+    var specificPhysicalCapabilityOpt = toOptions(utils_1.specificPhysicalCapabilityOptions);
+    var specificMentalCapabilityOpt = toOptions(utils_1.specificMentalCapabilityOptions);
+    var specificSocialCapabilityOpt = toOptions(utils_1.specificSocialCapabilityOptions);
+    var specificPersonalityCapabilityOpt = toOptions(utils_1.specificPersonalityCapabilityOptions);
+    var toInterventions = function (allInterventions) {
+        return Object.values(allInterventions.reduce(function (acc, cur) {
+            var _a, _b;
+            var id = cur.id, img = cur.img, url = cur.url, intervention = cur.intervention, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, _c = cur.specificCap, specificCap = _c === void 0 ? [] : _c, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore;
+            var key = intervention;
+            var sc = specificCap instanceof Array ? specificCap : [specificCap];
+            var search = "".concat(intervention, " ").concat(desc, " ").concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCap), " ").concat(mechanism, " ").concat(keywords && keywords.length ? keywords.join(' ') : '', " ").concat((0, utils_1.getOptionsLabel)(utils_1.interventionCategoryOptions, category), " ").concat(sc.map(function (c) { return (0, utils_1.getOptionsLabel)(utils_1.specificCapabilityOptions, c); }).join(' '));
+            if (acc.hasOwnProperty(key)) {
+                acc[key].id.push(id);
+                mechanism && acc[key].mechanism.push(mechanism);
+                desc && acc[key].desc.push(desc);
+                keywords && (_a = acc[key].desc).push.apply(_a, keywords);
+                booster && acc[key].booster.push(booster);
+                mainCap && acc[key].mainCap.push(mainCap);
+                specificCap && specificCap instanceof Array && (_b = acc[key].specificCap).push.apply(_b, specificCap);
+                hpeClassification && acc[key].hpeClassification.push(hpeClassification);
+                category && acc[key].category.push(category);
+                invasive && acc[key].invasive.push(invasive);
+                availability && acc[key].availability.push(availability);
+                maturity && acc[key].maturity.push(maturity);
+                hasEthical && acc[key].ethicalConsiderations.push(hasEthical);
+                evidenceDir && acc[key].evidenceDir.push(evidenceDir);
+                evidenceScore && acc[key].evidenceScore.push(evidenceScore);
+                acc[key].search += " ".concat(search);
+            }
+            else {
+                acc[key] = {
+                    id: [id],
+                    intervention: intervention,
+                    img: img,
+                    url: url,
+                    mechanism: [mechanism],
+                    desc: desc ? [desc] : [],
+                    keywords: keywords && keywords.length ? __spreadArray([], keywords, true) : [],
+                    booster: [booster],
+                    mainCap: [mainCap],
+                    specificCap: specificCap instanceof Array ? __spreadArray([], specificCap, true) : [specificCap],
+                    hpeClassification: [hpeClassification],
+                    category: [category],
+                    invasive: [invasive],
+                    availability: [availability],
+                    maturity: [maturity],
+                    ethicalConsiderations: [],
+                    evidenceDir: [],
+                    evidenceScore: [],
+                    search: search,
+                };
+            }
+            return acc;
+        }, {}));
+    };
+    var interventions = [];
+    return {
+        oninit: function (_a) {
+            var _b = _a.attrs, model = _b.state.model, setPage = _b.actions.setPage;
+            var _c = model.interventions, allInterventions = _c === void 0 ? [] : _c;
+            interventions = toInterventions(allInterventions);
+            setPage(models_1.Dashboards.INTERVENTIONS);
+        },
+        view: function (_a) {
+            var _b, _c, _d, _e, _f, _g, _h;
+            var _j = _a.attrs, _k = _j.state, model = _k.model, curUser = _k.curUser, _l = _k.bookmarks, bookmarks = _l === void 0 ? [] : _l, _m = _k.compareList, compareList = _m === void 0 ? [] : _m, searchFilters = _k.searchFilters, _o = _j.actions, saveModel = _o.saveModel, changePage = _o.changePage, bookmark = _o.bookmark, compare = _o.compare, setSearchFilters = _o.setSearchFilters;
+            if (interventions.length === 0) {
+                var allInterventions = model.interventions;
+                interventions = toInterventions(allInterventions);
+            }
+            var searchFilter = searchFilters.searchFilter, mainCapFilter = searchFilters.mainCapFilter, specificCapFilter = searchFilters.specificCapFilter, categoryFilter = searchFilters.categoryFilter, invasivenessFilter = searchFilters.invasivenessFilter, maturityFilter = searchFilters.maturityFilter, availabilityFilter = searchFilters.availabilityFilter, boosterFilter = searchFilters.boosterFilter, ethicalFilter = searchFilters.ethicalFilter, evidenceDirFilter = searchFilters.evidenceDirFilter, evidenceQualityFilter = searchFilters.evidenceQualityFilter, bookmarked = searchFilters.bookmarked;
+            var searchRegex = searchFilter ? new RegExp(searchFilter, 'i') : undefined;
+            var filteredInterventions = interventions.filter(function (t) {
+                if (searchRegex && !searchRegex.test(t.search || '')) {
+                    return false;
+                }
+                if (bookmarked && t.id.every(function (id) { return bookmarks.indexOf(id) < 0; }))
+                    return false;
+                if ((boosterFilter && boosterFilter === 1 && !t.booster) ||
+                    (boosterFilter === 2 && t.booster))
+                    return false;
+                if (mainCapFilter && !t.mainCap.some(function (c) { return c === mainCapFilter; })) {
+                    return false;
+                }
+                if (specificCapFilter && !t.specificCap.some(function (c) { return c === specificCapFilter; })) {
+                    return false;
+                }
+                if (categoryFilter && !t.category.some(function (c) { return c === categoryFilter; })) {
+                    return false;
+                }
+                if (invasivenessFilter && !t.invasive.some(function (c) { return c === invasivenessFilter; })) {
+                    return false;
+                }
+                if (maturityFilter && !t.maturity.some(function (c) { return c === maturityFilter; })) {
+                    return false;
+                }
+                if (availabilityFilter && !t.availability.some(function (c) { return c === availabilityFilter; })) {
+                    return false;
+                }
+                if (boosterFilter &&
+                    !t.booster.some(function (c) { return (boosterFilter === models_1.YES_NO.YES && c) || (boosterFilter === models_1.YES_NO.NO && !c); })) {
+                    return false;
+                }
+                if (ethicalFilter && !t.ethicalConsiderations.some(function (c) { return c === ethicalFilter; })) {
+                    return false;
+                }
+                if (evidenceDirFilter && !t.evidenceDir.some(function (c) { return c === evidenceDirFilter; })) {
+                    return false;
+                }
+                if (evidenceQualityFilter && !t.evidenceScore.some(function (c) { return c === evidenceQualityFilter; })) {
+                    return false;
+                }
+                return true;
+            });
+            var hasFilters = filteredInterventions.length !== interventions.length;
+            return [
+                (0, mithril_1.default)('.row.intervention-overview-page', { style: 'height: 95vh' }, [
+                    (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s12.m3', {
+                        style: 'height: 81px',
+                    }, (0, mithril_1.default)(ui_1.TextInputWithClear, {
+                        key: searchFilter || 'searchKey',
+                        label: 'Search',
+                        iconName: 'search',
+                        className: 'bottom-margin0',
+                        initialValue: searchFilter,
+                        oninput: function (s) {
+                            setSearchFilters({ searchFilter: s || '' });
+                            // m.redraw();
+                        },
+                    })), (0, mithril_1.default)('.col.s6.m3', (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                        modalId: 'search',
+                        iconName: 'manage_search',
+                        iconClass: 'large-icon',
+                        label: 'Adv.search',
+                        onclick: function () {
+                            setSearchFilters({ searchFilter: '' });
+                        },
+                    })), (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                        label: 'Bookmarked',
+                        className: 'col s6 m3',
+                        iconName: bookmarked ? 'star' : 'star_border',
+                        iconClass: 'large-icon amber-text',
+                        onclick: function () {
+                            setSearchFilters({ bookmarked: !bookmarked });
+                        },
+                    }), 
+                    // m(InputCheckbox, {
+                    //   label: 'Bookmarked',
+                    //   className: 'col s6 m3',
+                    //   onchange: (v) => {
+                    //     setSearchFilters({ bookmarked: v });
+                    //   },
+                    // }),
+                    curUser &&
+                        curUser === 'admin' &&
+                        (0, mithril_1.default)('.right-align', (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                            label: 'Add new intervention',
+                            iconName: 'add',
+                            className: 'small',
+                            onclick: function () {
+                                var newTech = { id: (0, mithril_materialized_1.uniqueId)() };
+                                model.interventions.push(newTech);
+                                saveModel(model);
+                                changePage(models_1.Dashboards.INTERVENTION, { id: newTech.id, edit: 'true' });
+                            },
+                        })))),
+                    hasFilters && [
+                        (0, mithril_1.default)('.col.s12.filters', [
+                            (0, mithril_1.default)('span', "".concat(filteredInterventions.length, " search result").concat(filteredInterventions.length === 1 ? '' : 's', ": ")),
+                            mainCapFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Capability: ".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCapFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters({ mainCapFilter: 0 }); } }, 'close'),
+                                ]),
+                            specificCapFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Spec.cap.: ".concat((0, utils_1.getOptionsLabel)(utils_1.specificCapabilityOptions, specificCapFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters({ specificCapFilter: 0 }); } }, 'close'),
+                                ]),
+                            categoryFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Category: ".concat((0, utils_1.getOptionsLabel)(utils_1.interventionCategoryOptions, categoryFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters({ categoryFilter: 0 }); } }, 'close'),
+                                ]),
+                            invasivenessFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Invasiveness: ".concat((0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, invasivenessFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ invasivenessFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            maturityFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Maturity: ".concat((0, utils_1.getOptionsLabel)(utils_1.maturityOptions, maturityFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ maturityFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            availabilityFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Availability: ".concat((0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, availabilityFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ availabilityFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            boosterFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Booster: ".concat((0, utils_1.getOptionsLabel)(utils_1.boosterOptions, boosterFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ boosterFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            ethicalFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Ethical: ".concat((0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, ethicalFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ ethicalFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            evidenceDirFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Evidence indication: ".concat((0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, evidenceDirFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ evidenceDirFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                            evidenceQualityFilter > 0 &&
+                                (0, mithril_1.default)('.chip', [
+                                    "Evidence quality: ".concat((0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, evidenceQualityFilter, false)),
+                                    (0, mithril_1.default)('i.close.material-icons', {
+                                        onclick: function () { return setSearchFilters({ evidenceQualityFilter: 0 }); },
+                                    }, 'close'),
+                                ]),
+                        ]),
+                    ],
+                    filteredInterventions.map(function (t) {
+                        var isBookmarked = t.id.some(function (id) { return bookmarks.indexOf(id) >= 0; });
+                        var selectedForComparison = t.id.some(function (id) { return compareList.indexOf(id) >= 0; });
+                        return (0, mithril_1.default)('.col.s12.m6.l4.xl3', (0, mithril_1.default)('.card.medium', [
+                            (0, mithril_1.default)('.card-image', [
+                                (0, mithril_1.default)('a', {
+                                    href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTION, "?id=".concat(t.id[0])),
+                                }, [
+                                    (0, mithril_1.default)('img', {
+                                        src: (0, images_1.resolveImg)(t.url, t.img),
+                                        alt: t.intervention,
+                                    }),
+                                    (0, mithril_1.default)('span.card-title.bold.sharpen.black-text', { title: t.intervention }, 
+                                    // { className: isBookmarked ? 'amber-text' : 'black-text' },
+                                    t.intervention),
+                                ]),
+                            ]),
+                            (0, mithril_1.default)('.card-content', [
+                                (0, mithril_1.default)('span.bold', t.mainCap
+                                    .map(function (c, i) {
+                                    return "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, c, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, t.hpeClassification[i], false)).toUpperCase();
+                                })
+                                    .filter(utils_1.isUnique)
+                                    .join(', ')),
+                                (0, mithril_1.default)('p.overflow', t.desc),
+                            ]),
+                            (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
+                            {
+                                href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTION, "?id=".concat(t.id[0])),
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' }), (0, mithril_1.default)('span.tooltiptext', 'SHOW')), (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
+                            {
+                                href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTIONS),
+                                onclick: function () {
+                                    if (isBookmarked) {
+                                        t.id.forEach(function (id) {
+                                            if (bookmarks.indexOf(id) >= 0)
+                                                bookmark(id);
+                                        });
+                                    }
+                                    else {
+                                        bookmark(t.id[0]);
+                                    }
+                                },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: isBookmarked ? 'star' : 'star_border',
+                                className: isBookmarked ? 'amber-text' : '',
+                            }), (0, mithril_1.default)('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')), (0, mithril_1.default)('a.tooltip', 
+                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=COMPARE]',
+                            {
+                                href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTIONS),
+                                onclick: function () {
+                                    if (selectedForComparison) {
+                                        t.id.forEach(function (id) {
+                                            if (compareList.indexOf(id) >= 0)
+                                                compare(id);
+                                        });
+                                    }
+                                    else {
+                                        compare(t.id[0]);
+                                    }
+                                },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: 'balance',
+                                className: selectedForComparison ? 'amber-text' : '',
+                            }), (0, mithril_1.default)('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE'))),
+                        ]));
+                    }),
+                ]),
+                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
+                    id: 'search',
+                    title: 'Advanced search',
+                    description: (0, mithril_1.default)('#adv-search.row', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                        form: [
+                            {
+                                id: 'mainCapFilter',
+                                label: 'Main capability',
+                                className: 'col s12 m6 l4',
+                                options: mainCapOpt,
+                                description: mainCapFilter
+                                    ? (_b = mainCapOpt.filter(function (o) { return +o.id === mainCapFilter; }).shift()) === null || _b === void 0 ? void 0 : _b.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific capabilities',
+                                placeholder: 'Choose main capability first',
+                                type: 'select',
+                                options: utils_1.specificCapabilityOptions,
+                                className: 'col s12 m6 l4',
+                                disabled: true,
+                                show: ['mainCapFilter = 0', '!mainCapFilter'],
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific cognitive capabilities',
+                                type: 'select',
+                                options: specificCognitiveCapabilityOpt,
+                                className: 'col s12 m6 l4',
+                                show: 'mainCapFilter = 1',
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific physical capabilities',
+                                type: 'select',
+                                options: specificPhysicalCapabilityOpt,
+                                className: 'col s12 m6 l4',
+                                show: 'mainCapFilter = 2',
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific mental capabilities',
+                                type: 'select',
+                                options: specificMentalCapabilityOpt,
+                                className: 'col s12 m6 l4',
+                                show: 'mainCapFilter = 3',
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific social capabilities',
+                                type: 'select',
+                                options: specificSocialCapabilityOpt,
+                                className: 'col s12 m6 l4',
+                                show: 'mainCapFilter = 4',
+                            },
+                            {
+                                id: 'specificCapFilter',
+                                label: 'Specific personality capabilities',
+                                type: 'select',
+                                options: specificPersonalityCapabilityOpt,
+                                className: 'col s12 m6 l4',
+                                show: 'mainCapFilter = 5',
+                            },
+                            {
+                                id: 'categoryFilter',
+                                label: 'Category',
+                                className: 'col s12 m6 l4',
+                                options: techCatOpt,
+                                description: categoryFilter
+                                    ? (_c = techCatOpt.filter(function (o) { return +o.id === categoryFilter; }).shift()) === null || _c === void 0 ? void 0 : _c.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'invasivenessFilter',
+                                label: 'Invasiveness',
+                                className: 'col s12 m6 l4',
+                                options: invasivenessOpt,
+                                description: invasivenessFilter
+                                    ? (_d = invasivenessOpt.filter(function (o) { return +o.id === invasivenessFilter; }).shift()) === null || _d === void 0 ? void 0 : _d.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'maturityFilter',
+                                label: 'Maturity',
+                                className: 'col s12 m6 l4',
+                                options: maturityOpt,
+                                description: maturityFilter
+                                    ? (_e = maturityOpt.filter(function (o) { return +o.id === maturityFilter; }).shift()) === null || _e === void 0 ? void 0 : _e.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'availabilityFilter',
+                                label: 'Availability',
+                                className: 'col s12 m6 l4',
+                                options: availabilityOpt,
+                                // description: availabilityFilter
+                                //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
+                                //   : undefined,
+                            },
+                            {
+                                id: 'boosterFilter',
+                                label: 'Booster',
+                                className: 'col s12 m6 l4',
+                                options: boosterOpt,
+                                // description: boosterFilter
+                                //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
+                                //   : undefined,
+                            },
+                            {
+                                id: 'ethicalFilter',
+                                label: 'Ethical considerations',
+                                className: 'col s12 m6 l4',
+                                options: ethicalOpt,
+                                description: ethicalFilter
+                                    ? (_f = ethicalOpt.filter(function (o) { return +o.id === ethicalFilter; }).shift()) === null || _f === void 0 ? void 0 : _f.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'evidenceDirFilter',
+                                label: 'Evidence indication',
+                                className: 'col s12 m6 l4',
+                                options: evidenceDirOpt,
+                                description: evidenceDirFilter
+                                    ? (_g = evidenceDirOpt.filter(function (o) { return +o.id === evidenceDirFilter; }).shift()) === null || _g === void 0 ? void 0 : _g.title
+                                    : undefined,
+                            },
+                            {
+                                id: 'evidenceQualityFilter',
+                                label: 'Evidence quality',
+                                className: 'col s12 m6 l4',
+                                options: evidenceQualityOpt,
+                                description: evidenceQualityFilter
+                                    ? (_h = evidenceQualityOpt.filter(function (o) { return +o.id === evidenceQualityFilter; }).shift()) === null || _h === void 0 ? void 0 : _h.title
+                                    : undefined,
+                            },
+                        ],
+                        obj: searchFilters,
+                        onchange: function () { return setSearchFilters(searchFilters); },
+                    })),
+                    bottomSheet: true,
+                    fixedFooter: true,
+                    buttons: [{ label: 'DONE' }],
+                }),
+            ];
+        },
+    };
+};
+exports.InterventionOverviewPage = InterventionOverviewPage;
+
+
+/***/ }),
+
+/***/ 1831:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InterventionPage = void 0;
+var mithril_1 = __importDefault(__webpack_require__(9402));
+var mithril_materialized_1 = __webpack_require__(6777);
+var mithril_ui_form_1 = __webpack_require__(2771);
+var images_1 = __webpack_require__(8270);
+var models_1 = __webpack_require__(2869);
+var services_1 = __webpack_require__(3778);
+var utils_1 = __webpack_require__(2090);
+var InterventionPage = function () {
+    var initInterventionForm = function (interventions, id, users) {
+        var added = new Set();
+        var interventionOptions = interventions
+            .filter(function (t) {
+            if (added.has(t.intervention))
+                return false;
+            added.add(t.intervention);
+            return t.id !== id;
+        })
+            .map(function (t) { return ({ id: t.id, label: t.intervention }); });
+        return (0, utils_1.interventionForm)(users, interventionOptions);
+    };
+    var suggestSimilarInt = function (intervention, interventions) {
+        var mainCap = intervention.mainCap, specificCap = intervention.specificCap;
+        var sc = new Set(specificCap instanceof Array ? specificCap : [specificCap]);
+        return interventions
+            .filter(function (i) {
+            return i.id !== intervention.id &&
+                i.mainCap === mainCap &&
+                i.specificCap &&
+                (i.specificCap instanceof Array
+                    ? i.specificCap.some(function (s) { return sc.has(s); })
+                    : sc.has(i.specificCap));
+        })
+            .map(function (s) { return s.id; });
+    };
+    var id = '';
+    var isEditing = false;
+    var form = [];
+    var allInterventions = [];
+    var isBookmarked = false;
+    var formValid = false;
+    return {
+        oninit: function (_a) {
+            var _b = _a.attrs, _c = _b.state, model = _c.model, _d = _c.curIntervention, curIntervention = _d === void 0 ? {} : _d, _e = _b.actions, setPage = _e.setPage, setIntervention = _e.setIntervention;
+            var _f = model.interventions, technologies = _f === void 0 ? [] : _f, _g = model.users, users = _g === void 0 ? [] : _g;
+            setPage(models_1.Dashboards.INTERVENTION);
+            id = mithril_1.default.route.param('id') || curIntervention.id || '';
+            isEditing = mithril_1.default.route.param('edit') === true ? true : false;
+            form = initInterventionForm(technologies, id, users);
+            var found = id === curIntervention.id
+                ? curIntervention
+                : technologies.filter(function (t) { return t.id === id; }).shift() || technologies[0];
+            allInterventions = found
+                ? technologies.filter(function (t) { return t.intervention === found.intervention; })
+                : [];
+            if (found !== curIntervention)
+                setIntervention(found);
+            window.scrollTo({ top: 0, left: 0 });
+        },
+        view: function (_a) {
+            var _b = _a.attrs, _c = _b.state, _d = _c.curIntervention, curIntervention = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.compareList, compareList = _e === void 0 ? [] : _e, _f = _c.model, model = _f === void 0 ? models_1.defaultModel : _f, curUser = _c.curUser, _g = _b.actions, saveModel = _g.saveModel, changePage = _g.changePage, setIntervention = _g.setIntervention, bookmark = _g.bookmark, compare = _g.compare;
+            id = mithril_1.default.route.param('id') || curIntervention.id || '';
+            var users = model.users, interventions = model.interventions;
+            if (!curIntervention.id || curIntervention.id !== id) {
+                form = initInterventionForm(interventions, id, users);
+                var found_1 = interventions.filter(function (t) { return t.id === id; }).shift() || interventions[0];
+                if (found_1) {
+                    allInterventions = interventions.filter(function (t) { return t.intervention === found_1.intervention; });
+                    setIntervention(found_1);
+                }
+                return;
+            }
+            // interventions.forEach((i) => {
+            //   i.similar = suggestSimilarInt(i, interventions);
+            // });
+            // saveModel({ ...model, interventions });
+            isBookmarked = bookmarks.indexOf(curIntervention.id) >= 0;
+            var selectedForComparison = compareList.indexOf(curIntervention.id) >= 0;
+            var ownerId = curIntervention.owner;
+            var updated = curIntervention.updated ? new Date(curIntervention.updated) : undefined;
+            var owner = users.filter(function (u) { return u.id === ownerId; }).shift();
+            var usedLiterature = curIntervention.literature;
+            var md = (0, utils_1.resolveRefs)(curIntervention.literature).md2html;
+            var mailtoLink = owner &&
+                "mailto:".concat(owner.email, "?subject=").concat(curIntervention.intervention.replace(/ /g, '%20'));
+            var similarTech = curIntervention.similar &&
+                curIntervention.similar.length > 0 &&
+                interventions.filter(function (t) { return curIntervention.similar.indexOf(t.id) >= 0; });
+            var filteredSpecCapOpt = utils_1.specificCapabilityOptions.filter(function (c) { return c.mc === curIntervention.mainCap; });
+            return [
+                (0, mithril_1.default)('.row.intervention-page', { style: 'height: 95vh' }, curUser &&
+                    curUser === 'admin' && [
+                    (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                        className: 'right no-print',
+                        label: isEditing ? 'Save' : 'Edit',
+                        disabled: isEditing && !formValid,
+                        iconName: isEditing ? 'save' : 'edit',
+                        onclick: function () {
+                            // if (
+                            //   !isEditing &&
+                            //   (!curIntervention.similar || curIntervention.similar.length === 0)
+                            // ) {
+                            //   curIntervention.similar = suggestSimilarInt(
+                            //     curIntervention,
+                            //     interventions
+                            //   );
+                            // }
+                            isEditing = !isEditing;
+                        },
+                    }),
+                    isEditing
+                        ? [
+                            (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                                className: 'right',
+                                label: 'Delete',
+                                iconName: 'delete',
+                                modalId: 'deleteIntervention',
+                            }),
+                            (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                                className: 'right',
+                                label: 'Suggest similar',
+                                iconName: 'auto_awesome',
+                                onclick: function () {
+                                    curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
+                                },
+                            }),
+                        ]
+                        : (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                            className: 'right no-print',
+                            label: 'Duplicate',
+                            iconName: 'content_copy',
+                            onclick: function () {
+                                var clone = JSON.parse(JSON.stringify(curIntervention));
+                                clone.intervention += ' (COPY)';
+                                clone.id = (0, mithril_materialized_1.uuid4)();
+                                model.interventions.push(clone);
+                                isEditing = true;
+                                setIntervention(clone);
+                                changePage(models_1.Dashboards.INTERVENTION, { id: clone.id });
+                            },
+                        }),
+                ], isEditing
+                    ? (0, mithril_1.default)('.col.s12', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                        form: form,
+                        obj: curIntervention,
+                        onchange: function (isValid) {
+                            formValid = isValid;
+                            if (!isValid) {
+                                return;
+                            }
+                            model.interventions = model.interventions.map(function (t) {
+                                return t.id === curIntervention.id ? curIntervention : t;
+                            });
+                            saveModel(model);
+                        },
+                    }))
+                    : [
+                        (0, mithril_1.default)('h3', [
+                            curIntervention.intervention,
+                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
+                                style: 'padding: 0 5px',
+                                onclick: function () { return bookmark(curIntervention.id); },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: isBookmarked ? 'star' : 'star_border',
+                                className: isBookmarked ? 'amber-text white' : 'white',
+                            })),
+                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
+                                style: 'padding: 0 5px',
+                                onclick: function () { return compare(curIntervention.id); },
+                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
+                                iconName: 'balance',
+                                className: selectedForComparison ? 'amber-text white' : 'white',
+                            })),
+                        ]),
+                        curIntervention.desc && (0, mithril_1.default)('p.bold', md(curIntervention.desc)),
+                        (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin0', allInterventions.length === 1
+                            ? (0, mithril_1.default)('h5.separator', 'Description')
+                            : (0, mithril_1.default)('h5.separator.button-row', __spreadArray([
+                                'Description'
+                            ], allInterventions.map(function (t, i) {
+                                return (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                                    className: t.id === curIntervention.id
+                                        ? 'bold grey lighten-3'
+                                        : 'grey lighten-3',
+                                    label: (0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false) ||
+                                        "v".concat(i + 1),
+                                    onclick: function () { return changePage(models_1.Dashboards.INTERVENTION, { id: t.id }); },
+                                });
+                            }), true)), (0, mithril_1.default)('section', [
+                            curIntervention.category &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Category: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.interventionCategoryOptions, curIntervention.category),
+                                ]),
+                            curIntervention.mainCap &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Main capability: '),
+                                    "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, curIntervention.mainCap, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, curIntervention.hpeClassification, false)),
+                                ]),
+                            curIntervention.specificCap &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Specific capability: '),
+                                    (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(curIntervention.specificCap, filteredSpecCapOpt, false)) + '.',
+                                ]),
+                            curIntervention.invasive &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Invasive: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, curIntervention.invasive) + '.',
+                                ]),
+                            curIntervention.maturity &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Maturity: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.maturityOptions, curIntervention.maturity) + '.',
+                                ]),
+                            typeof curIntervention.booster !== 'undefined' &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Can be used as booster: '),
+                                    "".concat(curIntervention.booster
+                                        ? 'Yes, the intervention can be applied quickly (approx. < 1 hour)'
+                                        : 'No, the intervention can not be applied quickly (approx. < 1 hour)', "."),
+                                ]),
+                        ]))),
+                        curIntervention.url &&
+                            (0, mithril_1.default)('.col.s6.m6', (0, mithril_1.default)('img.responsive-img', {
+                                src: (0, images_1.resolveImg)(curIntervention.url, curIntervention.img),
+                                alt: curIntervention.intervention,
+                            })),
+                        (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.bottom-margin0', [
+                            (0, mithril_1.default)('h5.separator', 'How it works'),
+                            curIntervention.mechanism &&
+                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Mechanism: '), md(curIntervention.mechanism)]),
+                            curIntervention.examples &&
+                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Examples: '), md(curIntervention.examples)]),
+                            curIntervention.incubation &&
+                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Incubation: '), md(curIntervention.incubation)]),
+                            curIntervention.effectDuration &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Effect duration: '),
+                                    md(curIntervention.effectDuration),
+                                ]),
+                            (0, mithril_1.default)('h5.separator', 'Keep in mind'),
+                            curIntervention.practical &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold[title=This information is not medical advice, please read the disclaimer!]', mithril_1.default.trust('Practical execution<sup class="red-text" style="font-size:1rem">*</sup>: ')),
+                                    md(curIntervention.practical),
+                                ]),
+                            curIntervention.sideEffects &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Possible side-effects: '),
+                                    md((0, utils_1.resolveChoice)(curIntervention.hasSideEffects, curIntervention.sideEffects)),
+                                ]),
+                            curIntervention.diff &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Individual differences: '),
+                                    md((0, utils_1.resolveChoice)(curIntervention.hasIndDiff, curIntervention.diff)),
+                                ]),
+                            curIntervention.ethical &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Ethical considerations: '),
+                                    md((0, utils_1.resolveChoice)(curIntervention.hasEthical, curIntervention.ethical)),
+                                ]),
+                            similarTech &&
+                                (0, mithril_1.default)('p', (0, mithril_1.default)('span.bold', "Similar intervention".concat(similarTech.length > 1 ? 's' : '', ": ")), similarTech.map(function (s, i) {
+                                    return (0, mithril_1.default)('a', {
+                                        href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTION, "?id=".concat(s.id)),
+                                        onclick: function () { return changePage(models_1.Dashboards.INTERVENTION, { id: s.id }); },
+                                    }, s.intervention + (i < similarTech.length - 1 ? ', ' : '.'));
+                                })),
+                            curIntervention.evidenceDir &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Evidence indication: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, curIntervention.evidenceDir) + '.',
+                                ]),
+                            curIntervention.evidenceScore &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Quality of evidence: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, curIntervention.evidenceScore) + '.',
+                                ]),
+                            curIntervention.availability &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Availability: '),
+                                    (0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, curIntervention.availability) + '.',
+                                ]),
+                            (0, mithril_1.default)('h5.separator', 'References'),
+                        ])),
+                        (0, mithril_1.default)('.col.s12.m8', (0, mithril_1.default)('.row', [
+                            usedLiterature && [
+                                (0, mithril_1.default)('ol.browser-default', usedLiterature.map(function (l) {
+                                    return (0, mithril_1.default)('li', (0, mithril_1.default)('a', {
+                                        href: l.doi,
+                                        alt: l.title,
+                                        target: '_blank',
+                                    }, l.title));
+                                })),
+                            ],
+                        ])),
+                        owner &&
+                            (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Expert: '), owner.name]), (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Email: '), (0, mithril_1.default)('a', { href: mailtoLink }, owner.email)]), owner.phone &&
+                                (0, mithril_1.default)('p', [
+                                    (0, mithril_1.default)('span.bold', 'Phone: '),
+                                    (0, mithril_1.default)('a', { href: "tel:".concat(owner.phone) }, owner.phone),
+                                ]), updated && (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Last update: '), updated.toDateString()])),
+                    ]),
+                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
+                    id: 'deleteIntervention',
+                    title: "Delete ".concat(curIntervention.intervention, "?"),
+                    description: "Are you sure that you want to delete ".concat(curIntervention.intervention, "?"),
+                    buttons: [
+                        {
+                            label: 'Yes',
+                            iconName: 'delete',
+                            onclick: function () {
+                                model.interventions = model.interventions.filter(function (t) { return t.id !== curIntervention.id; });
+                                saveModel(model);
+                                changePage(models_1.Dashboards.INTERVENTIONS);
+                            },
+                        },
+                        { label: 'No', iconName: 'cancel' },
+                    ],
+                }),
+            ];
+        },
+    };
+};
+exports.InterventionPage = InterventionPage;
+
+
+/***/ }),
+
+/***/ 9077:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16308,8 +16633,8 @@ exports.Layout = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var tno_svg_1 = __importDefault(__webpack_require__(1555));
-var models_1 = __webpack_require__(249);
-var routing_service_1 = __webpack_require__(8434);
+var models_1 = __webpack_require__(2869);
+var routing_service_1 = __webpack_require__(2438);
 var Layout = function () { return ({
     view: function (_a) {
         var children = _a.children, _b = _a.attrs, _c = _b.state, page = _c.page, curUser = _c.curUser, changePage = _b.actions.changePage;
@@ -16383,7 +16708,7 @@ exports.Layout = Layout;
 
 /***/ }),
 
-/***/ 7399:
+/***/ 2747:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16396,7 +16721,7 @@ exports.SettingsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var mithril_ui_form_1 = __webpack_require__(2771);
-var models_1 = __webpack_require__(249);
+var models_1 = __webpack_require__(2869);
 var userForm = [
     { id: 'id', type: 'none', autogenerate: 'id' },
     {
@@ -16524,7 +16849,7 @@ exports.SettingsPage = SettingsPage;
 
 /***/ }),
 
-/***/ 8305:
+/***/ 3117:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16545,9 +16870,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AllWordsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_ui_form_1 = __webpack_require__(2771);
-var models_1 = __webpack_require__(249);
-var utils_1 = __webpack_require__(2467);
-var ui_1 = __webpack_require__(2843);
+var models_1 = __webpack_require__(2869);
+var utils_1 = __webpack_require__(2090);
+var ui_1 = __webpack_require__(34);
 var md = "#### Definition of terms";
 var toLexicon = function (arr, header) {
     return arr
@@ -16561,8 +16886,8 @@ var toLexicon = function (arr, header) {
     });
 };
 var lexicon = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], toLexicon(utils_1.mainCapabilityOptions, 'Main capability'), true), toLexicon(utils_1.specificCapabilityOptions, 'Specific capability'), true), toLexicon(utils_1.invasivenessOptions, 'Invasiveness'), true), toLexicon(utils_1.maturityOptions, 'Maturity'), true), toLexicon(utils_1.ethicalConsiderationsOptions, 'Ethical considerations'), true), [
-    { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
-    { a: 'Booster', b: 'The technology can be applied quickly (approx. < 1 hour).' },
+    { a: 'Booster', b: 'The intervention can be applied quickly (approx. < 1 hour).' },
+    { a: 'Booster', b: 'The intervention can be applied quickly (approx. < 1 hour).' },
     {
         a: 'Quality of evidence',
         b: 'Is based on what the type of research, e.g. meta-analyses, large or small sample sizes, randomized controlled trials, controlled environments, peer-reviewed.',
@@ -16570,11 +16895,11 @@ var lexicon = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadAr
     { a: 'Evidence indication', b: 'Whether an effect is present, absent, or undecided.' },
     {
         a: 'Effect direction',
-        b: 'Whether the technology increases or decreases a subjects capability level.',
+        b: 'Whether the intervention increases or decreases a subjects capability level.',
     },
     {
         a: 'HCSE',
-        b: 'Human-Centered Software Engineering.',
+        b: 'Human Capability & Survivability Enhancement.',
     },
 ], false).sort(function (a, b) { return a.a.localeCompare(b.a); });
 var textFilter = '';
@@ -16632,795 +16957,7 @@ exports.AllWordsPage = AllWordsPage;
 
 /***/ }),
 
-/***/ 4819:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TechnologyOverviewPage = void 0;
-var mithril_1 = __importDefault(__webpack_require__(9402));
-var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(2771);
-var images_1 = __webpack_require__(8579);
-var models_1 = __webpack_require__(249);
-var services_1 = __webpack_require__(1153);
-var utils_1 = __webpack_require__(2467);
-var ui_1 = __webpack_require__(2843);
-var TechnologyOverviewPage = function () {
-    var toOptions = function (opt) {
-        return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
-    };
-    var mainCapOpt = toOptions(utils_1.mainCapabilityOptions);
-    var techCatOpt = toOptions(utils_1.technologyCategoryOptions);
-    var invasivenessOpt = toOptions(utils_1.invasivenessOptions);
-    var maturityOpt = toOptions(utils_1.maturityOptions);
-    var availabilityOpt = toOptions(utils_1.availabilityOptions);
-    var ethicalOpt = toOptions(utils_1.ethicalConsiderationsOptions);
-    var evidenceDirOpt = toOptions(utils_1.evidenceDirOptions);
-    var evidenceQualityOpt = toOptions(utils_1.evidenceLevelOptions);
-    var boosterOpt = toOptions(utils_1.boosterOptions);
-    var toTechnologies = function (allTech) {
-        return Object.values(allTech.reduce(function (acc, cur) {
-            var _a, _b;
-            var id = cur.id, img = cur.img, url = cur.url, technology = cur.technology, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, _c = cur.specificCap, specificCap = _c === void 0 ? [] : _c, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore;
-            var key = technology;
-            if (acc.hasOwnProperty(key)) {
-                acc[key].id.push(id);
-                mechanism && acc[key].mechanism.push(mechanism);
-                desc && acc[key].desc.push(desc);
-                keywords && (_a = acc[key].desc).push.apply(_a, keywords);
-                booster && acc[key].booster.push(booster);
-                mainCap && acc[key].mainCap.push(mainCap);
-                specificCap && specificCap instanceof Array && (_b = acc[key].specificCap).push.apply(_b, specificCap);
-                hpeClassification && acc[key].hpeClassification.push(hpeClassification);
-                category && acc[key].category.push(category);
-                invasive && acc[key].invasive.push(invasive);
-                availability && acc[key].availability.push(availability);
-                maturity && acc[key].maturity.push(maturity);
-                hasEthical && acc[key].ethicalConsiderations.push(hasEthical);
-                evidenceDir && acc[key].evidenceDir.push(evidenceDir);
-                evidenceScore && acc[key].evidenceScore.push(evidenceScore);
-            }
-            else {
-                acc[key] = {
-                    curTech: cur,
-                    id: [id],
-                    technology: technology,
-                    img: img,
-                    url: url,
-                    mechanism: [mechanism],
-                    desc: desc ? [desc] : [],
-                    keywords: keywords && keywords.length ? __spreadArray([], keywords, true) : [],
-                    booster: [booster],
-                    mainCap: [mainCap],
-                    specificCap: specificCap instanceof Array ? specificCap : [specificCap],
-                    hpeClassification: [hpeClassification],
-                    category: [category],
-                    invasive: [invasive],
-                    availability: [availability],
-                    maturity: [maturity],
-                    ethicalConsiderations: [],
-                    evidenceDir: [],
-                    evidenceScore: [],
-                };
-            }
-            return acc;
-        }, {}));
-    };
-    var technologies = [];
-    return {
-        oninit: function (_a) {
-            var _b = _a.attrs, model = _b.state.model, setPage = _b.actions.setPage;
-            var _c = model.technologies, allTech = _c === void 0 ? [] : _c;
-            technologies = toTechnologies(allTech);
-            setPage(models_1.Dashboards.TECHNOLOGIES);
-        },
-        // onupdate: () => {
-        //   const elems = document.querySelectorAll('.tooltipped');
-        //   M.Tooltip.init(elems);
-        // },
-        view: function (_a) {
-            var _b, _c, _d, _e, _f, _g, _h;
-            var _j = _a.attrs, _k = _j.state, model = _k.model, curUser = _k.curUser, _l = _k.bookmarks, bookmarks = _l === void 0 ? [] : _l, _m = _k.compareList, compareList = _m === void 0 ? [] : _m, searchFilters = _k.searchFilters, _o = _j.actions, setTechnology = _o.setTechnology, saveModel = _o.saveModel, changePage = _o.changePage, bookmark = _o.bookmark, compare = _o.compare, setSearchFilters = _o.setSearchFilters;
-            if (technologies.length === 0) {
-                var allTech = model.technologies;
-                technologies = toTechnologies(allTech);
-            }
-            var searchFilter = searchFilters.searchFilter, mainCapFilter = searchFilters.mainCapFilter, specificCapFilter = searchFilters.specificCapFilter, categoryFilter = searchFilters.categoryFilter, invasivenessFilter = searchFilters.invasivenessFilter, maturityFilter = searchFilters.maturityFilter, availabilityFilter = searchFilters.availabilityFilter, boosterFilter = searchFilters.boosterFilter, ethicalFilter = searchFilters.ethicalFilter, evidenceDirFilter = searchFilters.evidenceDirFilter, evidenceQualityFilter = searchFilters.evidenceQualityFilter, bookmarked = searchFilters.bookmarked;
-            var searchRegex = searchFilter ? new RegExp(searchFilter, 'i') : undefined;
-            var filteredTechnologies = technologies.filter(function (t) {
-                if (searchRegex &&
-                    !(searchRegex.test(t.technology || '') ||
-                        t.mechanism.some(function (m) { return searchRegex.test(m); }) ||
-                        t.desc.some(function (m) { return searchRegex.test(m); }) ||
-                        t.keywords.some(function (kw) { return searchRegex.test(kw); }))) {
-                    return false;
-                }
-                if (bookmarked && t.id.every(function (id) { return bookmarks.indexOf(id) < 0; }))
-                    return false;
-                if ((boosterFilter && boosterFilter === 1 && !t.booster) ||
-                    (boosterFilter === 2 && t.booster))
-                    return false;
-                if (mainCapFilter && !t.mainCap.some(function (c) { return c === mainCapFilter; })) {
-                    return false;
-                }
-                if (specificCapFilter && !t.specificCap.some(function (c) { return c === specificCapFilter; })) {
-                    return false;
-                }
-                if (categoryFilter && !t.category.some(function (c) { return c === categoryFilter; })) {
-                    return false;
-                }
-                if (invasivenessFilter && !t.invasive.some(function (c) { return c === invasivenessFilter; })) {
-                    return false;
-                }
-                if (maturityFilter && !t.maturity.some(function (c) { return c === maturityFilter; })) {
-                    return false;
-                }
-                if (availabilityFilter && !t.availability.some(function (c) { return c === availabilityFilter; })) {
-                    return false;
-                }
-                if (boosterFilter &&
-                    !t.booster.some(function (c) { return (boosterFilter === models_1.YES_NO.YES && c) || (boosterFilter === models_1.YES_NO.NO && !c); })) {
-                    return false;
-                }
-                if (ethicalFilter && !t.ethicalConsiderations.some(function (c) { return c === ethicalFilter; })) {
-                    return false;
-                }
-                if (evidenceDirFilter && !t.evidenceDir.some(function (c) { return c === evidenceDirFilter; })) {
-                    return false;
-                }
-                if (evidenceQualityFilter && !t.evidenceScore.some(function (c) { return c === evidenceQualityFilter; })) {
-                    return false;
-                }
-                return true;
-            });
-            var hasFilters = filteredTechnologies.length !== technologies.length;
-            return [
-                (0, mithril_1.default)('.row.technology-overview-page', { style: 'height: 95vh' }, [
-                    (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.search-filters', (0, mithril_1.default)('.col.s12.m4', {
-                        style: 'height: 81px',
-                    }, (0, mithril_1.default)(ui_1.TextInputWithClear, {
-                        label: 'Search',
-                        iconName: 'search',
-                        className: 'bottom-margin0',
-                        initialValue: searchFilter,
-                        oninput: function (s) {
-                            searchFilters.searchFilter = s || '';
-                            setSearchFilters(searchFilters);
-                            // m.redraw();
-                        },
-                    })), (0, mithril_1.default)('.col.s6.m2', {
-                        style: 'height: 81px',
-                    }, (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                        modalId: 'search',
-                        iconName: 'manage_search',
-                        label: 'Adv.search',
-                    })), (0, mithril_1.default)('.col.s6.m3', [
-                        (0, mithril_1.default)(mithril_materialized_1.Switch, {
-                            label: 'Bookmarked?',
-                            right: 'Yes',
-                            onchange: function (v) {
-                                searchFilters.bookmarked = v;
-                                setSearchFilters(searchFilters);
-                            },
-                        }),
-                    ]), curUser &&
-                        curUser === 'admin' &&
-                        (0, mithril_1.default)('.right-align', (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                            label: 'Add technology',
-                            iconName: 'add',
-                            className: 'small',
-                            onclick: function () {
-                                var newTech = { id: (0, mithril_materialized_1.uniqueId)() };
-                                model.technologies.push(newTech);
-                                saveModel(model);
-                                changePage(models_1.Dashboards.TECHNOLOGY, { id: newTech.id, edit: 'true' });
-                            },
-                        })))),
-                    hasFilters && [
-                        (0, mithril_1.default)('.col.s12.filters', [
-                            (0, mithril_1.default)('span', "".concat(filteredTechnologies.length, " search result").concat(filteredTechnologies.length === 1 ? '' : 's', ": ")),
-                            mainCapFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Capability: ".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCapFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { mainCapFilter: 0 })); } }, 'close'),
-                                ]),
-                            specificCapFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Spec.cap.: ".concat((0, utils_1.getOptionsLabel)(utils_1.specificCapabilityOptions, specificCapFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { specificCapFilter: 0 })); } }, 'close'),
-                                ]),
-                            categoryFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Category: ".concat((0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, categoryFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', { onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { categoryFilter: 0 })); } }, 'close'),
-                                ]),
-                            invasivenessFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Invasiveness: ".concat((0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, invasivenessFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { invasivenessFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            maturityFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Maturity: ".concat((0, utils_1.getOptionsLabel)(utils_1.maturityOptions, maturityFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { maturityFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            availabilityFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Availability: ".concat((0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, availabilityFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { availabilityFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            boosterFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Booster: ".concat((0, utils_1.getOptionsLabel)(utils_1.boosterOptions, boosterFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { boosterFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            ethicalFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Ethical: ".concat((0, utils_1.getOptionsLabel)(utils_1.NoYesUnknown, ethicalFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { ethicalFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            evidenceDirFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Evidence indication: ".concat((0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, evidenceDirFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () { return setSearchFilters(__assign(__assign({}, searchFilters), { evidenceDirFilter: 0 })); },
-                                    }, 'close'),
-                                ]),
-                            evidenceQualityFilter > 0 &&
-                                (0, mithril_1.default)('.chip', [
-                                    "Evidence quality: ".concat((0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, evidenceQualityFilter, false)),
-                                    (0, mithril_1.default)('i.close.material-icons', {
-                                        onclick: function () {
-                                            return setSearchFilters(__assign(__assign({}, searchFilters), { evidenceQualityFilter: 0 }));
-                                        },
-                                    }, 'close'),
-                                ]),
-                        ]),
-                    ],
-                    filteredTechnologies.map(function (t) {
-                        var isBookmarked = t.id.some(function (id) { return bookmarks.indexOf(id) >= 0; });
-                        var selectedForComparison = t.id.some(function (id) { return compareList.indexOf(id) >= 0; });
-                        return (0, mithril_1.default)('.col.s12.m6.l4.xl3', (0, mithril_1.default)('.card.medium', [
-                            (0, mithril_1.default)('.card-image', [
-                                (0, mithril_1.default)('a', {
-                                    href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
-                                }, [
-                                    (0, mithril_1.default)('img', { src: (0, images_1.resolveImg)(t.url, t.img), alt: t.technology }),
-                                    (0, mithril_1.default)('span.card-title.bold.sharpen', { className: 'black-text' }, 
-                                    // { className: isBookmarked ? 'amber-text' : 'black-text' },
-                                    t.technology),
-                                ]),
-                            ]),
-                            (0, mithril_1.default)('.card-content', [
-                                (0, mithril_1.default)('span.bold', t.mainCap
-                                    .map(function (c, i) {
-                                    return "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, c, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, t.hpeClassification[i], false)).toUpperCase();
-                                })
-                                    .filter(utils_1.isUnique)
-                                    .join(', ')),
-                                (0, mithril_1.default)('p.overflow', t.desc),
-                            ]),
-                            (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a.tooltip', 
-                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
-                            {
-                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(t.id[0])),
-                                onclick: function () { return setTechnology(t.curTech); },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, { iconName: 'visibility' }), (0, mithril_1.default)('span.tooltiptext', 'SHOW')), (0, mithril_1.default)('a.tooltip', 
-                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
-                            {
-                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGIES),
-                                onclick: function () {
-                                    if (isBookmarked) {
-                                        t.id.forEach(function (id) {
-                                            if (bookmarks.indexOf(id) >= 0)
-                                                bookmark(id);
-                                        });
-                                    }
-                                    else {
-                                        bookmark(t.id[0]);
-                                    }
-                                },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: isBookmarked ? 'star' : 'star_border',
-                                className: isBookmarked ? 'amber-text' : '',
-                            }), (0, mithril_1.default)('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')), (0, mithril_1.default)('a.tooltip', 
-                            // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=COMPARE]',
-                            {
-                                href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGIES),
-                                onclick: function () {
-                                    if (selectedForComparison) {
-                                        t.id.forEach(function (id) {
-                                            if (compareList.indexOf(id) >= 0)
-                                                compare(id);
-                                        });
-                                    }
-                                    else {
-                                        compare(t.id[0]);
-                                    }
-                                },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: 'balance',
-                                className: selectedForComparison ? 'amber-text' : '',
-                            }), (0, mithril_1.default)('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE'))),
-                        ]));
-                    }),
-                ]),
-                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
-                    id: 'search',
-                    title: 'Advanced search',
-                    description: (0, mithril_1.default)('.row', {
-                        style: 'max-height: 100%; height: calc(100% - 56px); overflow-y: scroll',
-                    }, (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
-                        form: [
-                            {
-                                id: 'mainCapFilter',
-                                label: 'Main capability',
-                                className: 'col s12 m6 l3',
-                                options: mainCapOpt,
-                                description: mainCapFilter
-                                    ? (_b = mainCapOpt.filter(function (o) { return +o.id === mainCapFilter; }).shift()) === null || _b === void 0 ? void 0 : _b.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific capabilities',
-                                type: 'select',
-                                options: utils_1.specificCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                disabled: true,
-                                show: ['mainCapFilter = 0', '!mainCapFilter'],
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific cognitive capabilities',
-                                type: 'select',
-                                options: utils_1.specificCognitiveCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                show: 'mainCapFilter = 1',
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific physical capabilities',
-                                type: 'select',
-                                options: utils_1.specificPhysicalCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                show: 'mainCapFilter = 2',
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific mental capabilities',
-                                type: 'select',
-                                options: utils_1.specificMentalCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                show: 'mainCapFilter = 3',
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific social capabilities',
-                                type: 'select',
-                                options: utils_1.specificSocialCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                show: 'mainCapFilter = 4',
-                            },
-                            {
-                                id: 'specificCapFilter',
-                                label: 'Specific personality capabilities',
-                                type: 'select',
-                                options: utils_1.specificPersonalityCapabilityOptions,
-                                className: 'col s12 m6 l3',
-                                show: 'mainCapFilter = 5',
-                            },
-                            {
-                                id: 'categoryFilter',
-                                label: 'Category',
-                                className: 'col s12 m6 l3',
-                                options: techCatOpt,
-                                description: categoryFilter
-                                    ? (_c = techCatOpt.filter(function (o) { return +o.id === categoryFilter; }).shift()) === null || _c === void 0 ? void 0 : _c.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'invasivenessFilter',
-                                label: 'Invasiveness',
-                                className: 'col s12 m6 l3',
-                                options: invasivenessOpt,
-                                description: invasivenessFilter
-                                    ? (_d = invasivenessOpt.filter(function (o) { return +o.id === invasivenessFilter; }).shift()) === null || _d === void 0 ? void 0 : _d.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'maturityFilter',
-                                label: 'Maturity',
-                                className: 'col s12 m6 l3',
-                                options: maturityOpt,
-                                description: maturityFilter
-                                    ? (_e = maturityOpt.filter(function (o) { return +o.id === maturityFilter; }).shift()) === null || _e === void 0 ? void 0 : _e.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'availabilityFilter',
-                                label: 'Availability',
-                                className: 'col s12 m6 l3',
-                                options: availabilityOpt,
-                                // description: availabilityFilter
-                                //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
-                                //   : undefined,
-                            },
-                            {
-                                id: 'boosterFilter',
-                                label: 'Booster',
-                                className: 'col s12 m6 l3',
-                                options: boosterOpt,
-                                // description: boosterFilter
-                                //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
-                                //   : undefined,
-                            },
-                            {
-                                id: 'ethicalFilter',
-                                label: 'Ethical considerations',
-                                className: 'col s12 m6 l3',
-                                options: ethicalOpt,
-                                description: ethicalFilter
-                                    ? (_f = ethicalOpt.filter(function (o) { return +o.id === ethicalFilter; }).shift()) === null || _f === void 0 ? void 0 : _f.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'evidenceDirFilter',
-                                label: 'Evidence indication',
-                                className: 'col s12 m6 l3',
-                                options: evidenceDirOpt,
-                                description: evidenceDirFilter
-                                    ? (_g = evidenceDirOpt.filter(function (o) { return +o.id === evidenceDirFilter; }).shift()) === null || _g === void 0 ? void 0 : _g.title
-                                    : undefined,
-                            },
-                            {
-                                id: 'evidenceQualityFilter',
-                                label: 'Evidence quality',
-                                className: 'col s12 m6 l3',
-                                options: evidenceQualityOpt,
-                                description: evidenceQualityFilter
-                                    ? (_h = evidenceQualityOpt.filter(function (o) { return +o.id === evidenceQualityFilter; }).shift()) === null || _h === void 0 ? void 0 : _h.title
-                                    : undefined,
-                            },
-                        ],
-                        obj: searchFilters,
-                        onchange: function () { return setSearchFilters(searchFilters); },
-                    })),
-                    bottomSheet: true,
-                    fixedFooter: true,
-                    buttons: [{ label: 'DONE' }],
-                }),
-            ];
-        },
-    };
-};
-exports.TechnologyOverviewPage = TechnologyOverviewPage;
-
-
-/***/ }),
-
-/***/ 8826:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TechnologyPage = void 0;
-var mithril_1 = __importDefault(__webpack_require__(9402));
-var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(2771);
-var images_1 = __webpack_require__(8579);
-var models_1 = __webpack_require__(249);
-var services_1 = __webpack_require__(1153);
-var utils_1 = __webpack_require__(2467);
-var TechnologyPage = function () {
-    var initTechForm = function (technologies, id, users) {
-        var technologyOptions = technologies
-            .filter(function (t) { return t.id !== id; })
-            .map(function (t) { return ({ id: t.id, label: t.technology }); });
-        return (0, utils_1.technologyForm)(users, technologyOptions);
-    };
-    var id = '';
-    var isEditing = false;
-    var form = [];
-    var allTechnologies = [];
-    var isBookmarked = false;
-    return {
-        oninit: function (_a) {
-            var _b = _a.attrs, _c = _b.state, model = _c.model, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, _e = _b.actions, setPage = _e.setPage, setTechnology = _e.setTechnology;
-            var _f = model.technologies, technologies = _f === void 0 ? [] : _f, _g = model.users, users = _g === void 0 ? [] : _g;
-            setPage(models_1.Dashboards.TECHNOLOGY);
-            id = mithril_1.default.route.param('id') || curTech.id || '';
-            isEditing = mithril_1.default.route.param('edit') === true ? true : false;
-            form = initTechForm(technologies, id, users);
-            var found = id === curTech.id
-                ? curTech
-                : technologies.filter(function (t) { return t.id === id; }).shift() || technologies[0];
-            allTechnologies = found ? technologies.filter(function (t) { return t.technology === found.technology; }) : [];
-            if (found !== curTech)
-                setTechnology(found);
-        },
-        view: function (_a) {
-            var _b = _a.attrs, _c = _b.state, _d = _c.curTech, curTech = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.compareList, compareList = _e === void 0 ? [] : _e, _f = _c.model, model = _f === void 0 ? models_1.defaultModel : _f, curUser = _c.curUser, _g = _b.actions, saveModel = _g.saveModel, changePage = _g.changePage, setTechnology = _g.setTechnology, bookmark = _g.bookmark, compare = _g.compare;
-            var users = model.users, technologies = model.technologies;
-            if (!curTech.id) {
-                form = initTechForm(technologies, id, users);
-                var found_1 = technologies.filter(function (t) { return t.id === id; }).shift() || technologies[0];
-                if (found_1) {
-                    allTechnologies = technologies.filter(function (t) { return t.technology === found_1.technology; });
-                    setTechnology(found_1);
-                }
-                return;
-            }
-            isBookmarked = bookmarks.indexOf(curTech.id) >= 0;
-            var selectedForComparison = compareList.indexOf(curTech.id) >= 0;
-            var ownerId = curTech.owner;
-            var updated = curTech.updated ? new Date(curTech.updated) : undefined;
-            var owner = users.filter(function (u) { return u.id === ownerId; }).shift();
-            var usedLiterature = curTech.literature;
-            var md = (0, utils_1.resolveRefs)(curTech.literature).md2html;
-            var mailtoLink = owner && "mailto:".concat(owner.email, "?subject=").concat(curTech.technology.replace(/ /g, '%20'));
-            var similarTech = curTech.similar &&
-                curTech.similar.length > 0 &&
-                technologies.filter(function (t) { return curTech.similar.indexOf(t.id) >= 0; });
-            return [
-                (0, mithril_1.default)('.row.technology-page', { style: 'height: 95vh' }, curUser &&
-                    curUser === 'admin' && [
-                    (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                        className: 'right no-print',
-                        label: isEditing ? 'Save' : 'Edit',
-                        iconName: isEditing ? 'save' : 'edit',
-                        onclick: function () { return (isEditing = !isEditing); },
-                    }),
-                    isEditing
-                        ? (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                            className: 'right',
-                            label: 'Delete',
-                            iconName: 'delete',
-                            modalId: 'deleteTechnology',
-                        })
-                        : (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                            className: 'right no-print',
-                            label: 'Duplicate',
-                            iconName: 'content_copy',
-                            onclick: function () {
-                                var clone = JSON.parse(JSON.stringify(curTech));
-                                clone.technology += ' (COPY)';
-                                clone.id = (0, mithril_materialized_1.uuid4)();
-                                model.technologies.push(clone);
-                                isEditing = true;
-                                setTechnology(clone);
-                                changePage(models_1.Dashboards.TECHNOLOGY, { id: clone.id });
-                            },
-                        }),
-                ], isEditing
-                    ? (0, mithril_1.default)('.col.s12', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
-                        form: form,
-                        obj: curTech,
-                        onchange: function () {
-                            model.technologies = model.technologies.map(function (t) {
-                                return t.id === curTech.id ? curTech : t;
-                            });
-                            saveModel(model);
-                        },
-                    }))
-                    : [
-                        (0, mithril_1.default)('h3', [
-                            curTech.technology,
-                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
-                                style: 'padding: 0 5px',
-                                onclick: function () { return bookmark(curTech.id); },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: isBookmarked ? 'star' : 'star_border',
-                                className: isBookmarked ? 'amber-text white' : 'white',
-                            })),
-                            (0, mithril_1.default)('a.btn-flat.btn-large.clean', {
-                                style: 'padding: 0 5px',
-                                onclick: function () { return compare(curTech.id); },
-                            }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
-                                iconName: 'balance',
-                                className: selectedForComparison ? 'amber-text white' : 'white',
-                            })),
-                        ]),
-                        curTech.application && (0, mithril_1.default)('h4', md(curTech.application)),
-                        (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin0', allTechnologies.length === 1
-                            ? (0, mithril_1.default)('h5.separator', 'Description')
-                            : (0, mithril_1.default)('h5.separator.button-row', __spreadArray([
-                                'Description'
-                            ], allTechnologies.map(function (t, i) {
-                                return (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                                    className: t.id === curTech.id ? 'bold grey lighten-3' : 'grey lighten-3',
-                                    label: (0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, t.mainCap, false) ||
-                                        "v".concat(i + 1),
-                                    onclick: function () { return setTechnology(t); },
-                                });
-                            }), true)), (0, mithril_1.default)('section', [
-                            curTech.desc && (0, mithril_1.default)('p', curTech.desc),
-                            curTech.category &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Category: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.technologyCategoryOptions, curTech.category),
-                                ]),
-                            curTech.mainCap &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Main capability: '),
-                                    "".concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, curTech.mainCap, false), " ").concat((0, utils_1.getOptionsLabel)(utils_1.hpeClassificationOptions, curTech.hpeClassification, false)),
-                                ]),
-                            curTech.specificCap &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Specific capability: '),
-                                    (0, utils_1.joinListWithAnd)((0, utils_1.optionsToTxt)(curTech.specificCap, utils_1.specificCapabilityOptions, false)) + '.',
-                                ]),
-                            curTech.invasive &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Invasive: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.invasivenessOptions, curTech.invasive) + '.',
-                                ]),
-                            curTech.maturity &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Maturity: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.maturityOptions, curTech.maturity) + '.',
-                                ]),
-                            typeof curTech.booster !== 'undefined' &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Can be used as booster: '),
-                                    "".concat(curTech.booster
-                                        ? 'Yes, the technology can be applied quickly (approx. < 1 hour)'
-                                        : 'No, the technology can not be applied quickly (approx. < 1 hour)', "."),
-                                ]),
-                        ]))),
-                        curTech.url &&
-                            (0, mithril_1.default)('.col.s6.m6', (0, mithril_1.default)('img.responsive-img', {
-                                src: (0, images_1.resolveImg)(curTech.url, curTech.img),
-                                alt: curTech.technology,
-                            })),
-                        (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.bottom-margin0', [
-                            (0, mithril_1.default)('h5.separator', 'How it works'),
-                            curTech.mechanism &&
-                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Mechanism: '), md(curTech.mechanism)]),
-                            curTech.examples &&
-                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Examples: '), md(curTech.examples)]),
-                            curTech.incubation &&
-                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Incubation: '), md(curTech.incubation)]),
-                            curTech.effectDuration &&
-                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Effect duration: '), md(curTech.effectDuration)]),
-                            (0, mithril_1.default)('h5.separator', 'Keep in mind'),
-                            curTech.practical &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold[title=This information is not medical advice, please read the disclaimer!]', mithril_1.default.trust('Practical execution<sup class="red-text">*</sup>: ')),
-                                    md(curTech.practical),
-                                ]),
-                            curTech.sideEffects &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Possible side-effects: '),
-                                    md((0, utils_1.resolveChoice)(curTech.hasSideEffects, curTech.sideEffects)),
-                                ]),
-                            curTech.diff &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Individual differences: '),
-                                    md((0, utils_1.resolveChoice)(curTech.hasIndDiff, curTech.diff)),
-                                ]),
-                            curTech.ethical &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Ethical considerations: '),
-                                    md((0, utils_1.resolveChoice)(curTech.hasEthical, curTech.ethical)),
-                                ]),
-                            similarTech &&
-                                (0, mithril_1.default)('p', (0, mithril_1.default)('span.bold', "Similar technolog".concat(similarTech.length > 1 ? 'ies' : 'y', ": ")), similarTech.map(function (s, i) {
-                                    return (0, mithril_1.default)('a', {
-                                        href: services_1.routingSvc.href(models_1.Dashboards.TECHNOLOGY, "?id=".concat(s.id)),
-                                    }, s.technology + (i < similarTech.length - 1 ? ', ' : '.'));
-                                })),
-                            curTech.evidenceDir &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Evidence indication: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.evidenceDirOptions, curTech.evidenceDir) + '.',
-                                ]),
-                            curTech.evidenceScore &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Quality of evidence: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.evidenceLevelOptions, curTech.evidenceScore) + '.',
-                                ]),
-                            curTech.availability &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Availability: '),
-                                    (0, utils_1.getOptionsLabel)(utils_1.availabilityOptions, curTech.availability) + '.',
-                                ]),
-                            (0, mithril_1.default)('h5.separator', 'References'),
-                        ])),
-                        (0, mithril_1.default)('.col.s12.m8', (0, mithril_1.default)('.row', [
-                            usedLiterature && [
-                                (0, mithril_1.default)('ol.browser-default', usedLiterature.map(function (l) {
-                                    return (0, mithril_1.default)('li', (0, mithril_1.default)('a', {
-                                        href: l.doi,
-                                        alt: l.title,
-                                        target: '_blank',
-                                    }, l.title));
-                                })),
-                            ],
-                        ])),
-                        owner &&
-                            (0, mithril_1.default)('.col.s12.m4', (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Expert: '), owner.name + '.']), (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Email: '), (0, mithril_1.default)('a', { href: mailtoLink }, owner.email)]), owner.phone &&
-                                (0, mithril_1.default)('p', [
-                                    (0, mithril_1.default)('span.bold', 'Phone: '),
-                                    (0, mithril_1.default)('a', { href: "tel:".concat(owner.phone) }, owner.phone),
-                                ]), updated &&
-                                (0, mithril_1.default)('p', [(0, mithril_1.default)('span.bold', 'Last update: '), updated.toDateString() + '.'])),
-                    ]),
-                (0, mithril_1.default)(mithril_materialized_1.ModalPanel, {
-                    id: 'deleteTechnology',
-                    title: "Delete ".concat(curTech.technology, "?"),
-                    description: "Are you sure that you want to delete ".concat(curTech.technology, "?"),
-                    buttons: [
-                        {
-                            label: 'Yes',
-                            iconName: 'delete',
-                            onclick: function () {
-                                model.technologies = model.technologies.filter(function (t) { return t.id !== curTech.id; });
-                                saveModel(model);
-                                changePage(models_1.Dashboards.TECHNOLOGIES);
-                            },
-                        },
-                        { label: 'No', iconName: 'cancel' },
-                    ],
-                }),
-            ];
-        },
-    };
-};
-exports.TechnologyPage = TechnologyPage;
-
-
-/***/ }),
-
-/***/ 2843:
+/***/ 34:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17440,13 +16977,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(7614), exports);
-__exportStar(__webpack_require__(5796), exports);
+__exportStar(__webpack_require__(3595), exports);
+__exportStar(__webpack_require__(7456), exports);
 
 
 /***/ }),
 
-/***/ 7614:
+/***/ 3595:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17476,7 +17013,7 @@ exports.CircularSpinner = CircularSpinner;
 
 /***/ }),
 
-/***/ 5796:
+/***/ 7456:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17488,7 +17025,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TextInputWithClear = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(2467);
+var utils_1 = __webpack_require__(2090);
 var TextInputWithClear = function () {
     var id;
     var input;
@@ -17561,7 +17098,7 @@ exports.TextInputWithClear = TextInputWithClear;
 
 /***/ }),
 
-/***/ 66:
+/***/ 4064:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17572,8 +17109,8 @@ var Dashboards;
 (function (Dashboards) {
     Dashboards["HOME"] = "HOME";
     Dashboards["TAXONOMY"] = "TAXONOMY";
-    Dashboards["TECHNOLOGIES"] = "TECHNOLOGIES";
-    Dashboards["TECHNOLOGY"] = "TECHNOLOGY";
+    Dashboards["INTERVENTIONS"] = "INTERVENTIONS";
+    Dashboards["INTERVENTION"] = "INTERVENTION";
     Dashboards["ABOUT"] = "ABOUT";
     Dashboards["SETTINGS"] = "SETTINGS";
     Dashboards["OVERVIEW"] = "OVERVIEW";
@@ -17584,29 +17121,29 @@ var Dashboards;
 
 /***/ }),
 
-/***/ 8908:
+/***/ 2244:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AVAILABILITY = exports.EVIDENCE_DIRECTION = exports.EVIDENCE_LEVEL = exports.LITERATURE_TYPE = exports.MATURITY = exports.EFFECT_DIRECTION = exports.INVASIVENESS_OBTRUSIVENESS = exports.YES_NO = exports.PERSONALITY_CAPABILITY = exports.SOCIAL_CAPABILITY = exports.MENTAL_CAPABILITY = exports.PHYSICAL_CAPABILITY = exports.COGNITION_CAPABILITY = exports.SPECIFIC_CAPABILITY = exports.MAIN_CAPABILITY = exports.HPE_CLASSIFICATION = exports.CHOICE = exports.STATUS = exports.TECHNOLOGY_CATEGORY = exports.defaultModel = void 0;
+exports.AVAILABILITY = exports.EVIDENCE_DIRECTION = exports.EVIDENCE_LEVEL = exports.LITERATURE_TYPE = exports.MATURITY = exports.EFFECT_DIRECTION = exports.INVASIVENESS_OBTRUSIVENESS = exports.YES_NO = exports.PERSONALITY_CAPABILITY = exports.SOCIAL_CAPABILITY = exports.MENTAL_CAPABILITY = exports.PHYSICAL_CAPABILITY = exports.COGNITION_CAPABILITY = exports.SPECIFIC_CAPABILITY = exports.MAIN_CAPABILITY = exports.HPE_CLASSIFICATION = exports.CHOICE = exports.STATUS = exports.INTERVENTION_CATEGORY = exports.defaultModel = void 0;
 exports.defaultModel = {
     version: 1,
     lastUpdate: new Date().valueOf(),
-    technologies: [],
+    interventions: [],
     users: [],
 };
-var TECHNOLOGY_CATEGORY;
-(function (TECHNOLOGY_CATEGORY) {
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["HARDWARE"] = 1] = "HARDWARE";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["BIO_ENHANCEMENT"] = 2] = "BIO_ENHANCEMENT";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION"] = 3] = "PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["TRAINING"] = 4] = "TRAINING";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["SELF_REGULATION"] = 5] = "SELF_REGULATION";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["NUTRITION"] = 6] = "NUTRITION";
-    TECHNOLOGY_CATEGORY[TECHNOLOGY_CATEGORY["OTHER"] = 7] = "OTHER";
-})(TECHNOLOGY_CATEGORY = exports.TECHNOLOGY_CATEGORY || (exports.TECHNOLOGY_CATEGORY = {}));
+var INTERVENTION_CATEGORY;
+(function (INTERVENTION_CATEGORY) {
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["HARDWARE"] = 1] = "HARDWARE";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["BIO_ENHANCEMENT"] = 2] = "BIO_ENHANCEMENT";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION"] = 3] = "PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["TRAINING"] = 4] = "TRAINING";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["SELF_REGULATION"] = 5] = "SELF_REGULATION";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["NUTRITION"] = 6] = "NUTRITION";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["OTHER"] = 7] = "OTHER";
+})(INTERVENTION_CATEGORY = exports.INTERVENTION_CATEGORY || (exports.INTERVENTION_CATEGORY = {}));
 var STATUS;
 (function (STATUS) {
     STATUS[STATUS["FIRST_DRAFT"] = 1] = "FIRST_DRAFT";
@@ -17813,7 +17350,7 @@ var AVAILABILITY;
 
 /***/ }),
 
-/***/ 249:
+/***/ 2869:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17833,14 +17370,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(66), exports);
-__exportStar(__webpack_require__(8908), exports);
-__exportStar(__webpack_require__(1029), exports);
+__exportStar(__webpack_require__(4064), exports);
+__exportStar(__webpack_require__(2244), exports);
+__exportStar(__webpack_require__(2346), exports);
 
 
 /***/ }),
 
-/***/ 1029:
+/***/ 2346:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17850,7 +17387,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 1153:
+/***/ 3778:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17870,13 +17407,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(6438), exports);
-__exportStar(__webpack_require__(8434), exports);
+__exportStar(__webpack_require__(6932), exports);
+__exportStar(__webpack_require__(2438), exports);
 
 
 /***/ }),
 
-/***/ 6438:
+/***/ 6932:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17923,10 +17460,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cells = exports.appActions = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var meiosis_setup_1 = __webpack_require__(3527);
-var _1 = __webpack_require__(1153);
-var models_1 = __webpack_require__(249);
-var local_ldb_1 = __webpack_require__(3448);
+var meiosis_setup_1 = __webpack_require__(7414);
+var _1 = __webpack_require__(3778);
+var models_1 = __webpack_require__(2869);
+var local_ldb_1 = __webpack_require__(3318);
 var MODEL_KEY = 'HPET_MODEL';
 var CUR_USER_KEY = 'HPET_CUR_USER';
 var BOOKMARKS_KEY = 'HPET_BOOKMARK';
@@ -17945,8 +17482,10 @@ var appActions = function (_a) {
         saveModel: function (model) {
             model.lastUpdate = Date.now();
             model.version = model.version ? ++model.version : 1;
-            if (model.technologies)
-                model.technologies.sort(function (a, b) { return (a.technology || '').localeCompare(b.technology || ''); });
+            if (model.interventions)
+                model.interventions.sort(function (a, b) {
+                    return (a.intervention || '').localeCompare(b.intervention || '');
+                });
             local_ldb_1.ldb.set(MODEL_KEY, JSON.stringify(model));
             // console.log(JSON.stringify(model, null, 2));
             update({ model: function () { return model; } });
@@ -17955,7 +17494,9 @@ var appActions = function (_a) {
             local_ldb_1.ldb.set(CUR_USER_KEY, curUser);
             update({ curUser: curUser });
         },
-        setTechnology: function (curTech) { return update({ curTech: function () { return curTech; } }); },
+        setIntervention: function (curIntervention) {
+            return update({ curIntervention: function () { return curIntervention; } });
+        },
         bookmark: function (id) {
             return update({
                 bookmarks: function (bookmarks) {
@@ -17987,9 +17528,13 @@ var appActions = function (_a) {
             });
         },
         setCompareList: function (ids) {
+            local_ldb_1.ldb.set(COMPARE_LIST_KEY, JSON.stringify(ids));
             update({ compareList: function () { return ids; } });
         },
-        setSearchFilters: function (searchFilters) { return update({ searchFilters: searchFilters }); },
+        setSearchFilters: function (searchFilters) {
+            // console.log(JSON.stringify(searchFilters, null, 2));
+            update({ searchFilters: searchFilters });
+        },
     });
 };
 exports.appActions = appActions;
@@ -18026,7 +17571,7 @@ var app = {
     initial: {
         page: models_1.Dashboards.HOME,
         model: models_1.defaultModel,
-        curTech: undefined,
+        curIntervention: undefined,
         bookmarks: [],
         compareList: [],
         curUser: 'mod',
@@ -18042,7 +17587,7 @@ exports.cells.map(function () {
 
 /***/ }),
 
-/***/ 6073:
+/***/ 9368:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -18074,8 +17619,7 @@ function registerServiceWorker(config) {
                 // Add some additional logging to localhost, pointing developers to the
                 // service worker/PWA documentation.
                 navigator.serviceWorker.ready.then(function () {
-                    console.log('This web app is being served cache-first by a service ' +
-                        'worker. To learn more, visit https://cra.link/PWA');
+                    console.log('This web app is being served cache-first by a service worker.');
                 });
             }
             else {
@@ -18168,7 +17712,7 @@ exports.unregister = unregister;
 
 /***/ }),
 
-/***/ 8434:
+/***/ 2438:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -18190,11 +17734,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.routingSvc = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(249);
-var meiosis_1 = __webpack_require__(6438);
-var layout_1 = __webpack_require__(5534);
-var components_1 = __webpack_require__(6224);
-var technology_overview_page_1 = __webpack_require__(4819);
+var models_1 = __webpack_require__(2869);
+var meiosis_1 = __webpack_require__(6932);
+var layout_1 = __webpack_require__(9077);
+var components_1 = __webpack_require__(9551);
+var intervention_overview_page_1 = __webpack_require__(654);
 var RoutingService = /** @class */ (function () {
     function RoutingService(dashboards) {
         this.setList(dashboards);
@@ -18271,21 +17815,21 @@ exports.routingSvc = new RoutingService([
         component: components_1.HomePage,
     },
     {
-        id: models_1.Dashboards.TECHNOLOGIES,
+        id: models_1.Dashboards.INTERVENTIONS,
         title: 'OVERVIEW',
         icon: 'dashboard',
         // icon: 'display_settings',
         route: '/overview',
         visible: true,
-        component: technology_overview_page_1.TechnologyOverviewPage,
+        component: intervention_overview_page_1.InterventionOverviewPage,
     },
     {
-        id: models_1.Dashboards.TECHNOLOGY,
-        title: 'TECHNOLOGY',
-        icon: 'lightbulb',
-        route: '/technology',
+        id: models_1.Dashboards.INTERVENTION,
+        title: 'INTERVENTION',
+        icon: 'visibility',
+        route: '/intervention',
         visible: true,
-        component: components_1.TechnologyPage,
+        component: components_1.InterventionPage,
     },
     {
         id: models_1.Dashboards.COMPARE,
@@ -18324,7 +17868,7 @@ exports.routingSvc = new RoutingService([
 
 /***/ }),
 
-/***/ 2467:
+/***/ 2090:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -18342,11 +17886,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.technologyForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.ethicalConsiderationsOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.technologyCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
+exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.interventionForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.ethicalConsiderationsOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.interventionCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var mithril_ui_form_1 = __webpack_require__(2771);
-var models_1 = __webpack_require__(249);
+var models_1 = __webpack_require__(2869);
 var supRegex = /\^([^_ ]+)(_|$|\s)/g;
 var subRegex = /\_([^\^ ]+)(\^|$|\s)/g;
 /** Expand markdown notation by converting A_1 to subscript and x^2 to superscript. */
@@ -18419,15 +17963,16 @@ var joinListWithAnd = function (arr, and, prefix) {
     if (arr === void 0) { arr = []; }
     if (and === void 0) { and = 'and'; }
     if (prefix === void 0) { prefix = ''; }
-    return arr.length === 0
+    var terms = arr.filter(function (term) { return term; });
+    return terms.length === 0
         ? ''
         : prefix +
-            (arr.length === 1
-                ? arr[0]
-                : "".concat(arr
-                    .slice(0, arr.length - 1)
-                    .map(function (t, i) { return (i === 0 ? t : t.toLowerCase()); })
-                    .join(', '), " ").concat(and, " ").concat(arr[arr.length - 1].toLowerCase()));
+            (terms.length === 1
+                ? terms[0]
+                : "".concat(terms
+                    .slice(0, terms.length - 1)
+                    .map(function (t, i) { return (i === 0 || typeof t === 'undefined' ? t : t.toLowerCase()); })
+                    .join(', '), " ").concat(and, " ").concat(terms[terms.length - 1].toLowerCase()));
 };
 exports.joinListWithAnd = joinListWithAnd;
 /** Convert a list of options to text (label + title?) */
@@ -18463,34 +18008,34 @@ var resolveChoice = function (choice, text) {
             : text;
 };
 exports.resolveChoice = resolveChoice;
-exports.technologyCategoryOptions = [
-    { id: models_1.TECHNOLOGY_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
-    { id: models_1.TECHNOLOGY_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
+exports.interventionCategoryOptions = [
+    { id: models_1.INTERVENTION_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
+    { id: models_1.INTERVENTION_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
     {
-        id: models_1.TECHNOLOGY_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
+        id: models_1.INTERVENTION_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
         label: 'Pharmacological substances, supplements and nutrition',
         title: '',
     },
-    { id: models_1.TECHNOLOGY_CATEGORY.TRAINING, label: 'Training', title: '' },
-    { id: models_1.TECHNOLOGY_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
-    { id: models_1.TECHNOLOGY_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
-    { id: models_1.TECHNOLOGY_CATEGORY.OTHER, label: 'Other', title: '' },
+    { id: models_1.INTERVENTION_CATEGORY.TRAINING, label: 'Training', title: '' },
+    { id: models_1.INTERVENTION_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
+    { id: models_1.INTERVENTION_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
+    { id: models_1.INTERVENTION_CATEGORY.OTHER, label: 'Other', title: '' },
 ];
 exports.hpeClassificationOptions = [
     {
         id: models_1.HPE_CLASSIFICATION.OPTIMIZATION,
         label: 'Optimization',
-        title: 'The technology improves human performance on a specific capability within biological limits',
+        title: 'The intervention improves human performance on a specific capability within biological limits',
     },
     {
         id: models_1.HPE_CLASSIFICATION.ENHANCEMENT,
         label: 'Enhancement',
-        title: 'The technology improves human performance on a specific capability above biological limits',
+        title: 'The intervention improves human performance on a specific capability above biological limits',
     },
     {
         id: models_1.HPE_CLASSIFICATION.DEGRADATION,
         label: 'Degradation',
-        title: 'The technology decreases human performance on a specific capability',
+        title: 'The intervention decreases human performance on a specific capability',
     },
 ];
 exports.mainCapabilityOptions = [
@@ -18820,24 +18365,24 @@ exports.maturityOptions = [
     {
         id: models_1.MATURITY.MEDIUM,
         label: 'Medium',
-        title: 'A small body of research exists indicating effectiveness of the technology. Low TRL level applications',
+        title: 'A small body of research exists indicating effectiveness of the intervention. Low TRL level applications',
     },
     {
         id: models_1.MATURITY.HIGH,
         label: 'High',
-        title: 'One or more meta-analyses indicate effectiveness. The technology is already applied in practice',
+        title: 'One or more meta-analyses indicate effectiveness. The intervention is already applied in practice',
     },
 ];
 exports.effectDirectionOptions = [
     {
         id: models_1.EFFECT_DIRECTION.NEGATIVE,
         label: 'Negative',
-        title: 'The technology decreases a subjects capability level',
+        title: 'The intervention decreases a subjects capability level',
     },
     {
         id: models_1.EFFECT_DIRECTION.POSITIVE,
         label: 'Positive',
-        title: 'The technology increases a subjects capability level',
+        title: 'The intervention increases a subjects capability level',
     },
 ];
 exports.ethicalConsiderationsOptions = [
@@ -18898,8 +18443,8 @@ exports.availabilityOptions = [
     { id: models_1.AVAILABILITY.UNKNOWN, label: 'Unknown' },
 ];
 exports.boosterOptions = [
-    { id: 1, label: 'Yes', title: 'The technology can be applied quickly (approx. < 1 hour)' },
-    { id: 2, label: 'No', title: 'The technology can not be applied quickly (approx. < 1 hour)' },
+    { id: 1, label: 'Yes', title: 'The intervention can be applied quickly (approx. < 1 hour)' },
+    { id: 2, label: 'No', title: 'The intervention can not be applied quickly (approx. < 1 hour)' },
 ];
 var literatureTypeOptions = [
     { id: models_1.LITERATURE_TYPE.CASE_STUDY, label: 'Case study' },
@@ -18941,13 +18486,14 @@ var literatureForm = [
         className: 'col s4 m3',
     },
 ];
-var technologyForm = function (users, technologyOptions) {
+var interventionForm = function (users, interventionOptions) {
     return [
         { id: 'id', type: 'none', autogenerate: 'id' },
         { id: 'updated', type: 'none', autogenerate: 'timestamp' },
         {
-            id: 'technology',
-            label: 'Technology title',
+            id: 'intervention',
+            label: 'Intervention title',
+            required: true,
             type: 'text',
             className: 'col s6 m8',
         },
@@ -18956,7 +18502,7 @@ var technologyForm = function (users, technologyOptions) {
             label: 'Category',
             type: 'select',
             multiple: true,
-            options: exports.technologyCategoryOptions,
+            options: exports.interventionCategoryOptions,
             className: 'col s6 m4',
         },
         {
@@ -18971,13 +18517,13 @@ var technologyForm = function (users, technologyOptions) {
             type: 'tags',
             className: 'col s12',
         },
-        {
-            id: 'owner',
-            label: 'Owner',
-            type: 'select',
-            options: users.map(function (u) { return ({ id: u.id, label: u.name }); }),
-            className: 'col s12',
-        },
+        // {
+        //   id: 'owner',
+        //   label: 'Owner',
+        //   type: 'select',
+        //   options: users.map((u) => ({ id: u.id, label: u.name })),
+        //   className: 'col s12',
+        // },
         // {
         //   id: 'status',
         //   label: 'Status',
@@ -18994,14 +18540,9 @@ var technologyForm = function (users, technologyOptions) {
         //   className: 'col s4',
         // },
         {
-            id: 'application',
-            label: 'Specific application',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
             id: 'mainCap',
             label: 'Main capability',
+            required: true,
             type: 'select',
             className: 'col s6 m3',
             options: exports.mainCapabilityOptions,
@@ -19078,10 +18619,10 @@ var technologyForm = function (users, technologyOptions) {
         },
         {
             id: 'similar',
-            label: 'Similar technologies',
+            label: 'Similar interventions',
             type: 'select',
             multiple: true,
-            options: technologyOptions,
+            options: interventionOptions,
             className: 'col s12',
         },
         {
@@ -19134,21 +18675,21 @@ var technologyForm = function (users, technologyOptions) {
             label: 'Individual differences',
             type: 'textarea',
             className: 'col s12',
-            show: 'hasIndDiff > 1',
+            show: 'hasIndDiff > 2',
         },
         {
             id: 'sideEffects',
             label: 'Side effects',
             type: 'textarea',
             className: 'col s12',
-            show: 'hasSideEffects > 1',
+            show: 'hasSideEffects > 2',
         },
         {
             id: 'ethical',
             label: 'Ethical considerations',
             type: 'textarea',
             className: 'col s12',
-            show: 'hasEthical > 1',
+            show: 'hasEthical > 2',
         },
         {
             id: 'examples',
@@ -19181,8 +18722,15 @@ var technologyForm = function (users, technologyOptions) {
             id: 'evidenceScore',
             label: 'Evidence quality',
             type: 'select',
-            className: 'col s12 m5',
+            className: 'col s12 m2',
             options: exports.evidenceLevelOptions,
+        },
+        {
+            id: 'owner',
+            label: 'Owner',
+            type: 'select',
+            options: users.map(function (u) { return ({ id: u.id, label: u.name }); }),
+            className: 'col s12 m3',
         },
         // {
         //   id: 'evidenceScore',
@@ -19215,7 +18763,7 @@ var technologyForm = function (users, technologyOptions) {
         },
     ];
 };
-exports.technologyForm = technologyForm;
+exports.interventionForm = interventionForm;
 /** Convert markdown text to HTML */
 var markdown2html = function (markdown) {
     if (markdown === void 0) { markdown = ''; }
@@ -19253,7 +18801,7 @@ exports.isUnique = isUnique;
 
 /***/ }),
 
-/***/ 3448:
+/***/ 3318:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -19614,7 +19162,7 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(9761);
+/******/ 	var __webpack_exports__ = __webpack_require__(4965);
 /******/ 	
 /******/ })()
 ;
