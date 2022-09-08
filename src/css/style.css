@@ -663,3 +663,30 @@ a > i.large-icon {
   font-size: 2rem;
   vertical-align: middle;
 }
+
+#adv-search {
+  max-height: 100%;
+  height: calc(100% - 56px);
+}
+
+@media only screen and (max-width: 601px) {
+  #adv-search {
+    overflow-y: scroll;
+  }
+}
+
+.dropdown-content li {
+  min-height: 35px;
+}
+.dropdown-content li > a,
+.dropdown-content li > span {
+  padding: 7px 8px;
+}
+
+table th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 65px;
+  z-index: 1;
+  background: #fff;
+}
