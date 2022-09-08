@@ -476,8 +476,8 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                         alt: t.intervention,
                       }),
                       m(
-                        'span.card-title.bold.sharpen',
-                        { className: 'black-text' },
+                        'span.card-title.bold.sharpen.black-text',
+                        { title: t.intervention },
                         // { className: isBookmarked ? 'amber-text' : 'black-text' },
                         t.intervention
                       ),
