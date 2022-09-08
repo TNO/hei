@@ -228,7 +228,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     })
                   ),
                 ]),
-                curIntervention.application && m('h4', md(curIntervention.application)),
+                curIntervention.desc && m('p.bold', md(curIntervention.desc)),
                 m(
                   '.col.s12.m6',
                   m(
@@ -251,7 +251,6 @@ export const InterventionPage: MeiosisComponent = () => {
                           ),
                         ]),
                     m('section', [
-                      curIntervention.desc && m('p', curIntervention.desc),
                       curIntervention.category &&
                         m('p', [
                           m('span.bold', 'Category: '),
