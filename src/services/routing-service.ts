@@ -111,7 +111,7 @@ export const routingSvc: RoutingService = new RoutingService([
   {
     id: Dashboards.INTERVENTION,
     title: 'INTERVENTION',
-    icon: 'lightbulb',
+    icon: 'visibility',
     route: '/intervention',
     visible: true,
     component: InterventionPage,
