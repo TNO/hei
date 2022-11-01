@@ -81,7 +81,8 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:description',
-              content: 'Train your memory, quickly and effectively!',
+              content:
+                'A database where you can look for means to enhance human performance, e.g. by using drugs, specific training or other means.',
             },
           },
           {
