@@ -323,6 +323,8 @@ li.collection-item:first-child {
 /* Tooltip container */
 .tooltip {
   position: relative;
+  cursor: help;
+  color: darkblue;
   /* display: inline-block; */
   /* border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }

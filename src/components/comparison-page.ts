@@ -20,9 +20,11 @@ import {
 import { render } from 'mithril-ui-form';
 
 export const ComparisonPage: MeiosisComponent = () => {
+  const ASPECT_COL_WIDTH = 100;
   let isInitialized = false;
   let interventionLookup = {} as Record<string, { name: string; technology?: Intervention }>;
   let autocompleteData = {} as Record<string, null>;
+  let pageWidth = 400;
 
   const toName = (t: Intervention) =>
     `${t.intervention}: ${getOptionsLabel(mainCapabilityOptions, t.mainCap, false)}`;
@@ -51,6 +53,9 @@ export const ComparisonPage: MeiosisComponent = () => {
     }) => {
       setPage(Dashboards.COMPARE);
     },
+    oncreate: ({ dom }) => {
+      pageWidth = dom.clientWidth;
+    },
     view: ({
       attrs: {
         state: { compareList = [], model },
@@ -61,6 +66,9 @@ export const ComparisonPage: MeiosisComponent = () => {
       const selectedInterventions = compareList.map(
         (c) => interventionLookup[c].technology
       ) as Intervention[];
+
+      const colWidth = Math.round((pageWidth - ASPECT_COL_WIDTH) / selectedInterventions.length);
+
       return m('.row.compare', { style: 'height: 85vh' }, [
         m('.col.s12', [
           m(Chips, {
@@ -81,8 +89,10 @@ export const ComparisonPage: MeiosisComponent = () => {
         compareList.length > 0 &&
           m('table', [
             m('tr', [
-              m('th', 'Aspect'),
-              ...selectedInterventions.map((t) => m('th', t.intervention)),
+              m('th', { style: `width: ${ASPECT_COL_WIDTH}px` }, 'Aspect'),
+              ...selectedInterventions.map((t) =>
+                m('th', { style: `width: ${colWidth}px` }, t.intervention)
+              ),
             ]),
             m('tr', [
               m('td', m('b', 'Category')),
@@ -189,14 +199,14 @@ export const ComparisonPage: MeiosisComponent = () => {
               m('td', m('b', 'Effect duration')),
               ...selectedInterventions.map((t) => m('td', t.effectDuration)),
             ]),
-            m('tr', [
-              m('td', m('b', 'Examples')),
-              ...selectedInterventions.map((t) => m('td', t.examples)),
-            ]),
-            m('tr', [
-              m('td', m('b', 'Practical')),
-              ...selectedInterventions.map((t) => m('td', t.practical)),
-            ]),
+            // m('tr', [
+            //   m('td', m('b', 'Examples')),
+            //   ...selectedInterventions.map((t) => m('td', t.examples)),
+            // ]),
+            // m('tr', [
+            //   m('td', m('b', 'Practical')),
+            //   ...selectedInterventions.map((t) => m('td', t.practical)),
+            // ]),
           ]),
       ]);
     },

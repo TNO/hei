@@ -462,8 +462,6 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           filteredInterventions.map((t) => {
             const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
             const selectedForComparison = t.id.some((id) => compareList.indexOf(id) >= 0);
-            const url = `url(${resolveImg(t.url, t.img)})`;
-            console.log(url);
             return m(
               '.col.s12.m6.l4.xl3',
               m('.card.medium', [
@@ -475,7 +473,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                     },
                     [
                       m('.v-image', {
-                        style: `background-image: ${url}`,
+                        style: `background-image: url(${resolveImg(t.url, t.img)})`,
                         // alt: t.intervention,
                       }),
                       m(
