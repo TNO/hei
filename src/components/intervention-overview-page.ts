@@ -567,6 +567,26 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
             m(LayoutForm, {
               form: [
                 {
+                  id: 'selectedFilters',
+                  label: 'Select filters',
+                  className: 'col s12',
+                  multiple: true,
+                  options: [
+                    { id: 'mainCapFilter', label: 'Capability' },
+                    { id: 'categoryFilter', label: 'Category' },
+                    { id: 'invasivenessFilter', label: 'Invasiveness' },
+                    { id: 'maturityFilter', label: 'Maturity' },
+                    { id: 'availabilityFilter', label: 'Availability' },
+                    { id: 'boosterFilter', label: 'Booster' },
+                    { id: 'ethicalFilter', label: 'Ethical' },
+                    { id: 'evidenceDirFilter', label: 'Evidence indication' },
+                    { id: 'evidenceQualityFilter', label: 'Evidence quality' },
+                  ],
+                  description: mainCapFilter
+                    ? mainCapOpt.filter((o) => +o.id === mainCapFilter).shift()?.title
+                    : undefined,
+                },
+                {
                   id: 'mainCapFilter',
                   label: 'Main capability',
                   className: 'col s12 m6 l4',
@@ -574,16 +594,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: mainCapFilter
                     ? mainCapOpt.filter((o) => +o.id === mainCapFilter).shift()?.title
                     : undefined,
-                },
-                {
-                  id: 'specificCapFilter',
-                  label: 'Specific capabilities',
-                  placeholder: 'Choose main capability first',
-                  type: 'select',
-                  options: specificCapabilityOptions,
-                  className: 'col s12 m6 l4',
-                  disabled: true,
-                  show: ['mainCapFilter = 0', '!mainCapFilter'],
+                  show: 'selectedFilters = mainCapFilter',
                 },
                 {
                   id: 'specificCapFilter',
@@ -633,6 +644,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: categoryFilter
                     ? techCatOpt.filter((o) => +o.id === categoryFilter).shift()?.title
                     : undefined,
+                  show: 'selectedFilters = categoryFilter',
                 },
                 {
                   id: 'invasivenessFilter',
@@ -642,6 +654,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: invasivenessFilter
                     ? invasivenessOpt.filter((o) => +o.id === invasivenessFilter).shift()?.title
                     : undefined,
+                  show: 'selectedFilters = invasivenessFilter',
                 },
                 {
                   id: 'maturityFilter',
@@ -651,6 +664,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: maturityFilter
                     ? maturityOpt.filter((o) => +o.id === maturityFilter).shift()?.title
                     : undefined,
+                  show: 'selectedFilters = maturityFilter',
                 },
                 {
                   id: 'availabilityFilter',
@@ -660,6 +674,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   // description: availabilityFilter
                   //   ? availabilityOpt.filter((o) => o.id === availabilityFilter).shift()?.title
                   //   : undefined,
+                  show: 'selectedFilters = availabilityFilter',
                 },
                 {
                   id: 'boosterFilter',
@@ -669,6 +684,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   // description: boosterFilter
                   //   ? availabilityOpt.filter((o) => o.id === boosterFilter).shift()?.title
                   //   : undefined,
+                  show: 'selectedFilters = boosterFilter',
                 },
                 {
                   id: 'ethicalFilter',
@@ -678,6 +694,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: ethicalFilter
                     ? ethicalOpt.filter((o) => +o.id === ethicalFilter).shift()?.title
                     : undefined,
+                  show: 'selectedFilters = ethicalFilter',
                 },
                 {
                   id: 'evidenceDirFilter',
@@ -687,6 +704,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                   description: evidenceDirFilter
                     ? evidenceDirOpt.filter((o) => +o.id === evidenceDirFilter).shift()?.title
                     : undefined,
+                  show: 'selectedFilters = evidenceDirFilter',
                 },
                 {
                   id: 'evidenceQualityFilter',
@@ -697,6 +715,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                     ? evidenceQualityOpt.filter((o) => +o.id === evidenceQualityFilter).shift()
                         ?.title
                     : undefined,
+                  show: 'selectedFilters = evidenceQualityFilter',
                 },
               ] as UIForm<SearchFilter>,
               obj: searchFilters,

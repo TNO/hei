@@ -1,4 +1,5 @@
 export type SearchFilter = {
+  selectedFilters: string[];
   searchFilter: string;
   mainCapFilter: number;
   specificCapFilter: number;

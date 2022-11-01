@@ -734,4 +734,7 @@ table th {
   .card-img-height {
     height: 150px;
   }
+  .modal.bottom-sheet {
+    max-height: 65%;
+  }
 }
