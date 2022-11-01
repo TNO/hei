@@ -302,11 +302,11 @@ li.collection-item:first-child {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.card-title {
+/* .card-title {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-}
+} */
 
 .comment {
   background-color: lightgrey;
