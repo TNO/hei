@@ -462,23 +462,25 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           filteredInterventions.map((t) => {
             const isBookmarked = t.id.some((id) => bookmarks.indexOf(id) >= 0);
             const selectedForComparison = t.id.some((id) => compareList.indexOf(id) >= 0);
+            const url = `url(${resolveImg(t.url, t.img)})`;
+            console.log(url);
             return m(
               '.col.s12.m6.l4.xl3',
               m('.card.medium', [
-                m('.card-image', [
+                m('.v-responsive.card-img-height', [
                   m(
                     'a',
                     {
                       href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
                     },
                     [
-                      m('img', {
-                        src: resolveImg(t.url, t.img),
-                        alt: t.intervention,
+                      m('.v-image', {
+                        style: `background-image: ${url}`,
+                        // alt: t.intervention,
                       }),
                       m(
                         'span.card-title.bold.sharpen.black-text',
-                        { title: t.intervention },
+                        { title: t.intervention, style: 'z-index: 100' },
                         // { className: isBookmarked ? 'amber-text' : 'black-text' },
                         t.intervention
                       ),

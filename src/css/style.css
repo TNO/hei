@@ -690,3 +690,46 @@ table th {
   z-index: 1;
   background: #fff;
 }
+
+.v-responsive {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex: 1 0 auto;
+  max-width: 100%;
+}
+
+.v-responsive .card-title {
+  position: absolute;
+  padding: 5px;
+}
+
+.v-image {
+  /* z-index: -1; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.card-img-height {
+  height: 200px;
+}
+
+/* On screens that are 992px or less, set the background color to blue */
+@media screen and (max-width: 992px) {
+  .card-img-height {
+    height: 175px;
+  }
+}
+
+/* On screens that are 600px or less, set the background color to olive */
+@media screen and (max-width: 600px) {
+  .card-img-height {
+    height: 150px;
+  }
+}
