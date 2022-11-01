@@ -164,6 +164,12 @@ export const InterventionPage: MeiosisComponent = () => {
                       className: 'right',
                       label: 'Suggest similar',
                       iconName: 'auto_awesome',
+                      disabled: !(
+                        curIntervention.mainCap &&
+                        curIntervention.specificCap &&
+                        (!(curIntervention.specificCap instanceof Array) ||
+                          curIntervention.specificCap.length > 0)
+                      ),
                       onclick: () => {
                         curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
                       },
