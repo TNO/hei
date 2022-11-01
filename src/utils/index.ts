@@ -17,6 +17,7 @@ import {
   STATUS,
   INTERVENTION_CATEGORY,
   User,
+  Intervention,
 } from '../models';
 
 const supRegex = /\^([^_ ]+)(_|$|\s)/g;
@@ -653,7 +654,7 @@ const literatureForm = [
     options: literatureTypeOptions,
     className: 'col s4 m3',
   },
-] as UIForm;
+] as UIForm<Literature>;
 
 export const interventionForm = (
   users: User[],
@@ -935,7 +936,7 @@ export const interventionForm = (
       pageSize: 20,
       type: literatureForm,
     },
-  ] as UIForm;
+  ] as UIForm<Intervention>;
 };
 
 /** Convert markdown text to HTML */

@@ -1,6 +1,6 @@
 import m from 'mithril';
 import { FlatButton, Icon, ModalPanel, uniqueId } from 'mithril-materialized';
-import { LayoutForm, UIForm } from 'mithril-ui-form';
+import { ILayoutForm, LayoutForm, UIForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import {
   AVAILABILITY,
@@ -16,6 +16,7 @@ import {
   Intervention,
   INTERVENTION_CATEGORY,
   YES_NO,
+  SearchFilter,
 } from '../models';
 import { MeiosisComponent, routingSvc } from '../services';
 import {
@@ -697,10 +698,10 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                         ?.title
                     : undefined,
                 },
-              ] as UIForm,
+              ] as UIForm<SearchFilter>,
               obj: searchFilters,
               onchange: () => setSearchFilters(searchFilters),
-            })
+            } as ILayoutForm<SearchFilter>)
           ),
           bottomSheet: true,
           fixedFooter: true,

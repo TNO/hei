@@ -1,6 +1,6 @@
 import m from 'mithril';
 import { Collapsible, FlatButton } from 'mithril-materialized';
-import { LayoutForm, UIForm } from 'mithril-ui-form';
+import { ILayoutForm, LayoutForm, UIForm } from 'mithril-ui-form';
 import { Dashboards, defaultModel, User } from '../models';
 import { MeiosisComponent } from '../services';
 
@@ -43,7 +43,7 @@ const userForm = [
     type: 'url',
     className: 'col s12',
   },
-] as UIForm;
+] as UIForm<User>;
 
 export const SettingsPage: MeiosisComponent = () => {
   let newUser = {} as User;
@@ -76,7 +76,7 @@ export const SettingsPage: MeiosisComponent = () => {
                     form: userForm,
                     obj: user,
                     onchange: () => saveModel(model),
-                  }),
+                  } as ILayoutForm<User>),
                   m(FlatButton, {
                     label: 'Delete',
                     iconName: 'delete',
@@ -102,7 +102,7 @@ export const SettingsPage: MeiosisComponent = () => {
                 onchange: (isValid) => {
                   canSaveUser = isValid;
                 },
-              }),
+              } as ILayoutForm<User>),
             m(FlatButton, {
               label: addUser ? 'Save' : 'Add User',
               disabled: addUser ? !canSaveUser : false,
