@@ -12378,20 +12378,20 @@ $jscomp.polyfill = function (e, r, p, m) {
 
 /***/ }),
 
-/***/ 9806:
+/***/ 8885:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.meiosisSetup = void 0;
-var setup_1 = __webpack_require__(7210);
+var setup_1 = __webpack_require__(2606);
 Object.defineProperty(exports, "meiosisSetup", ({ enumerable: true, get: function () { return setup_1.meiosisSetup; } }));
 
 
 /***/ }),
 
-/***/ 7210:
+/***/ 2606:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -12401,8 +12401,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.meiosisSetup = void 0;
-const simple_stream_1 = __webpack_require__(6775);
-const util_1 = __webpack_require__(7150);
+const simple_stream_1 = __webpack_require__(5617);
+const util_1 = __webpack_require__(6345);
 const mergerino_1 = __importDefault(__webpack_require__(8474));
 const assoc = (prop, value, target) => {
     target[prop] = value;
@@ -12459,15 +12459,17 @@ const baseSetup = ({ stream, app }) => {
 };
 const nestPatch = (patch, prop) => ({ [prop]: patch });
 const nestUpdate = (parentUpdate, prop) => (patch) => parentUpdate(nestPatch(patch, prop));
-const nestCell = (getState, parentUpdate, components) => (prop) => {
-    const getNestedState = () => getState()[prop];
+const nestCell = (states, parentUpdate, components) => (prop) => {
+    const nestedStates = states.map((state) => state[prop]);
+    const getNestedState = () => states()[prop];
     const nestedUpdate = nestUpdate(parentUpdate, prop);
     const nestedComponents = (0, util_1.get)(components, [prop, 'nested']);
     return {
+        states: nestedStates,
         state: getNestedState(),
         getState: getNestedState,
         update: nestedUpdate,
-        nest: nestCell(getNestedState, nestedUpdate, nestedComponents),
+        nest: nestCell(nestedStates, nestedUpdate, nestedComponents),
         nested: nestedComponents
     };
 };
@@ -12489,7 +12491,7 @@ const meiosisSetup = (config) => {
     });
     const nest = nestCell(states, update, view);
     const getState = () => states();
-    const getCell = (state) => ({ state, getState, update, nest, nested: view });
+    const getCell = (state) => ({ states, state, getState, update, nest, nested: view });
     const dropRepeats = (0, simple_stream_1.createDropRepeats)(stream);
     if (app) {
         getServices(app).forEach((service) => {
@@ -12504,7 +12506,7 @@ exports.meiosisSetup = meiosisSetup;
 
 /***/ }),
 
-/***/ 6775:
+/***/ 5617:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -12614,7 +12616,7 @@ exports.dropRepeats = (0, exports.createDropRepeats)();
 
 /***/ }),
 
-/***/ 7150:
+/***/ 6345:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -12725,7 +12727,7 @@ const e=Object.assign||((e,t)=>(t&&Object.keys(t).forEach(o=>e[o]=t[o]),e)),t=(e
 
 /***/ }),
 
-/***/ 6099:
+/***/ 7682:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12735,7 +12737,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 5277:
+/***/ 2653:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12745,7 +12747,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 5503:
+/***/ 3236:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12836,7 +12838,7 @@ const a=()=>"idxxxxxxxx".replace(/[x]/g,()=>(16*Math.random()|0).toString(16)),i
 
 /***/ }),
 
-/***/ 8332:
+/***/ 134:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12873,8 +12875,8 @@ const t=[[/\r\n/g,"\n"],[/\n(#+)(.*)/g,(t,n,e="")=>{const r=n.length;return`<h${
 
 // EXTERNAL MODULE: ./node_modules/.pnpm/mithril-materialized@1.0.1/node_modules/mithril-materialized/dist/index.modern.js
 var index_modern = __webpack_require__(6777);
-;// CONCATENATED MODULE: ./node_modules/.pnpm/mithril-ui-form@1.7.1/node_modules/mithril-ui-form/lib/index.esm.js
-const O=e=>e.charAt(0).toUpperCase()+e.slice(1),S=e=>"string"==typeof e,N=function(e,t,n){return void 0===t&&(t=2),void 0===n&&(n="0"),e.toString().length>=t?e.toString():N(n+e,t,n)},$=e=>`${N(e.getHours())}:${N(e.getMinutes())}`,j=(e,t)=>{const n=(t=(t=t.replace(/\[(\w+)\]/g,".$1")).replace(/^\./,"")).split(".");let a={...e};for(let t=0,i=n.length;t<i;++t){const i=n[t];if(i in a)a=a[i];else{if(!(a instanceof Array))return;{const t=e[i]||i,n=/([A-Z]\w+)/.exec(i),o=n&&n[0][0].toLowerCase()+n[0].substr(1)||i,r=a.filter(e=>e[o]===t).shift();if(!r)return;a=r}}}return a},A=/([^ =><]*)\s*([=><]*)\s*(\S*)/i,V=/^\s*!\s*/,C=(e,t)=>{const n=e.split("&"),a=t.reduce((e,t)=>t instanceof Array?[...e,...t]:[...e,t],[]);return n.reduce((e,t)=>{const n=V.test(t),i=n?t.replace(V,""):t;return e=e&&a.filter(Boolean).reduce((e,t)=>e||((e,t)=>{if(!t||0===Object.keys(t).length)return!1;const n=A.exec(e);if(n){const[e,a,i,o]=n,r=j(t,a.trim()),l="boolean"==typeof r?r?"true":"false":r;if(void 0===l||"string"==typeof l&&0===l.length)return!1;if(!i||!o)return!0;{const t=isNaN(+o)?"true"===o||"false"!==o&&o:+o;switch(i){case"=":return l instanceof Array?l.indexOf(t)>=0:l===t;case"<=":return l<=t;case">=":return l>=t;case"<":return l<t;case">":return l>t;default:return console.error(`Unrecognized operand (${i}) in expression: ${e}`),!1}}}return!0})(i.trim(),t),!1),n?!e:e},!0)},L=function(e){const t=e instanceof Array?e:[e];return 0===e.length||t.some(e=>C(e,[].slice.call(arguments,1)))},T=(e,t)=>j(t.filter(Boolean).reduceRight((e,t)=>({...t,...e})),e.trim()),P=(e,t)=>void 0!==T(e,t),F=/{{\s*([^\s"'`:]*):?([^\s]*)\s*}}/g,M=function(e){if(!F.test(e))return!0;let t;F.lastIndex=0;let n=!0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((e,t,a)=>{let[,i]=a;n=n&&P(i,[].slice.call(arguments,1))}))}while(n&&null!==t);return n},E=(e,t)=>{if(void 0===e)return"";if(e instanceof Array)return e.map(e=>E(e,t)).join(", ");if(!t)return e.toString();if("boolean"==typeof e){const n=t.indexOf(":");return e?t.substring(0,n):t.substring(n+1)}switch(t){default:return e.toString();case"date":return new Date(e).toLocaleDateString();case"time":return new Date(e).toLocaleTimeString();case"iso":return new Date(e).toISOString();case"utc":return new Date(e).toUTCString()}},H=function(e){if(!F.test(e))return e;let t;F.lastIndex=0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((t,n,a)=>{let[i,o,r]=a;const l=T(o,[].slice.call(arguments,1));!l||l instanceof Array||(e=e.replace(i,E(l,r)))}))}while(null!==t);return e},U=e=>{if(null===e)return e;if(e instanceof Date)return new Date(e.getTime());if(e instanceof Array){const t=[];return e.forEach(e=>{t.push(e)}),t.map(e=>U(e))}if("object"==typeof e){const t={...e};return Object.keys(t).forEach(e=>{t[e]=U(t[e])}),t}return e},_=e=>{const t=function(e,n){return void 0===n&&(n=""),e.filter(e=>"section"!==e.type&&"md"!==e.type).reduce((e,a)=>{const i=(n?`${n}.`:"")+String(a.id),o=a.type||(a.options&&a.options.length>0?"select":"text");return"string"==typeof o?e[i]=a:e={...e,...t(o,i)},e},{})},n=t(e),a=(e,t)=>{if(!n.hasOwnProperty(e)||void 0===t)return t;const a=n[e],i=t instanceof Array?t.filter(e=>null!=e):[t];switch(a.type||(a.options?"options":"none")){default:return t;case"radio":case"select":case"options":const e="string"==typeof a.options?T(a.options,[n]):a.options;return i.map(t=>e.filter(e=>e.id===t).map(e=>e.label||O(e.id)).shift()).filter(e=>void 0!==e)}},i=function(e,t){if(void 0===t&&(t=""),e&&("object"!=typeof e||0!==Object.keys(e).length)){if(e instanceof Array)return e.map(e=>i(e,t));{const n={};return Object.keys(e).forEach(o=>{const r=t?`${t}.${o}`:o,l=e[o];if("boolean"==typeof l)n[o]=l;else if("number"==typeof l||"string"==typeof l){const e=a(r,l);e&&(n[o]=e instanceof Array&&1===e.length?e[0]:e)}else if(l instanceof Array)if("string"==typeof l[0]||null===l[0]){const e=a(r,l);e&&(n[o]=e)}else n[o]=i(l,o);else"object"==typeof l&&(n[o]=l)}),n}}};return i},R=function(e){return void 0===e&&(e=""),e.replace(/\s|,|\./g,"").toLowerCase()},J=function(e,t,n){void 0===n&&(n=1);const a=[];for(let i=e;i<=t;i+=n)a.push(i);return a},q=e=>{"string"!=typeof e&&(e=JSON.stringify(e));let t=0;if(0===e.length)return t;for(var n=0;n<e.length;n++)t=(t<<5)-t+e.charCodeAt(n),t&=t;return t},z=(e,t,n)=>{const a=Object.assign({},t,n);return`${e}?${Object.keys(a).map(e=>`${e}=${a[e]}`).join("&")}`},W=()=>({view:n=>{let{attrs:{md:a="",removeParagraphs:i=!1,externalLinks:o=!1,...r}}=n;return mithril_default()(".slimdown-view.markdown",r,mithril_default().trust(slimdown_modern_n(a,i,o)))}}),B=()=>({view:t=>{let{attrs:{type:n,props:a,label:i="",initialValue:o,inline:r=!1}}=t;const l={className:a.className||"col s12"};if(o instanceof Array&&o.length>3)return mithril_default()(".readonly",l,[mithril_default()("label",i),mithril_default()(W,{md:"\n- "+o.join("\n- ")})]);if("string"==typeof o)return mithril_default()(".readonly",l,"url"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()("a[target=_blank]",{href:o},o)]:"color"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()(".color",{style:`height: 1rem; width: 40px; border-radius: 4px; background-color: ${o}`})]:[mithril_default()("label",i),mithril_default()(W,{md:o})]);const s=o instanceof Array?o.join(", "):o;return mithril_default()(".readonly",l,[i&&mithril_default()("label",i),r?mithril_default()("span",s?`: ${s}`:mithril_default().trust("&nbsp;")):mithril_default()("p",s||mithril_default().trust("&nbsp;"))])}}),Y=function(w,x){void 0===w&&(w={}),void 0===x&&(x={});const I=()=>{const I={key:Date.now()};return{view:k=>{let{attrs:{i18n:D,field:S,obj:N,autofocus:j,onchange:A,context:V,containerId:C,disabled:P,readonly:F}}=k;const{id:E="",type:U,disabled:_=P,readonly:R=F,value:J,required:q,autogenerate:z,show:Y,label:G,description:K,i18n:Z=D||{},checkAllOptions:Q,transform:X,effect:te}=S;if(Y&&!L(Y,N,V)||G&&!M(G,N,V)||K&&!M(K,N,V))return;const ne="string"==typeof S.options?T(S.options,[N,...V]):S.options,ae=ne&&ne instanceof Array?ne.filter(e=>void 0!==e.id&&(e.label||!/[0-9]/.test(e.id))&&(!e.show||L(e.show,N,V))).map(e=>e.label?e:{...e,label:O(e.id)}):[],ie="boolean"==typeof P&&P,oe=function(e,n,i){void 0===n&&(n=!1),void 0===i&&(i=!1);const{id:o="",label:r,description:l,required:s,multiple:c,className:d,checkboxClass:u,icon:p,iconClass:m,placeholder:f,maxLength:g,minLength:h,max:y,min:b,step:v,dateTimeOutput:w,dateTimeSeconds:x,dateFormat:I,twelveHour:k}=e,D={id:`${String(o)}-${(0,index_modern.uniqueId)()}`,label:r};return void 0===r&&o&&(D.label=O(String(o))),l&&(D.helperText=slimdown_modern_n(l,!0)),d&&(D.className=d),p&&(D.iconName=p),m&&(D.iconClass=m),u&&(D.checkboxClass=u),f&&(D.placeholder=f),s&&(D.isMandatory=!0),c&&(D.multiple=c),i&&(D.disabled=!0),n&&(D.autofocus=!0),void 0!==g&&(D.maxLength=g),void 0!==h&&(D.minLength=h),void 0!==y&&(D.max=y),void 0!==b&&(D.min=b),void 0!==v&&(D.step=v),w&&(D.dateTimeOutput=w),x&&(D.dateTimeSeconds=x),I&&(D.dateFormat=I),k&&(D.twelveHour=k),D}(S,j,"boolean"==typeof _||void 0===_?ie||_:ie||L(_,N,V));G&&(oe.label=slimdown_modern_n(H(oe.label||G,N,V),!0)),K&&(oe.description=slimdown_modern_n(H(oe.description||K,N,V),!0));const re=q?e=>e instanceof Array?e&&e.length>0:void 0!==typeof e:void 0;if(N instanceof Array)return void console.warn("Only a repeat list can deal with arrays!");const le=function(e){try{return void 0===e||"undefined"===e?(delete N[E],A(N),Promise.resolve()):(N[E]=X?X("to",e):e,te?Promise.resolve(te(N,N[E],V)).then(function(e){A(void 0!==e?e:N)}):Promise.resolve(A(N)))}catch(e){return Promise.reject(e)}};if(U instanceof Array)return E?(N.hasOwnProperty(E)||(N[E]={}),mithril_default()(".muf-form",{className:S.className},[mithril_default()(".muf-form-header",mithril_default().trust(slimdown_modern_n(oe.label||O(String(E)),!0))),oe.description&&mithril_default()("div",mithril_default().trust(slimdown_modern_n(oe.description))),mithril_default()(".row",mithril_default()(ee,{...oe,i18n:Z,readonly:R,form:U,obj:N[E],context:[N,...V],onchange:()=>A(N),containerId:C}))])):void console.warn("Missing ID for type "+JSON.stringify(U));z&&!N[E]&&(N[E]="guid"===z?(0,index_modern.uuid4)():"id"===z?(0,index_modern.uniqueId)():Date.now());const se=N.hasOwnProperty(E)&&void 0!==N[E]?X?X("from",N[E]):N[E]:J;E&&void 0!==J&&void 0!==se&&(N[E]=X?X("to",se):se);const[ce,de]=Q?Q.split("|"):["",""],{className:ue}=oe;if(R&&U&&["md","none"].indexOf(U)<0){if(x.hasOwnProperty(U))return mithril_default()(x[U],{iv:se,field:S,props:oe,label:oe.label,obj:N,context:V});if(U&&w.hasOwnProperty(U))return mithril_default()(w[U],{iv:se,field:S,props:oe,label:oe.label,onchange:le,obj:N,context:V});switch(U){case"time":{const t=se||new Date,n=$(t);return mithril_default()(B,{props:oe,label:oe.label,initialValue:n})}case"date":{const t=se,n="number"==typeof t||"string"==typeof t||t instanceof Date?new Date(t).toLocaleDateString():"";return mithril_default()(B,{props:oe,label:oe.label,initialValue:n})}case"checkbox":return mithril_default()(B,{props:oe,label:oe.label,initialValue:se?"✔":"✘",inline:!0});case"tags":return mithril_default()(B,{props:oe,label:oe.label,initialValue:se||[]});case"options":case"select":{const t=void 0!==se?se instanceof Array?se:[se]:[],n=ae.filter(e=>t.indexOf(e.id)>=0),a=n&&0===n.length?"?":1===n.length?n[0].label:n.map(e=>e.label);return mithril_default()(B,{props:oe,label:oe.label,initialValue:a})}case"radio":{const t=se,n=ae.filter(e=>e.id===t);return mithril_default()(B,{props:oe,initialValue:n&&n.length?n[0].label:"?"})}case"base64":{const t=se;return!(!t||!/data:image/i.test(t))&&mithril_default()("div",mithril_default()("img.responsive-img",{src:t,alt:N.title||N.alt||N.name||"",style:`max-height: ${S.max||50}px`}))}case"file":{const t=se;return mithril_default()("div",oe,(t instanceof Array?t:[t]).map(function(t){void 0===t&&(t="");const n=/data:image|.jpg$|.jpeg$|.png$|.gif$|.svg$|.bmp$|.tif$|.tiff$/i.test(t),a=`${new URL(S.url).origin}${t}`;return mithril_default()("a[target=_blank]",{href:a},n?mithril_default()("img",{src:a,alt:a,style:`max-height: ${S.max||50}`}):mithril_default()(B,{props:oe,label:S.placeholder||"File",initialValue:t}))}))}case"markdown":{const n="string"==typeof se&&se?slimdown_modern_n(se):"";return mithril_default()(B,{props:oe,label:oe.label,initialValue:n})}default:return mithril_default()(B,{props:oe,type:U,label:oe.label,initialValue:se})}}else{if(U&&w.hasOwnProperty(U))return mithril_default()(w[U],{iv:se,field:S,props:oe,label:oe.label,onchange:le,obj:N,context:V});switch(U){case"colour":case"color":{const t=se;return mithril_default()(index_modern.ColorInput,{...oe,initialValue:t,onchange:le})}case"time":{const{twelveHour:t=!1}=oe,n=se?"number"==typeof se||"string"==typeof se?new Date(se):se:new Date,a=$(n);return N[E]=X?X("to",n):n,mithril_default()(index_modern.TimePicker,{...oe,twelveHour:t,initialValue:a,onchange:e=>{const t=e.split(":").map(e=>+e);n.setHours(t[0],t[1]),le(n)},container:C})}case"date":{const{format:t="mmmm d, yyyy"}=oe,n="number"==typeof se||"string"==typeof se?new Date(se):se;N[E]=n?X?X("to",n.valueOf()):n.valueOf():n;const{min:a,max:i}=oe,o=a?!n||a<n.valueOf()?new Date(a):n:void 0,r=i?!n||i>n.valueOf()?new Date(i):n:void 0;return mithril_default()(index_modern.DatePicker,{...oe,minDate:o,maxDate:r,setDefaultDate:!!n,format:t,initialValue:n,onchange:e=>{le(new Date(e))},container:C})}case"datetime":{const{label:t,className:n="col s12",dateTimeSeconds:a=!1,twelveHour:i=!1,format:o="mmmm d, yyyy",...r}=oe,l="number"==typeof se||"string"==typeof se?new Date(se):se,s={initialDateTime:l},c=l||void 0,d=l?$(l):"",{min:u,max:p}=oe,m=u?!l||u<l.valueOf()?new Date(u):l:void 0,f=p?!l||p>l.valueOf()?new Date(p):l:void 0,h=oe.dateTimeOutput||"UTC",v=e=>{s.initialDateTime=e,le("UTC"===h?e.toUTCString():"ISO"===h?e.toISOString():e.valueOf())};return mithril_default()("div",{className:n},mithril_default()(".row",[mithril_default()(a?".col.s6":".col.s8",{style:"padding-right: 0"},mithril_default()(index_modern.DatePicker,{...r,label:t,minDate:m,maxDate:f,setDefaultDate:!!l,format:o,initialValue:c,container:C,onchange:e=>{const t=new Date(s.initialDateTime);t.setFullYear(e.getFullYear()),t.setMonth(e.getMonth()),t.setDate(e.getDate()),v(t)}})),mithril_default()(".col.s4",{style:"min-width: 6rem; padding-right: 0; padding-left: 0"},mithril_default()(index_modern.TimePicker,{...r,label:"",helperText:"",twelveHour:i,initialValue:d,container:C,onchange:e=>{const t=e.split(":").map(e=>+e),n=s.initialDateTime||new Date((new Date).setSeconds(0,0));n.setHours(t[0],t[1]),v(n)}})),a&&mithril_default()(index_modern.NumberInput,{style:"min-width: 4rem; padding-right: 0; padding-left: 0",className:"col s2",min:0,max:59,onchange:e=>{const t=s.initialDateTime||new Date((new Date).setSeconds(0,0));t.setSeconds(e,0),v(t)}})]))}case"email":{const t=se;return mithril_default()(index_modern.EmailInput,{...oe,validate:re,autofocus:j,onchange:le,initialValue:t})}case"number":{const t=se;return mithril_default()(index_modern.NumberInput,{...oe,validate:re,autofocus:j,onchange:le,initialValue:t})}case"radio":{const t=se;return mithril_default()(index_modern.RadioButtons,{label:"",...oe,options:ae,checkedId:t,onchange:le})}case"checkbox":{const t=se;return mithril_default()(index_modern.InputCheckbox,{...oe,checked:t,onchange:le})}case"options":{const t=se;return[[mithril_default()(index_modern.Options,{key:I.key,checkboxClass:"col s6 m4 l3",className:"input-field col s12",...oe,disabled:oe.disabled||!ae||0===ae.length,options:ae,checkedId:t,onchange:e=>le(1===e.length?e[0]:e.filter(e=>null!==e))})],void 0!==Q&&mithril_default()(".col.s12.option-buttons",[mithril_default()(index_modern.FlatButton,{disabled:oe.disabled,label:ce,iconName:"check",onclick:()=>{I.key=Date.now(),le(ae.map(e=>e.id))}}),de&&mithril_default()(index_modern.FlatButton,{disabled:oe.disabled,label:de,iconName:"check_box_outline_blank",onclick:()=>{const e=N[E]||[];e.length=0,I.key=Date.now(),le(e)}})])]}case"select":{const t=se;return mithril_default()(index_modern.Select,{placeholder:oe.multiple?Z.pickOneOrMore||"Pick one or more":Z.pickOne||"Pick one",...oe,disabled:oe.disabled||!ae||0===ae.length,options:ae,checkedId:t,onchange:e=>le(1!==e.length||oe.multiple?e.filter(e=>null!==e||void 0!==e):e[0])})}case"md":const t=H((E?se:J||G)||"",N,V);return mithril_default()(W,{md:t,className:ue});case"section":return mithril_default()(".divider");case"switch":{const t=se,n=ae&&ae.length>0?ae[0].label:"",a=ae&&ae.length>1?ae[1].label:"";return mithril_default()(index_modern.Switch,{...oe,left:n,right:a,checked:t,onchange:le})}case"tags":{const t=(se?se instanceof Array?se:[se]:[]).map(e=>({tag:e})),n=ae&&ae.length>0?{data:ae.reduce((e,t)=>(e[t.id]=null,e),{}),limit:S.maxLength||Infinity,minLenght:S.minLength||1}:{},{label:a,isMandatory:i,className:o,helperText:r}=oe;return mithril_default()(index_modern.Chips,{className:o,label:a,isMandatory:i,helperText:r,onchange:e=>le(e.map(e=>e.tag)),placeholder:S.placeholder||"Add a tag",secondaryPlaceholder:S.secondaryPlaceholder||"+tag",data:t,autocompleteOptions:n})}case"markdown":case"textarea":{const t=se;return mithril_default()(index_modern.TextArea,{...oe,validate:re,autofocus:j,onchange:le,initialValue:t})}case"file":{const t=se,{url:n,placeholder:a}=S;if(!n)throw Error('Input field "url" not defined, which indicates the URL to the upload folder.');const i=ae?ae.map(e=>e.id):void 0,o=t=>{if(!t||t.length<1)return void le("");const a=new FormData;a.append("file",t[0]),mithril_default().request({method:"POST",url:n,body:a}).then(e=>le(e)).catch(console.error)};return mithril_default()(index_modern.FileInput,{...oe,accept:i,placeholder:a,onchange:o,initialValue:t})}case"base64":{const t=se,n=!(!t||!/data:image/i.test(t)),{placeholder:a}=S,i=ae?ae.map(e=>e.id).join(","):void 0,o=t=>{if(!t||t.length<1)return void le("");const n=new FileReader;n.onloadend=()=>{"string"==typeof n.result&&le(n.result),mithril_default().redraw()},n.readAsDataURL(t[0])};return n?mithril_default()("div",[mithril_default()("img.responsive-img",{src:t,alt:N.title||N.alt||N.name||"",style:`max-height: ${S.max||50}px`}),mithril_default()(index_modern.FlatButton,{iconName:"clear",onclick:()=>le("")})]):mithril_default()(index_modern.FileInput,{...oe,accept:i,placeholder:a,onchange:o,initialValue:t})}case"url":{const t=se;return mithril_default()(index_modern.UrlInput,{placeholder:"http(s)://www.example.com",...oe,validate:re,autofocus:j,onchange:le,initialValue:t})}case"text":{const t=se;return mithril_default()(index_modern.TextInput,{...oe,validate:re,autofocus:j,onchange:le,initialValue:t,tabindex:15})}default:return}}}}};return{createFormField:()=>I}},G=()=>{const t={},n=(e,n)=>{const a=t.onNewItem?t.onNewItem(e,n):{};e instanceof Array?e.push(a):e.hasOwnProperty(n)?e[n].push(a):e[n]=[a]};let o;return{oninit:e=>{let{attrs:{i18n:n={},field:{id:a="",sortProperty:i,onNewItem:r}}}=e;t.editLabel=n.editRepeat||`Edit ${String(a)}`,t.createLabel=n.createRepeat||`Create new ${String(a)}`,t.onNewItem=r,o=(e=>{if(!e)return(e,t)=>0;const t="!"===e[0],n=t?e.substring(1):e;return t?(e,t)=>e[n]>t[n]?-1:e[n]<t[n]?1:0:(e,t)=>e[n]>t[n]?1:e[n]<t[n]?-1:0})(i)},view:l=>{let{attrs:{field:s,obj:c,context:d,className:u=(s.className?"."+s.className.split(" ").join("."):".col.s12"),section:p,containerId:m,disabled:f=("boolean"==typeof s.disabled?s.disabled:void 0),readonly:g,i18n:h={},onchange:y}}=l;const{modalKey:b,filterValue:v}=t,{id:k,label:D,type:O,min:S,max:N,pageSize:$,propertyFilter:j,filterLabel:A,readonly:V=g,repeatItemClass:C=""}=s,L="edit_"+(D?D.toLowerCase().replace(/\s/gi,"_"):(0,index_modern.uniqueId)()),T=((e,t)=>e instanceof Array?e:(e.hasOwnProperty(t)||(e[t]=[]),e[t]))(c,k),P=v?R(v):void 0,F=j&&P&&P.length>2?T.filter(e=>R(`${e[j]}`).indexOf(P)>=0):T,M=mithril_default().route.param(String(k))?Math.min(F.length,+mithril_default().route.param(String(k))):1,E=$&&F&&(M-1)*$<F.length?M:1,H=$?(e,t)=>(E-1)*$<=t&&t<E*$:()=>!0,U=mithril_default().route.get(),_=$?Math.ceil(F.length/$):0,W=!!(N&&F.length>=N),B=!f&&(!S||F.length>S),Y=U.split("?")[0],G=(e=>{const t=e?e.split("?")[1]:window.location.search.slice(1),n={};if(t){const e=t.split("&");for(var a=0;a<e.length;a++){const t=e[a].split("="),i=t[0],o=void 0===t[1]||t[1];if(i.match(/\[(\d+)?\]$/)){const e=n[i.replace(/\[(\d+)?\]/,"")]||[];i.match(/\[\d+\]$/)?e[+/\[(\d+)\]/.exec(i)[1]]=o:e.push(o)}else n[i]?"string"==typeof n[i]?(n[i]=[n[i]],n[i].push(o)):n[i].push(o):n[i]=o}}return n})(U);return[[mithril_default()(`#${String(k)}.mui-repeat-list${u}`,[mithril_default()(".row.mui-repeat-list-controls",mithril_default()(".col.s12",[mithril_default()(index_modern.FlatButton,{iconName:f||W?"":"add",iconClass:"right",label:D,onclick:()=>{n(c,String(k)),k&&mithril_default().route.set(Y,Object.assign(G,{[k]:F.length})),y&&y(c)},style:"padding: 0",className:"left",disabled:f||W,readonly:V}),_>1&&mithril_default()(".right",mithril_default()(index_modern.Pagination,{curPage:E,items:J(1,_).map(e=>({href:z(Y,G,{[k]:e})}))})),(F.length>1||v)&&j&&!f&&mithril_default()(index_modern.TextInput,{style:"margin-top: -6px; margin-bottom: -1rem;",iconName:"filter_list",iconClass:"small",placeholder:A,onkeyup:(e,n)=>t.filterValue=n,className:"right",disabled:f,readonly:V})])),F&&F.length>0&&"string"!=typeof O&&F.sort(o).filter(H).map((n,a)=>[B&&[mithril_default()(index_modern.RoundIconButton,{type:"button",iconName:"clear",iconClass:"white black-text",className:"row mui-delete-item btn-small right",style:"padding: 0; margin-top: -10px; margin-right: -25px",disabled:f,readonly:V,onclick:()=>{t.curItemIdx=$?(E-1)*$+a:a}}),(!$||$>1)&&mithril_default()("span.mui-show-item-number",`[${($?(E-1)*$+a:a)+1}]`)],[mithril_default()(".row.repeat-item",{className:C,key:M+q(n)},[mithril_default()(ee,{form:s.type,obj:n,i18n:h,context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,disabled:f,readonly:V,onchange:()=>y&&y(c)})])]]),!(f||W||V||!F||0===F.length||1===$)&&mithril_default()(index_modern.RoundIconButton,{iconName:"add",iconClass:"white black-text",className:"row mui-add-new-item btn-small right",title:D,style:"padding: 0; margin-top: -10px; margin-right: -25px",onclick:()=>{n(c,String(k)),mithril_default().route.set(Y,Object.assign(G,{[k]:F.length})),y&&y(c)}})])],void 0!==t.curItemIdx&&mithril_default()(index_modern.ModalPanel,{id:"deleteItem",onCreate:e=>e.open(),options:{onCloseStart:()=>{t.curItemIdx=void 0,mithril_default().redraw()}},fixedFooter:!0,title:h.deleteItem||"Delete item",description:mithril_default()(ee,{form:O,obj:F[t.curItemIdx],context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,readonly:!0,i18n:h}),buttons:[{label:h.disagree||"Disagree"},{label:h.agree||"Agree",onclick:()=>{void 0!==t.curItemIdx&&(F.splice(t.curItemIdx,1),c instanceof Array?c=[...F]:c[k]=[...F],y&&y(c))}}]}),"string"==typeof O||void 0===O?void 0:mithril_default()(index_modern.ModalPanel,{onCreate:e=>t.editModal=e,id:L,title:t.editItem?t.editLabel:t.createLabel,fixedFooter:!0,description:mithril_default()(".row.form-item",mithril_default()(ee,{key:b,form:O,i18n:h,obj:t.editItem||t.newItem||{},onchange:e=>t.canSave=e,context:d instanceof Array?[c,...d]:[c,d],containerId:m,disabled:f})),buttons:[{iconName:"cancel",label:h.cancel||"Cancel"},{iconName:"save",label:h.save||"Save",disabled:!t.canSave,onclick:()=>{if(t.editItem&&void 0!==t.curItemIdx){const e=t.editItem,n=t.curItemIdx;O.forEach(t=>{t.id&&(n[t.id]=e[t.id])})}else t.newItem&&F.push(t.newItem);y&&y(c)}}]})]}}},K=()=>{const t={};return{oninit:e=>{let{attrs:{i18n:n={}}}=e;const{raw:a="RAW",view:i="VIEW"}=n;t.raw=a,t.view=i},view:n=>{let{attrs:{field:{id:a="",type:i,onSelect:o},obj:r,context:l,containerId:c,disabled:d,readonly:u,i18n:p,onchange:m}}=n;if(r instanceof Array)return;const f=r[a],g=f?JSON.parse(f):void 0,h=g&&g.features||[],y=[],b={title:t.raw,vnode:mithril_default()(index_modern.TextArea,{class:"col s12",initialValue:g?JSON.stringify(g,null,2):void 0,placeholder:"Enter GeoJSON",onchange:e=>r[a]=e})};if(!i||"string"==typeof i)return;const v=i,w=v.length>0?v[0].id:void 0,x={title:t.view,vnode:h.length?mithril_default()(index_modern.Collapsible,{oncreate:e=>{let{dom:n}=e;return t.dom=n},onOpenStart:o?e=>{const n=t.dom.children||[];for(let t=0;t<n.length;t++)if(n[t]===e)return void o(t,h[t])}:void 0,className:"geojson-feature-list",items:h.map((t,n)=>(t.properties||(t.properties={}),{id:"erik_"+n,key:n,header:w&&t.properties[w]||t.geometry.type,body:mithril_default()(".row",mithril_default()(ee,{class:"col s12",form:v,obj:t.properties,i18n:p,context:l instanceof Array?[r,...l]:[r,l],containerId:c,disabled:d,readonly:u,onchange:(e,t)=>{t&&(h[n].properties=t),r[a]=JSON.stringify(g,null,2),m&&m(r)}}))}))}):mithril_default()("span","...")};return y.push(x),y.push(b),mithril_default()(index_modern.Tabs,{tabs:y,tabWidth:"fill"})}}},Z={},Q={},X=(e,t,n)=>{Z[e]=t,n&&(Q[e]=n)},ee=(()=>{const t=(e,t)=>t.filter(e=>e.required&&void 0!==typeof e.id).reduce((t,n)=>t&&!(n.id&&(void 0===e[n.id]||e[n.id]instanceof Array&&0===e[n.id].length||"string"==typeof e[n.id]&&0===e[n.id].length)),!0);return{createLayoutForm:()=>()=>{const n=Y(Z,Q).createFormField();return{view:a=>{let{attrs:{i18n:i,form:o,obj:r,onchange:l,disabled:s,readonly:c,context:d,section:u}}=a;const p=e=>l&&l(t(e,o),e);return o.filter((e=>{if(!e)return e=>!0;let t=!1;return n=>{let{type:a,id:i}=n;return"section"===a?(t=i===e,!1):t}})(u)).filter(e=>!e.show||L(e.show,r,...d||[])).reduce((t,a)=>(a.type||(a.type=(e=>{const{autogenerate:t,value:n,options:a}=e;return t?"none":n?"string"==typeof n?"md":"number"==typeof n?"number":"boolean"==typeof n?"checkbox":"none":a&&a.length>0?"select":"none"})(a)),[...t,void 0===a.repeat?mithril_default()(n,{i18n:i,field:a,obj:r,onchange:p,disabled:s,readonly:c,context:d,section:u,containerId:"body"}):mithril_default()("geojson"===a.repeat?K:G,{obj:r,field:a,onchange:p,context:d,i18n:i,containerId:"body",disabled:s,readonly:c})]),[])}}},isValid:t}})().createLayoutForm();
+;// CONCATENATED MODULE: ./node_modules/.pnpm/mithril-ui-form@1.7.2/node_modules/mithril-ui-form/lib/index.esm.js
+const O=e=>e.charAt(0).toUpperCase()+e.slice(1),S=e=>"string"==typeof e,N=function(e,t,n){return void 0===t&&(t=2),void 0===n&&(n="0"),e.toString().length>=t?e.toString():N(n+e,t,n)},$=e=>`${N(e.getHours())}:${N(e.getMinutes())}`,j=(e,t)=>{const n=(t=(t=t.replace(/\[(\w+)\]/g,".$1")).replace(/^\./,"")).split(".");let a={...e};for(let t=0,i=n.length;t<i;++t){const i=n[t];if(i in a)a=a[i];else{if(!(a instanceof Array))return;{const t=e[i]||i,n=/([A-Z]\w+)/.exec(i),r=n&&n[0][0].toLowerCase()+n[0].substr(1)||i,o=a.filter(e=>e[r]===t).shift();if(!o)return;a=o}}}return a},A=/([^ =><]*)\s*([=><]*)\s*(\S*)/i,V=/^\s*!\s*/,C=(e,t)=>{const n=e.split("&"),a=t.reduce((e,t)=>t instanceof Array?[...e,...t]:[...e,t],[]);return n.reduce((e,t)=>{const n=V.test(t),i=n?t.replace(V,""):t;return e=e&&a.filter(Boolean).reduce((e,t)=>e||((e,t)=>{if(!t||0===Object.keys(t).length)return!1;const n=A.exec(e);if(n){const[e,a,i,r]=n,o=j(t,a.trim()),l="boolean"==typeof o?o?"true":"false":o;if(void 0===l||"string"==typeof l&&0===l.length)return!1;if(!i||!r)return!0;{const t=isNaN(+r)?"true"===r||"false"!==r&&r:+r;switch(i){case"=":return l instanceof Array?l.indexOf(t)>=0:l===t;case"<=":return l<=t;case">=":return l>=t;case"<":return l<t;case">":return l>t;default:return console.error(`Unrecognized operand (${i}) in expression: ${e}`),!1}}}return!0})(i.trim(),t),!1),n?!e:e},!0)},L=function(e){const t=e instanceof Array?e:[e];return 0===e.length||t.some(e=>C(e,[].slice.call(arguments,1)))},T=(e,t)=>j(t.filter(Boolean).reduceRight((e,t)=>({...t,...e})),e.trim()),P=(e,t)=>void 0!==T(e,t),F=/{{\s*([^\s"'`:]*):?([^\s]*)\s*}}/g,M=function(e){if(!F.test(e))return!0;let t;F.lastIndex=0;let n=!0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((e,t,a)=>{let[,i]=a;n=n&&P(i,[].slice.call(arguments,1))}))}while(n&&null!==t);return n},E=(e,t)=>{if(void 0===e)return"";if(e instanceof Array)return e.map(e=>E(e,t)).join(", ");if(!t)return e.toString();if("boolean"==typeof e){const n=t.indexOf(":");return e?t.substring(0,n):t.substring(n+1)}switch(t){default:return e.toString();case"date":return new Date(e).toLocaleDateString();case"time":return new Date(e).toLocaleTimeString();case"iso":return new Date(e).toISOString();case"utc":return new Date(e).toUTCString()}},H=function(e){if(!F.test(e))return e;let t;F.lastIndex=0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((t,n,a)=>{let[i,r,o]=a;const l=T(r,[].slice.call(arguments,1));!l||l instanceof Array||(e=e.replace(i,E(l,o)))}))}while(null!==t);return e},U=e=>{if(null===e)return e;if(e instanceof Date)return new Date(e.getTime());if(e instanceof Array){const t=[];return e.forEach(e=>{t.push(e)}),t.map(e=>U(e))}if("object"==typeof e){const t={...e};return Object.keys(t).forEach(e=>{t[e]=U(t[e])}),t}return e},_=e=>{const t=function(e,n){return void 0===n&&(n=""),e.filter(e=>"section"!==e.type&&"md"!==e.type).reduce((e,a)=>{const i=(n?`${n}.`:"")+String(a.id),r=a.type||(a.options&&a.options.length>0?"select":"text");return"string"==typeof r?e[i]=a:e={...e,...t(r,i)},e},{})},n=t(e),a=(e,t)=>{if(!n.hasOwnProperty(e)||void 0===t)return t;const a=n[e],i=t instanceof Array?t.filter(e=>null!=e):[t];switch(a.type||(a.options?"options":"none")){default:return t;case"radio":case"select":case"options":const e="string"==typeof a.options?T(a.options,[n]):a.options;return i.map(t=>e.filter(e=>e.id===t).map(e=>e.label||O(e.id)).shift()).filter(e=>void 0!==e)}},i=function(e,t){if(void 0===t&&(t=""),e&&("object"!=typeof e||0!==Object.keys(e).length)){if(e instanceof Array)return e.map(e=>i(e,t));{const n={};return Object.keys(e).forEach(r=>{const o=t?`${t}.${r}`:r,l=e[r];if("boolean"==typeof l)n[r]=l;else if("number"==typeof l||"string"==typeof l){const e=a(o,l);e&&(n[r]=e instanceof Array&&1===e.length?e[0]:e)}else if(l instanceof Array)if("string"==typeof l[0]||null===l[0]){const e=a(o,l);e&&(n[r]=e)}else n[r]=i(l,r);else"object"==typeof l&&(n[r]=l)}),n}}};return i},R=function(e){return void 0===e&&(e=""),e.replace(/\s|,|\./g,"").toLowerCase()},J=function(e,t,n){void 0===n&&(n=1);const a=[];for(let i=e;i<=t;i+=n)a.push(i);return a},q=e=>{"string"!=typeof e&&(e=JSON.stringify(e));let t=0;if(0===e.length)return t;for(var n=0;n<e.length;n++)t=(t<<5)-t+e.charCodeAt(n),t&=t;return t},z=(e,t,n)=>{const a=Object.assign({},t,n);return`${e}?${Object.keys(a).map(e=>`${e}=${a[e]}`).join("&")}`},W=()=>({view:n=>{let{attrs:{md:a="",removeParagraphs:i=!1,externalLinks:r=!1,...o}}=n;return mithril_default()(".slimdown-view.markdown",o,mithril_default().trust(slimdown_modern_n(a,i,r)))}}),B=()=>({view:t=>{let{attrs:{type:n,props:a,label:i="",initialValue:r,inline:o=!1}}=t;const l={className:a.className||"col s12"};if(r instanceof Array&&r.length>3)return mithril_default()(".readonly",l,[mithril_default()("label",i),mithril_default()(W,{md:"\n- "+r.join("\n- ")})]);if("string"==typeof r)return mithril_default()(".readonly",l,"url"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()("a[target=_blank]",{href:r},r)]:"color"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()(".color",{style:`height: 1rem; width: 40px; border-radius: 4px; background-color: ${r}`})]:[mithril_default()("label",i),mithril_default()(W,{md:r})]);const s=r instanceof Array?r.join(", "):r;return mithril_default()(".readonly",l,[i&&mithril_default()("label",i),o?mithril_default()("span",s?`: ${s}`:mithril_default().trust("&nbsp;")):mithril_default()("p",s||mithril_default().trust("&nbsp;"))])}}),Y=function(w,x){void 0===w&&(w={}),void 0===x&&(x={});const I=()=>{const I={key:Date.now()};return{view:k=>{let{attrs:{i18n:D,field:S,obj:N,autofocus:j,onchange:A,context:V,containerId:C,disabled:P,readonly:F}}=k;const{id:E="",type:U,disabled:_=P,readonly:R=F,value:J,required:q,autogenerate:z,show:Y,label:G,description:K,i18n:Z=D||{},checkAllOptions:Q,transform:X,effect:te}=S;if(Y&&!L(Y,N,V)||G&&!M(G,N,V)||K&&!M(K,N,V))return;const ne="string"==typeof S.options?T(S.options,[N,...V]):S.options,ae=ne&&ne instanceof Array?ne.filter(e=>void 0!==e.id&&(e.label||!/[0-9]/.test(e.id))&&(!e.show||L(e.show,N,V))).map(e=>e.label?e:{...e,label:O(e.id)}):[],ie="boolean"==typeof P&&P,re=function(e,n,i){void 0===n&&(n=!1),void 0===i&&(i=!1);const{id:r="",label:o,description:l,required:s,multiple:c,className:d,checkboxClass:u,icon:p,iconClass:m,placeholder:f,maxLength:g,minLength:h,max:y,min:b,step:v,dateTimeOutput:w,dateTimeSeconds:x,dateFormat:I,twelveHour:k}=e,D={id:`${String(r)}-${(0,index_modern.uniqueId)()}`,label:o};return void 0===o&&r&&(D.label=O(String(r))),l&&(D.helperText=slimdown_modern_n(l,!0)),d&&(D.className=d),p&&(D.iconName=p),m&&(D.iconClass=m),u&&(D.checkboxClass=u),f&&(D.placeholder=f),s&&(D.isMandatory=!0),c&&(D.multiple=c),i&&(D.disabled=!0),n&&(D.autofocus=!0),void 0!==g&&(D.maxLength=g),void 0!==h&&(D.minLength=h),void 0!==y&&(D.max=y),void 0!==b&&(D.min=b),void 0!==v&&(D.step=v),w&&(D.dateTimeOutput=w),x&&(D.dateTimeSeconds=x),I&&(D.dateFormat=I),k&&(D.twelveHour=k),D}(S,j,"boolean"==typeof _||void 0===_?ie||_:ie||L(_,N,V));G&&(re.label=slimdown_modern_n(H(re.label||G,N,V),!0)),K&&(re.description=slimdown_modern_n(H(re.description||K,N,V),!0));const oe=q?e=>e instanceof Array?e&&e.length>0:void 0!==typeof e:void 0;if(N instanceof Array)return void console.warn("Only a repeat list can deal with arrays!");const le=function(e){try{return void 0===e||"undefined"===e?(delete N[E],A(N),Promise.resolve()):(N[E]=X?X("to",e):e,te?Promise.resolve(te(N,N[E],V)).then(function(e){A(void 0!==e?e:N)}):Promise.resolve(A(N)))}catch(e){return Promise.reject(e)}};if(U instanceof Array)return E?(N.hasOwnProperty(E)||(N[E]={}),mithril_default()(".muf-form",{className:S.className},[mithril_default()(".muf-form-header",mithril_default().trust(slimdown_modern_n(re.label||O(String(E)),!0))),re.description&&mithril_default()("div",mithril_default().trust(slimdown_modern_n(re.description))),mithril_default()(".row",mithril_default()(ee,{...re,i18n:Z,readonly:R,form:U,obj:N[E],context:V instanceof Array?[N,...V]:[N,V],onchange:()=>A(N),containerId:C}))])):void console.warn("Missing ID for type "+JSON.stringify(U));z&&!N[E]&&(N[E]="guid"===z?(0,index_modern.uuid4)():"id"===z?(0,index_modern.uniqueId)():Date.now());const se=N.hasOwnProperty(E)&&void 0!==N[E]?X?X("from",N[E]):N[E]:J;E&&void 0!==J&&void 0!==se&&(N[E]=X?X("to",se):se);const[ce,de]=Q?Q.split("|"):["",""],{className:ue}=re;if(R&&U&&["md","none"].indexOf(U)<0){if(x.hasOwnProperty(U))return mithril_default()(x[U],{iv:se,field:S,props:re,label:re.label,obj:N,context:V});if(U&&w.hasOwnProperty(U))return mithril_default()(w[U],{iv:se,field:S,props:re,label:re.label,onchange:le,obj:N,context:V});switch(U){case"time":{const t=se||new Date,n=$(t);return mithril_default()(B,{props:re,label:re.label,initialValue:n})}case"date":{const t="number"==typeof se||"string"==typeof se||se instanceof Date?new Date(se).toLocaleDateString():"";return mithril_default()(B,{props:re,label:re.label,initialValue:t})}case"checkbox":return mithril_default()(B,{props:re,label:re.label,initialValue:se?"✔":"✘",inline:!0});case"tags":return mithril_default()(B,{props:re,label:re.label,initialValue:se||[]});case"options":case"select":{const t=void 0!==se?se instanceof Array?se:[se]:[],n=ae.filter(e=>t.indexOf(e.id)>=0),a=n&&0===n.length?"?":1===n.length?n[0].label:n.map(e=>e.label);return mithril_default()(B,{props:re,label:re.label,initialValue:a})}case"radio":{const t=se,n=ae.filter(e=>e.id===t);return mithril_default()(B,{props:re,initialValue:n&&n.length?n[0].label:"?"})}case"base64":{const t=se;return!(!t||!/data:image/i.test(t))&&mithril_default()("div",mithril_default()("img.responsive-img",{src:t,alt:N.title||N.alt||N.name||"",style:`max-height: ${S.max||50}px`}))}case"file":return mithril_default()("div",re,(se instanceof Array?se:[se]).map(function(t){void 0===t&&(t="");const n=/data:image|.jpg$|.jpeg$|.png$|.gif$|.svg$|.bmp$|.tif$|.tiff$/i.test(t),a=`${new URL(S.url).origin}${t}`;return mithril_default()("a[target=_blank]",{href:a},n?mithril_default()("img",{src:a,alt:a,style:`max-height: ${S.max||50}`}):mithril_default()(B,{props:re,label:S.placeholder||"File",initialValue:t}))}));case"markdown":{const n="string"==typeof se&&se?slimdown_modern_n(se):"";return mithril_default()(B,{props:re,label:re.label,initialValue:n})}default:return mithril_default()(B,{props:re,type:U,label:re.label,initialValue:se})}}else{if(U&&w.hasOwnProperty(U))return mithril_default()(w[U],{iv:se,field:S,props:re,label:re.label,onchange:le,obj:N,context:V});switch(U){case"colour":case"color":{const t=se;return mithril_default()(index_modern.ColorInput,{...re,initialValue:t,onchange:le})}case"time":{const{twelveHour:t=!1}=re,n=se?"number"==typeof se||"string"==typeof se?new Date(se):se:new Date,a=$(n);return N[E]=X?X("to",n):n,mithril_default()(index_modern.TimePicker,{...re,twelveHour:t,initialValue:a,onchange:e=>{const t=e.split(":").map(e=>+e);n.setHours(t[0],t[1]),le(n)},container:C})}case"date":{const{format:t="mmmm d, yyyy"}=re,n="number"==typeof se||"string"==typeof se?new Date(se):se;N[E]=n?X?X("to",n.valueOf()):n.valueOf():n;const{min:a,max:i}=re,r=a?!n||a<n.valueOf()?new Date(a):n:void 0,o=i?!n||i>n.valueOf()?new Date(i):n:void 0;return mithril_default()(index_modern.DatePicker,{...re,minDate:r,maxDate:o,setDefaultDate:!!n,format:t,initialValue:n,onchange:e=>{le(new Date(e))},container:C})}case"datetime":{const{label:t,className:n="col s12",dateTimeSeconds:a=!1,twelveHour:i=!1,format:r="mmmm d, yyyy",...o}=re,l="number"==typeof se||"string"==typeof se?new Date(se):se,s={initialDateTime:l},c=l||void 0,d=l?$(l):"",{min:u,max:p}=re,m=u?!l||u<l.valueOf()?new Date(u):l:void 0,f=p?!l||p>l.valueOf()?new Date(p):l:void 0,h=re.dateTimeOutput||"UTC",v=e=>{s.initialDateTime=e,le("UTC"===h?e.toUTCString():"ISO"===h?e.toISOString():e.valueOf())};return mithril_default()("div",{className:n},mithril_default()(".row",[mithril_default()(a?".col.s6":".col.s8",{style:"padding-right: 0"},mithril_default()(index_modern.DatePicker,{...o,label:t,minDate:m,maxDate:f,setDefaultDate:!!l,format:r,initialValue:c,container:C,onchange:e=>{const t=new Date(s.initialDateTime);t.setFullYear(e.getFullYear()),t.setMonth(e.getMonth()),t.setDate(e.getDate()),v(t)}})),mithril_default()(".col.s4",{style:"min-width: 6rem; padding-right: 0; padding-left: 0"},mithril_default()(index_modern.TimePicker,{...o,label:"",helperText:"",twelveHour:i,initialValue:d,container:C,onchange:e=>{const t=e.split(":").map(e=>+e),n=s.initialDateTime||new Date((new Date).setSeconds(0,0));n.setHours(t[0],t[1]),v(n)}})),a&&mithril_default()(index_modern.NumberInput,{style:"min-width: 4rem; padding-right: 0; padding-left: 0",className:"col s2",min:0,max:59,onchange:e=>{const t=s.initialDateTime||new Date((new Date).setSeconds(0,0));t.setSeconds(e,0),v(t)}})]))}case"email":{const t=se;return mithril_default()(index_modern.EmailInput,{...re,validate:oe,autofocus:j,onchange:le,initialValue:t})}case"number":{const t=se;return mithril_default()(index_modern.NumberInput,{...re,validate:oe,autofocus:j,onchange:le,initialValue:t})}case"radio":{const t=se;return mithril_default()(index_modern.RadioButtons,{label:"",...re,options:ae,checkedId:t,onchange:le})}case"checkbox":{const t=se;return mithril_default()(index_modern.InputCheckbox,{...re,checked:t,onchange:le})}case"options":{const t=se;return[[mithril_default()(index_modern.Options,{key:I.key,checkboxClass:"col s6 m4 l3",className:"input-field col s12",...re,disabled:re.disabled||!ae||0===ae.length,options:ae,checkedId:t,onchange:e=>le(1===e.length?e[0]:e.filter(e=>null!==e))})],void 0!==Q&&mithril_default()(".col.s12.option-buttons",[mithril_default()(index_modern.FlatButton,{disabled:re.disabled,label:ce,iconName:"check",onclick:()=>{I.key=Date.now(),le(ae.map(e=>e.id))}}),de&&mithril_default()(index_modern.FlatButton,{disabled:re.disabled,label:de,iconName:"check_box_outline_blank",onclick:()=>{const e=N[E]||[];e.length=0,I.key=Date.now(),le(e)}})])]}case"select":{const t=se;return mithril_default()(index_modern.Select,{placeholder:re.multiple?Z.pickOneOrMore||"Pick one or more":Z.pickOne||"Pick one",...re,disabled:re.disabled||!ae||0===ae.length,options:ae,checkedId:t,onchange:e=>le(1!==e.length||re.multiple?e.filter(e=>null!==e||void 0!==e):e[0])})}case"md":const t=H((E?se:J||G)||"",N,V);return mithril_default()(W,{md:t,className:ue});case"section":return mithril_default()(".divider");case"switch":{const t=se,n=ae&&ae.length>0?ae[0].label:"",a=ae&&ae.length>1?ae[1].label:"";return mithril_default()(index_modern.Switch,{...re,left:n,right:a,checked:t,onchange:le})}case"tags":{const t=(se?se instanceof Array?se:[se]:[]).map(e=>({tag:e})),n=ae&&ae.length>0?{data:ae.reduce((e,t)=>(e[t.id]=null,e),{}),limit:S.maxLength||Infinity,minLenght:S.minLength||1}:{},{label:a,isMandatory:i,className:r,helperText:o}=re;return mithril_default()(index_modern.Chips,{className:r,label:a,isMandatory:i,helperText:o,onchange:e=>le(e.map(e=>e.tag)),placeholder:S.placeholder||"Add a tag",secondaryPlaceholder:S.secondaryPlaceholder||"+tag",data:t,autocompleteOptions:n})}case"markdown":case"textarea":{const t=se;return mithril_default()(index_modern.TextArea,{...re,validate:oe,autofocus:j,onchange:le,initialValue:t})}case"file":{const t=se,{url:n,placeholder:a}=S;if(!n)throw Error('Input field "url" not defined, which indicates the URL to the upload folder.');const i=ae?ae.map(e=>e.id):void 0,r=t=>{if(!t||t.length<1)return void le("");const a=new FormData;a.append("file",t[0]),mithril_default().request({method:"POST",url:n,body:a}).then(e=>le(e)).catch(console.error)};return mithril_default()(index_modern.FileInput,{...re,accept:i,placeholder:a,onchange:r,initialValue:t})}case"base64":{const t=se,n=!(!t||!/data:image/i.test(t)),{placeholder:a}=S,i=ae?ae.map(e=>e.id).join(","):void 0,r=t=>{if(!t||t.length<1)return void le("");const n=new FileReader;n.onloadend=()=>{"string"==typeof n.result&&le(n.result),mithril_default().redraw()},n.readAsDataURL(t[0])};return n?mithril_default()("div",[mithril_default()("img.responsive-img",{src:t,alt:N.title||N.alt||N.name||"",style:`max-height: ${S.max||50}px`}),mithril_default()(index_modern.FlatButton,{iconName:"clear",onclick:()=>le("")})]):mithril_default()(index_modern.FileInput,{...re,accept:i,placeholder:a,onchange:r,initialValue:t})}case"url":{const t=se;return mithril_default()(index_modern.UrlInput,{placeholder:"http(s)://www.example.com",...re,validate:oe,autofocus:j,onchange:le,initialValue:t})}case"text":{const t=se;return mithril_default()(index_modern.TextInput,{...re,validate:oe,autofocus:j,onchange:le,initialValue:t,tabindex:15})}default:return}}}}};return{createFormField:()=>I}},G=()=>{const t={},n=(e,n)=>{const a=t.onNewItem?t.onNewItem(e,n):{};e instanceof Array?e.push(a):e.hasOwnProperty(n)?e[n].push(a):e[n]=[a]};let r;return{oninit:e=>{let{attrs:{i18n:n={},field:{id:a="",sortProperty:i,onNewItem:o}}}=e;t.editLabel=n.editRepeat||`Edit ${String(a)}`,t.createLabel=n.createRepeat||`Create new ${String(a)}`,t.onNewItem=o,r=(e=>{if(!e)return(e,t)=>0;const t="!"===e[0],n=t?e.substring(1):e;return t?(e,t)=>e[n]>t[n]?-1:e[n]<t[n]?1:0:(e,t)=>e[n]>t[n]?1:e[n]<t[n]?-1:0})(i)},view:l=>{let{attrs:{field:s,obj:c,context:d,className:u=(s.className?"."+s.className.split(" ").join("."):".col.s12"),section:p,containerId:m,disabled:f=("boolean"==typeof s.disabled?s.disabled:void 0),readonly:g,i18n:h={},onchange:y}}=l;const{modalKey:b,filterValue:v}=t,{id:k,label:D,type:O,min:S,max:N,pageSize:$,propertyFilter:j,filterLabel:A,readonly:V=g,repeatItemClass:C=""}=s,L="edit_"+(D?D.toLowerCase().replace(/\s/gi,"_"):(0,index_modern.uniqueId)()),T=((e,t)=>e instanceof Array?e:(e.hasOwnProperty(t)||(e[t]=[]),e[t]))(c,k),P=v?R(v):void 0,F=j&&P&&P.length>2?T.filter(e=>R(`${e[j]}`).indexOf(P)>=0):T,M=mithril_default().route.param(String(k))?Math.min(F.length,+mithril_default().route.param(String(k))):1,E=$&&F&&(M-1)*$<F.length?M:1,H=$?(e,t)=>(E-1)*$<=t&&t<E*$:()=>!0,U=mithril_default().route.get(),_=$?Math.ceil(F.length/$):0,W=!!(N&&F.length>=N),B=!f&&(!S||F.length>S),Y=U.split("?")[0],G=(e=>{const t=e?e.split("?")[1]:window.location.search.slice(1),n={};if(t){const e=t.split("&");for(var a=0;a<e.length;a++){const t=e[a].split("="),i=t[0],r=void 0===t[1]||t[1];if(i.match(/\[(\d+)?\]$/)){const e=n[i.replace(/\[(\d+)?\]/,"")]||[];i.match(/\[\d+\]$/)?e[+/\[(\d+)\]/.exec(i)[1]]=r:e.push(r)}else n[i]?"string"==typeof n[i]?(n[i]=[n[i]],n[i].push(r)):n[i].push(r):n[i]=r}}return n})(U);return[[mithril_default()(`#${String(k)}.mui-repeat-list${u}`,[mithril_default()(".row.mui-repeat-list-controls",mithril_default()(".col.s12",[mithril_default()(index_modern.FlatButton,{iconName:f||W?"":"add",iconClass:"right",label:D,onclick:()=>{n(c,String(k)),k&&mithril_default().route.set(Y,Object.assign(G,{[k]:F.length})),y&&y(c)},style:"padding: 0",className:"left",disabled:f||W,readonly:V}),_>1&&mithril_default()(".right",mithril_default()(index_modern.Pagination,{curPage:E,items:J(1,_).map(e=>({href:z(Y,G,{[k]:e})}))})),(F.length>1||v)&&j&&!f&&mithril_default()(index_modern.TextInput,{style:"margin-top: -6px; margin-bottom: -1rem;",iconName:"filter_list",iconClass:"small",placeholder:A,onkeyup:(e,n)=>t.filterValue=n,className:"right",disabled:f,readonly:V})])),F&&F.length>0&&"string"!=typeof O&&F.sort(r).filter(H).map((n,a)=>[B&&[mithril_default()(index_modern.RoundIconButton,{type:"button",iconName:"clear",iconClass:"white black-text",className:"row mui-delete-item btn-small right",style:"padding: 0; margin-top: -10px; margin-right: -25px",disabled:f,readonly:V,onclick:()=>{t.curItemIdx=$?(E-1)*$+a:a}}),(!$||$>1)&&mithril_default()("span.mui-show-item-number",`[${($?(E-1)*$+a:a)+1}]`)],[mithril_default()(".row.repeat-item",{className:C,key:M+q(n)},[mithril_default()(ee,{form:s.type,obj:n,i18n:h,context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,disabled:f,readonly:V,onchange:()=>y&&y(c)})])]]),!(f||W||V||!F||0===F.length||1===$)&&mithril_default()(index_modern.RoundIconButton,{iconName:"add",iconClass:"white black-text",className:"row mui-add-new-item btn-small right",title:D,style:"padding: 0; margin-top: -10px; margin-right: -25px",onclick:()=>{n(c,String(k)),mithril_default().route.set(Y,Object.assign(G,{[k]:F.length})),y&&y(c)}})])],void 0!==t.curItemIdx&&mithril_default()(index_modern.ModalPanel,{id:"deleteItem",onCreate:e=>e.open(),options:{onCloseStart:()=>{t.curItemIdx=void 0,mithril_default().redraw()}},fixedFooter:!0,title:h.deleteItem||"Delete item",description:mithril_default()(ee,{form:O,obj:F[t.curItemIdx],context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,readonly:!0,i18n:h}),buttons:[{label:h.disagree||"Disagree"},{label:h.agree||"Agree",onclick:()=>{void 0!==t.curItemIdx&&(F.splice(t.curItemIdx,1),c instanceof Array?c=[...F]:c[k]=[...F],y&&y(c))}}]}),"string"==typeof O||void 0===O?void 0:mithril_default()(index_modern.ModalPanel,{onCreate:e=>t.editModal=e,id:L,title:t.editItem?t.editLabel:t.createLabel,fixedFooter:!0,description:mithril_default()(".row.form-item",mithril_default()(ee,{key:b,form:O,i18n:h,obj:t.editItem||t.newItem||{},onchange:e=>t.canSave=e,context:d instanceof Array?[c,...d]:[c,d],containerId:m,disabled:f})),buttons:[{iconName:"cancel",label:h.cancel||"Cancel"},{iconName:"save",label:h.save||"Save",disabled:!t.canSave,onclick:()=>{if(t.editItem&&void 0!==t.curItemIdx){const e=t.editItem,n=t.curItemIdx;O.forEach(t=>{t.id&&(n[t.id]=e[t.id])})}else t.newItem&&F.push(t.newItem);y&&y(c)}}]})]}}},K=()=>{const t={};return{oninit:e=>{let{attrs:{i18n:n={}}}=e;const{raw:a="RAW",view:i="VIEW"}=n;t.raw=a,t.view=i},view:n=>{let{attrs:{field:{id:a="",type:i,onSelect:r},obj:o,context:l,containerId:c,disabled:d,readonly:u,i18n:p,onchange:m}}=n;if(o instanceof Array)return;const f=o[a],g=f?JSON.parse(f):void 0,h=g&&g.features||[],y=[],b={title:t.raw,vnode:mithril_default()(index_modern.TextArea,{class:"col s12",initialValue:g?JSON.stringify(g,null,2):void 0,placeholder:"Enter GeoJSON",onchange:e=>o[a]=e})};if(!i||"string"==typeof i)return;const v=i,w=v.length>0?v[0].id:void 0,x={title:t.view,vnode:h.length?mithril_default()(index_modern.Collapsible,{oncreate:e=>{let{dom:n}=e;return t.dom=n},onOpenStart:r?e=>{const n=t.dom.children||[];for(let t=0;t<n.length;t++)if(n[t]===e)return void r(t,h[t])}:void 0,className:"geojson-feature-list",items:h.map((t,n)=>(t.properties||(t.properties={}),{id:"erik_"+n,key:n,header:w&&t.properties[w]||t.geometry.type,body:mithril_default()(".row",mithril_default()(ee,{class:"col s12",form:v,obj:t.properties,i18n:p,context:l instanceof Array?[o,...l]:[o,l],containerId:c,disabled:d,readonly:u,onchange:(e,t)=>{t&&(h[n].properties=t),o[a]=JSON.stringify(g,null,2),m&&m(o)}}))}))}):mithril_default()("span","...")};return y.push(x),y.push(b),mithril_default()(index_modern.Tabs,{tabs:y,tabWidth:"fill"})}}},Z={},Q={},X=(e,t,n)=>{Z[e]=t,n&&(Q[e]=n)},ee=(()=>{const t=(e,t)=>t.filter(e=>e.required&&void 0!==typeof e.id).reduce((t,n)=>t&&!(n.id&&(void 0===e[n.id]||e[n.id]instanceof Array&&0===e[n.id].length||"string"==typeof e[n.id]&&0===e[n.id].length)),!0);return{createLayoutForm:()=>()=>{const n=Y(Z,Q).createFormField();return{view:a=>{let{attrs:{i18n:i,form:r,obj:o,onchange:l,disabled:s,readonly:c,context:d,section:u}}=a;const p=e=>l&&l(t(e,r),e);return r.filter((e=>{if(!e)return e=>!0;let t=!1;return n=>{let{type:a,id:i}=n;return"section"===a?(t=i===e,!1):t}})(u)).filter(e=>!e.show||L(e.show,o,...d||[])).reduce((t,a)=>(a.type||(a.type=(e=>{const{autogenerate:t,value:n,options:a}=e;return t?"none":n?"string"==typeof n?"md":"number"==typeof n?"number":"boolean"==typeof n?"checkbox":"none":a&&a.length>0?"select":"none"})(a)),[...t,void 0===a.repeat||!1===a.repeat?mithril_default()(n,{i18n:i,field:a,obj:o,onchange:p,disabled:s,readonly:c,context:d,section:u,containerId:"body"}):mithril_default()("geojson"===a.repeat?K:G,{obj:o,field:a,onchange:p,context:d,i18n:i,containerId:"body",disabled:s,readonly:c})]),[])}}},isValid:t}})().createLayoutForm();
 //# sourceMappingURL=index.esm.js.map
 
 
@@ -15247,7 +15249,7 @@ module.exports = {}.hasOwnProperty
 
 /***/ }),
 
-/***/ 5174:
+/***/ 1879:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15257,11 +15259,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var mithril_1 = __importDefault(__webpack_require__(9402));
-__webpack_require__(6099);
-__webpack_require__(5277);
-__webpack_require__(5503);
-var routing_service_1 = __webpack_require__(2464);
-var register_service_worker_1 = __webpack_require__(1472);
+__webpack_require__(7682);
+__webpack_require__(2653);
+__webpack_require__(3236);
+var routing_service_1 = __webpack_require__(260);
+var register_service_worker_1 = __webpack_require__(9867);
 console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}));
 (0, register_service_worker_1.registerServiceWorker)({
     onSuccess: function (registration) { return console.log('SW registered: ', registration); },
@@ -15284,7 +15286,7 @@ mithril_1.default.route(document.body, routing_service_1.routingSvc.defaultRoute
 
 /***/ }),
 
-/***/ 4057:
+/***/ 2031:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15305,7 +15307,7 @@ exports.resolveImg = resolveImg;
 
 /***/ }),
 
-/***/ 3084:
+/***/ 3860:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15317,8 +15319,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AboutPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(8332);
-var models_1 = __webpack_require__(2301);
+var mithril_ui_form_1 = __webpack_require__(134);
+var models_1 = __webpack_require__(5439);
 var md = function (highlight) {
     if (highlight === void 0) { highlight = false; }
     return "#### About\n\nThis website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all interventions.\n\n##### Disclaimer\n\n**This platform is intended for informational purposes only and it does not provide medical advice.** It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.\n\n##### How to use this platform\n\n###### Ministry of Defence employee\n\n<p class=\"".concat(highlight ? 'red-text' : '', "\">In order to use this platform, you will need to upload a configuration file (JSON) on the home page. You can request the latest version of this configuration file by contacting the HCSE (Human Capability & Survivability Enhancement) program leader, [Olaf Binsch](mailto:olaf.binsch@tno.nl). Without this file, there will be no interventions displayed on the platform.</p>\n\nYou can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention.\n\nBy selecting \u2018Compare\u2019, recognizable by the <i class=\"material-icons\">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE interventions, you can contact the expert that is listed at the bottom of each intervention page.\n\n###### TNO researcher\n\nIf you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to TNO researcher. This allows you to add and change interventions using the button \"Add new intervention\". Remember that the changes will only be saved locally on your own PC. If you want to implement your changes in the master file, do the following:\n\n1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder\n2. Implement you changes or additions to the platform\n3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.\n\n**HCSE program leader:** [Olaf Binsch](mailto:olaf.binsch@tno.nl)<br>**Email:** olaf.binsch@tno.nl \n");
@@ -15371,7 +15373,7 @@ exports.AboutPage = AboutPage;
 
 /***/ }),
 
-/***/ 4846:
+/***/ 3763:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15391,10 +15393,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComparisonPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(2301);
+var models_1 = __webpack_require__(5439);
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(2218);
-var mithril_ui_form_1 = __webpack_require__(8332);
+var utils_1 = __webpack_require__(1676);
+var mithril_ui_form_1 = __webpack_require__(134);
 var ComparisonPage = function () {
     var ASPECT_COL_WIDTH = 100;
     var isInitialized = false;
@@ -15553,7 +15555,7 @@ exports.ComparisonPage = ComparisonPage;
 
 /***/ }),
 
-/***/ 5261:
+/***/ 8952:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15577,10 +15579,10 @@ exports.HomePage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var background_jpg_1 = __importDefault(__webpack_require__(2868));
-var services_1 = __webpack_require__(4445);
-var models_1 = __webpack_require__(2301);
-var utils_1 = __webpack_require__(2218);
-var mithril_ui_form_1 = __webpack_require__(8332);
+var services_1 = __webpack_require__(1619);
+var models_1 = __webpack_require__(5439);
+var utils_1 = __webpack_require__(1676);
+var mithril_ui_form_1 = __webpack_require__(134);
 var HomePage = function () {
     var readerAvailable = window.File && window.FileReader && window.FileList && window.Blob;
     return {
@@ -15764,7 +15766,7 @@ exports.HomePage = HomePage;
 
 /***/ }),
 
-/***/ 1198:
+/***/ 2682:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15784,19 +15786,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(3084), exports);
-__exportStar(__webpack_require__(5261), exports);
-__exportStar(__webpack_require__(1802), exports);
-__exportStar(__webpack_require__(4188), exports);
-__exportStar(__webpack_require__(7205), exports);
-__exportStar(__webpack_require__(8433), exports);
-__exportStar(__webpack_require__(4846), exports);
-__exportStar(__webpack_require__(7446), exports);
+__exportStar(__webpack_require__(3860), exports);
+__exportStar(__webpack_require__(8952), exports);
+__exportStar(__webpack_require__(8757), exports);
+__exportStar(__webpack_require__(2293), exports);
+__exportStar(__webpack_require__(7464), exports);
+__exportStar(__webpack_require__(2897), exports);
+__exportStar(__webpack_require__(3763), exports);
+__exportStar(__webpack_require__(9742), exports);
 
 
 /***/ }),
 
-/***/ 7205:
+/***/ 7464:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15817,12 +15819,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InterventionOverviewPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(8332);
-var images_1 = __webpack_require__(4057);
-var models_1 = __webpack_require__(2301);
-var services_1 = __webpack_require__(4445);
-var utils_1 = __webpack_require__(2218);
-var ui_1 = __webpack_require__(6904);
+var mithril_ui_form_1 = __webpack_require__(134);
+var images_1 = __webpack_require__(2031);
+var models_1 = __webpack_require__(5439);
+var services_1 = __webpack_require__(1619);
+var utils_1 = __webpack_require__(1676);
+var ui_1 = __webpack_require__(1428);
 var InterventionOverviewPage = function () {
     var toOptions = function (opt) {
         return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
@@ -16096,7 +16098,7 @@ var InterventionOverviewPage = function () {
                                 })
                                     .filter(utils_1.isUnique)
                                     .join(', ')),
-                                (0, mithril_1.default)('p.overflow', t.desc),
+                                (0, mithril_1.default)('p.overflow', t.desc[0]),
                             ]),
                             (0, mithril_1.default)('.card-action', (0, mithril_1.default)('a.tooltip', 
                             // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
@@ -16314,7 +16316,7 @@ exports.InterventionOverviewPage = InterventionOverviewPage;
 
 /***/ }),
 
-/***/ 4188:
+/***/ 2293:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16335,11 +16337,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InterventionPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(8332);
-var images_1 = __webpack_require__(4057);
-var models_1 = __webpack_require__(2301);
-var services_1 = __webpack_require__(4445);
-var utils_1 = __webpack_require__(2218);
+var mithril_ui_form_1 = __webpack_require__(134);
+var images_1 = __webpack_require__(2031);
+var models_1 = __webpack_require__(5439);
+var services_1 = __webpack_require__(1619);
+var utils_1 = __webpack_require__(1676);
 var InterventionPage = function () {
     var initInterventionForm = function (interventions, id, users) {
         var added = new Set();
@@ -16369,18 +16371,20 @@ var InterventionPage = function () {
     };
     var id = '';
     var isEditing = false;
-    var form = [];
+    var form1a = [];
+    var form1b = [];
     var allInterventions = [];
     var isBookmarked = false;
     var formValid = false;
     return {
         oninit: function (_a) {
-            var _b = _a.attrs, _c = _b.state, model = _c.model, _d = _c.curIntervention, curIntervention = _d === void 0 ? {} : _d, _e = _b.actions, setPage = _e.setPage, setIntervention = _e.setIntervention;
-            var _f = model.interventions, technologies = _f === void 0 ? [] : _f, _g = model.users, users = _g === void 0 ? [] : _g;
+            var _b;
+            var _c = _a.attrs, _d = _c.state, model = _d.model, _e = _d.curIntervention, curIntervention = _e === void 0 ? {} : _e, _f = _c.actions, setPage = _f.setPage, setIntervention = _f.setIntervention;
+            var _g = model.interventions, technologies = _g === void 0 ? [] : _g, _h = model.users, users = _h === void 0 ? [] : _h;
             setPage(models_1.Dashboards.INTERVENTION);
             id = mithril_1.default.route.param('id') || curIntervention.id || '';
             isEditing = mithril_1.default.route.param('edit') === true ? true : false;
-            form = initInterventionForm(technologies, id, users);
+            _b = initInterventionForm(technologies, id, users), form1a = _b[0], form1b = _b[1];
             var found = id === curIntervention.id
                 ? curIntervention
                 : technologies.filter(function (t) { return t.id === id; }).shift() || technologies[0];
@@ -16392,11 +16396,12 @@ var InterventionPage = function () {
             window.scrollTo({ top: 0, left: 0 });
         },
         view: function (_a) {
-            var _b = _a.attrs, _c = _b.state, _d = _c.curIntervention, curIntervention = _d === void 0 ? {} : _d, bookmarks = _c.bookmarks, _e = _c.compareList, compareList = _e === void 0 ? [] : _e, _f = _c.model, model = _f === void 0 ? models_1.defaultModel : _f, curUser = _c.curUser, _g = _b.actions, saveModel = _g.saveModel, changePage = _g.changePage, setIntervention = _g.setIntervention, bookmark = _g.bookmark, compare = _g.compare;
+            var _b;
+            var _c = _a.attrs, _d = _c.state, _e = _d.curIntervention, curIntervention = _e === void 0 ? {} : _e, bookmarks = _d.bookmarks, _f = _d.compareList, compareList = _f === void 0 ? [] : _f, _g = _d.model, model = _g === void 0 ? models_1.defaultModel : _g, curUser = _d.curUser, _h = _c.actions, saveModel = _h.saveModel, changePage = _h.changePage, setIntervention = _h.setIntervention, bookmark = _h.bookmark, compare = _h.compare;
             id = mithril_1.default.route.param('id') || curIntervention.id || '';
             var users = model.users, interventions = model.interventions;
             if (!curIntervention.id || curIntervention.id !== id) {
-                form = initInterventionForm(interventions, id, users);
+                _b = initInterventionForm(interventions, id, users), form1a = _b[0], form1b = _b[1];
                 var found_1 = interventions.filter(function (t) { return t.id === id; }).shift() || interventions[0];
                 if (found_1) {
                     allInterventions = interventions.filter(function (t) { return t.intervention === found_1.intervention; });
@@ -16450,18 +16455,6 @@ var InterventionPage = function () {
                                 iconName: 'delete',
                                 modalId: 'deleteIntervention',
                             }),
-                            (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
-                                className: 'right',
-                                label: 'Suggest similar',
-                                iconName: 'auto_awesome',
-                                disabled: !(curIntervention.mainCap &&
-                                    curIntervention.specificCap &&
-                                    (!(curIntervention.specificCap instanceof Array) ||
-                                        curIntervention.specificCap.length > 0)),
-                                onclick: function () {
-                                    curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
-                                },
-                            }),
                         ]
                         : (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
                             className: 'right no-print',
@@ -16478,20 +16471,48 @@ var InterventionPage = function () {
                             },
                         }),
                 ], isEditing
-                    ? (0, mithril_1.default)('.col.s12', (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
-                        form: form,
-                        obj: curIntervention,
-                        onchange: function (isValid) {
-                            formValid = isValid;
-                            if (!isValid) {
-                                return;
-                            }
-                            model.interventions = model.interventions.map(function (t) {
-                                return t.id === curIntervention.id ? curIntervention : t;
-                            });
-                            saveModel(model);
-                        },
-                    }))
+                    ? (0, mithril_1.default)('.col.s12', [
+                        (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                            form: form1a,
+                            obj: curIntervention,
+                            onchange: function (isValid) {
+                                formValid = isValid;
+                                if (!isValid) {
+                                    return;
+                                }
+                                model.interventions = model.interventions.map(function (t) {
+                                    return t.id === curIntervention.id ? curIntervention : t;
+                                });
+                                saveModel(model);
+                            },
+                        }),
+                        (0, mithril_1.default)('.row', (0, mithril_1.default)('.col.s12.margin-top7', (0, mithril_1.default)(mithril_materialized_1.FlatButton, {
+                            className: 'right',
+                            label: 'Suggest similar',
+                            iconName: 'auto_awesome',
+                            disabled: !(curIntervention.mainCap &&
+                                curIntervention.specificCap &&
+                                (!(curIntervention.specificCap instanceof Array) ||
+                                    curIntervention.specificCap.length > 0)),
+                            onclick: function () {
+                                curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
+                            },
+                        }))),
+                        (0, mithril_1.default)(mithril_ui_form_1.LayoutForm, {
+                            form: form1b,
+                            obj: curIntervention,
+                            onchange: function (isValid) {
+                                formValid = isValid;
+                                if (!isValid) {
+                                    return;
+                                }
+                                model.interventions = model.interventions.map(function (t) {
+                                    return t.id === curIntervention.id ? curIntervention : t;
+                                });
+                                saveModel(model);
+                            },
+                        }),
+                    ])
                     : [
                         (0, mithril_1.default)('h3', [
                             curIntervention.intervention,
@@ -16511,7 +16532,7 @@ var InterventionPage = function () {
                             })),
                         ]),
                         curIntervention.desc && (0, mithril_1.default)('p.bold', md(curIntervention.desc)),
-                        (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin0', allInterventions.length === 1
+                        (0, mithril_1.default)('.col.s12.m6', (0, mithril_1.default)('.row.bottom-margin-15', allInterventions.length === 1
                             ? (0, mithril_1.default)('h5.separator', 'Description')
                             : (0, mithril_1.default)('h5.separator.button-row', __spreadArray([
                                 'Description'
@@ -16563,6 +16584,13 @@ var InterventionPage = function () {
                                 src: (0, images_1.resolveImg)(curIntervention.url, curIntervention.img),
                                 alt: curIntervention.intervention,
                             })),
+                        similarTech &&
+                            (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.bottom-margin0', (0, mithril_1.default)('p', (0, mithril_1.default)('span.bold', "Similar intervention".concat(similarTech.length > 1 ? 's' : '', ": ")), similarTech.map(function (s, i) {
+                                return (0, mithril_1.default)('a', {
+                                    href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTION, "?id=".concat(s.id)),
+                                    onclick: function () { return changePage(models_1.Dashboards.INTERVENTION, { id: s.id }); },
+                                }, s.intervention + (i < similarTech.length - 1 ? ', ' : '.'));
+                            })))),
                         (0, mithril_1.default)('.col.s12', (0, mithril_1.default)('.row.bottom-margin0', [
                             (0, mithril_1.default)('h5.separator', 'How it works'),
                             curIntervention.mechanism &&
@@ -16597,13 +16625,6 @@ var InterventionPage = function () {
                                     (0, mithril_1.default)('span.bold', 'Ethical considerations: '),
                                     md((0, utils_1.resolveChoice)(curIntervention.hasEthical, curIntervention.ethical)),
                                 ]),
-                            similarTech &&
-                                (0, mithril_1.default)('p', (0, mithril_1.default)('span.bold', "Similar intervention".concat(similarTech.length > 1 ? 's' : '', ": ")), similarTech.map(function (s, i) {
-                                    return (0, mithril_1.default)('a', {
-                                        href: services_1.routingSvc.href(models_1.Dashboards.INTERVENTION, "?id=".concat(s.id)),
-                                        onclick: function () { return changePage(models_1.Dashboards.INTERVENTION, { id: s.id }); },
-                                    }, s.intervention + (i < similarTech.length - 1 ? ', ' : '.'));
-                                })),
                             curIntervention.evidenceDir &&
                                 (0, mithril_1.default)('p', [
                                     (0, mithril_1.default)('span.bold', 'Evidence indication: '),
@@ -16665,7 +16686,7 @@ exports.InterventionPage = InterventionPage;
 
 /***/ }),
 
-/***/ 7446:
+/***/ 9742:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16678,8 +16699,8 @@ exports.Layout = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var tno_svg_1 = __importDefault(__webpack_require__(1555));
-var models_1 = __webpack_require__(2301);
-var routing_service_1 = __webpack_require__(2464);
+var models_1 = __webpack_require__(5439);
+var routing_service_1 = __webpack_require__(260);
 var Layout = function () { return ({
     view: function (_a) {
         var children = _a.children, _b = _a.attrs, _c = _b.state, page = _c.page, curUser = _c.curUser, changePage = _b.actions.changePage;
@@ -16725,7 +16746,7 @@ var Layout = function () { return ({
                         M.Sidenav.init(elems);
                     },
                 }, routes.map(function (d) {
-                    return (0, mithril_1.default)("li.tooltip".concat(isActive(d)), [
+                    return (0, mithril_1.default)("li.tooltip".concat(isActive(d), ".unselectable"), [
                         (0, mithril_1.default)('a', { href: routing_service_1.routingSvc.href(d.id) }, (0, mithril_1.default)(mithril_materialized_1.Icon, {
                             className: d.iconClass ? " ".concat(d.iconClass) : '',
                             iconName: typeof d.icon === 'string' ? d.icon : d.icon(),
@@ -16733,7 +16754,7 @@ var Layout = function () { return ({
                     ]);
                 })),
                 (0, mithril_1.default)('ul.right.hide-on-med-and-down', routes.map(function (d) {
-                    return (0, mithril_1.default)("li.tooltip".concat(isActive(d)), [
+                    return (0, mithril_1.default)("li.tooltip".concat(isActive(d), ".unselectable"), [
                         (0, mithril_1.default)(mithril_materialized_1.Icon, {
                             className: 'hoverable' + (d.iconClass ? " ".concat(d.iconClass) : ''),
                             style: 'font-size: 2.2rem; width: 4rem;',
@@ -16753,7 +16774,7 @@ exports.Layout = Layout;
 
 /***/ }),
 
-/***/ 8433:
+/***/ 2897:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16765,8 +16786,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(8332);
-var models_1 = __webpack_require__(2301);
+var mithril_ui_form_1 = __webpack_require__(134);
+var models_1 = __webpack_require__(5439);
 var userForm = [
     { id: 'id', type: 'none', autogenerate: 'id' },
     {
@@ -16894,7 +16915,7 @@ exports.SettingsPage = SettingsPage;
 
 /***/ }),
 
-/***/ 1802:
+/***/ 8757:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16914,10 +16935,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AllWordsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var mithril_ui_form_1 = __webpack_require__(8332);
-var models_1 = __webpack_require__(2301);
-var utils_1 = __webpack_require__(2218);
-var ui_1 = __webpack_require__(6904);
+var mithril_ui_form_1 = __webpack_require__(134);
+var models_1 = __webpack_require__(5439);
+var utils_1 = __webpack_require__(1676);
+var ui_1 = __webpack_require__(1428);
 var md = "#### Definition of terms";
 var toLexicon = function (arr, header) {
     return arr
@@ -17002,7 +17023,7 @@ exports.AllWordsPage = AllWordsPage;
 
 /***/ }),
 
-/***/ 6904:
+/***/ 1428:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17022,13 +17043,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(4913), exports);
-__exportStar(__webpack_require__(2499), exports);
+__exportStar(__webpack_require__(7540), exports);
+__exportStar(__webpack_require__(9104), exports);
 
 
 /***/ }),
 
-/***/ 4913:
+/***/ 7540:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17058,7 +17079,7 @@ exports.CircularSpinner = CircularSpinner;
 
 /***/ }),
 
-/***/ 2499:
+/***/ 9104:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17070,7 +17091,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TextInputWithClear = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(2218);
+var utils_1 = __webpack_require__(1676);
 var TextInputWithClear = function () {
     var id;
     var input;
@@ -17143,7 +17164,7 @@ exports.TextInputWithClear = TextInputWithClear;
 
 /***/ }),
 
-/***/ 4090:
+/***/ 77:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17166,7 +17187,7 @@ var Dashboards;
 
 /***/ }),
 
-/***/ 1485:
+/***/ 7422:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17395,7 +17416,7 @@ var AVAILABILITY;
 
 /***/ }),
 
-/***/ 2301:
+/***/ 5439:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17415,14 +17436,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(4090), exports);
-__exportStar(__webpack_require__(1485), exports);
-__exportStar(__webpack_require__(2871), exports);
+__exportStar(__webpack_require__(77), exports);
+__exportStar(__webpack_require__(7422), exports);
+__exportStar(__webpack_require__(1744), exports);
 
 
 /***/ }),
 
-/***/ 2871:
+/***/ 1744:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17432,7 +17453,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 4445:
+/***/ 1619:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17452,13 +17473,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(3628), exports);
-__exportStar(__webpack_require__(2464), exports);
+__exportStar(__webpack_require__(9907), exports);
+__exportStar(__webpack_require__(260), exports);
 
 
 /***/ }),
 
-/***/ 3628:
+/***/ 9907:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17478,7 +17499,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -17505,10 +17526,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cells = exports.appActions = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var meiosis_setup_1 = __webpack_require__(9806);
-var _1 = __webpack_require__(4445);
-var models_1 = __webpack_require__(2301);
-var local_ldb_1 = __webpack_require__(7922);
+var meiosis_setup_1 = __webpack_require__(8885);
+var _1 = __webpack_require__(1619);
+var models_1 = __webpack_require__(5439);
+var local_ldb_1 = __webpack_require__(1444);
 var MODEL_KEY = 'HPET_MODEL';
 var CUR_USER_KEY = 'HPET_CUR_USER';
 var BOOKMARKS_KEY = 'HPET_BOOKMARK';
@@ -17632,7 +17653,7 @@ exports.cells.map(function () {
 
 /***/ }),
 
-/***/ 1472:
+/***/ 9867:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17757,7 +17778,7 @@ exports.unregister = unregister;
 
 /***/ }),
 
-/***/ 2464:
+/***/ 260:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17779,11 +17800,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.routingSvc = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(2301);
-var meiosis_1 = __webpack_require__(3628);
-var layout_1 = __webpack_require__(7446);
-var components_1 = __webpack_require__(1198);
-var intervention_overview_page_1 = __webpack_require__(7205);
+var models_1 = __webpack_require__(5439);
+var meiosis_1 = __webpack_require__(9907);
+var layout_1 = __webpack_require__(9742);
+var components_1 = __webpack_require__(2682);
+var intervention_overview_page_1 = __webpack_require__(7464);
 var RoutingService = /** @class */ (function () {
     function RoutingService(dashboards) {
         this.setList(dashboards);
@@ -17913,7 +17934,7 @@ exports.routingSvc = new RoutingService([
 
 /***/ }),
 
-/***/ 2218:
+/***/ 1676:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17934,8 +17955,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.interventionForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.ethicalConsiderationsOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.interventionCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(8332);
-var models_1 = __webpack_require__(2301);
+var mithril_ui_form_1 = __webpack_require__(134);
+var models_1 = __webpack_require__(5439);
 var supRegex = /\^([^_ ]+)(_|$|\s)/g;
 var subRegex = /\_([^\^ ]+)(\^|$|\s)/g;
 /** Expand markdown notation by converting A_1 to subscript and x^2 to superscript. */
@@ -18533,279 +18554,283 @@ var literatureForm = [
 ];
 var interventionForm = function (users, interventionOptions) {
     return [
-        { id: 'id', type: 'none', autogenerate: 'id' },
-        { id: 'updated', type: 'none', autogenerate: 'timestamp' },
-        {
-            id: 'intervention',
-            label: 'Intervention title',
-            required: true,
-            type: 'text',
-            className: 'col s6 m8',
-        },
-        {
-            id: 'category',
-            label: 'Category',
-            type: 'select',
-            multiple: true,
-            options: exports.interventionCategoryOptions,
-            className: 'col s6 m4',
-        },
-        {
-            id: 'desc',
-            label: 'Description',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'keywords',
-            label: 'Synonyms and keywords',
-            type: 'tags',
-            className: 'col s12',
-        },
-        // {
-        //   id: 'owner',
-        //   label: 'Owner',
-        //   type: 'select',
-        //   options: users.map((u) => ({ id: u.id, label: u.name })),
-        //   className: 'col s12',
-        // },
-        // {
-        //   id: 'status',
-        //   label: 'Status',
-        //   type: 'select',
-        //   options: statusOptions,
-        //   className: 'col s4',
-        // },
-        // {
-        //   id: 'reviewer',
-        //   label: 'Reviewer',
-        //   type: 'select',
-        //   multiple: true,
-        //   options: users.map((u) => ({ id: u.id, label: u.name })),
-        //   className: 'col s4',
-        // },
-        {
-            id: 'mainCap',
-            label: 'Main capability',
-            required: true,
-            type: 'select',
-            className: 'col s6 m3',
-            options: exports.mainCapabilityOptions,
-        },
-        {
-            id: 'hpeClassification',
-            label: 'HPE classification',
-            type: 'select',
-            className: 'col s6 m3',
-            options: exports.hpeClassificationOptions,
-        },
-        {
-            id: 'invasive',
-            label: 'Invasive?',
-            type: 'select',
-            className: 'col s6 m2',
-            options: exports.invasivenessOptions,
-        },
-        {
-            id: 'booster',
-            label: 'Can be applied as booster?',
-            type: 'checkbox',
-            className: 'col s6 m4',
-        },
-        {
-            id: 'specificCap',
-            label: 'Specific cognitive capabilities',
-            type: 'options',
-            multiple: true,
-            options: exports.specificCognitiveCapabilityOptions,
-            className: 'col s12',
-            checkboxClass: 'col s4',
-            show: 'mainCap = 1',
-        },
-        {
-            id: 'specificCap',
-            label: 'Specific physical capabilities',
-            type: 'options',
-            multiple: true,
-            options: exports.specificPhysicalCapabilityOptions,
-            className: 'col s12',
-            checkboxClass: 'col s4',
-            show: 'mainCap = 2',
-        },
-        {
-            id: 'specificCap',
-            label: 'Specific mental capabilities',
-            type: 'options',
-            multiple: true,
-            options: exports.specificMentalCapabilityOptions,
-            className: 'col s12',
-            checkboxClass: 'col s4',
-            show: 'mainCap = 3',
-        },
-        {
-            id: 'specificCap',
-            label: 'Specific social capabilities',
-            type: 'options',
-            multiple: true,
-            options: exports.specificSocialCapabilityOptions,
-            className: 'col s12',
-            checkboxClass: 'col s4',
-            show: 'mainCap = 4',
-        },
-        {
-            id: 'specificCap',
-            label: 'Specific personality capabilities',
-            type: 'options',
-            multiple: true,
-            options: exports.specificPersonalityCapabilityOptions,
-            className: 'col s12',
-            checkboxClass: 'col s4',
-            show: 'mainCap = 5',
-        },
-        {
-            id: 'similar',
-            label: 'Similar interventions',
-            type: 'select',
-            multiple: true,
-            options: interventionOptions,
-            className: 'col s12',
-        },
-        {
-            id: 'mechanism',
-            label: 'How it works',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'effectDuration',
-            label: 'Effect duration',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'incubation',
-            label: 'Effect incubation',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'practical',
-            label: 'Practical execution',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'hasIndDiff',
-            label: 'Has individual differences?',
-            type: 'select',
-            options: exports.NoYesUnknown,
-            className: 'col s4',
-        },
-        {
-            id: 'hasSideEffects',
-            label: 'Has side effects?',
-            type: 'select',
-            options: exports.NoYesUnknown,
-            className: 'col s4',
-        },
-        {
-            id: 'hasEthical',
-            label: 'Has ethical considerations?',
-            type: 'select',
-            options: exports.NoYesUnknown,
-            className: 'col s4',
-        },
-        {
-            id: 'diff',
-            label: 'Individual differences',
-            type: 'textarea',
-            className: 'col s12',
-            show: 'hasIndDiff > 2',
-        },
-        {
-            id: 'sideEffects',
-            label: 'Side effects',
-            type: 'textarea',
-            className: 'col s12',
-            show: 'hasSideEffects > 2',
-        },
-        {
-            id: 'ethical',
-            label: 'Ethical considerations',
-            type: 'textarea',
-            className: 'col s12',
-            show: 'hasEthical > 2',
-        },
-        {
-            id: 'examples',
-            label: 'Examples of the intervention being used in practice',
-            type: 'textarea',
-            className: 'col s12',
-        },
-        {
-            id: 'maturity',
-            label: 'Maturity',
-            type: 'select',
-            className: 'col s6 m2',
-            options: exports.maturityOptions,
-        },
-        {
-            id: 'availability',
-            label: 'Availability',
-            type: 'select',
-            className: 'col s12 m3',
-            options: exports.availabilityOptions,
-        },
-        {
-            id: 'evidenceDir',
-            label: 'Evidence indication',
-            type: 'select',
-            className: 'col s12 m2',
-            options: exports.evidenceDirOptions,
-        },
-        {
-            id: 'evidenceScore',
-            label: 'Evidence quality',
-            type: 'select',
-            className: 'col s12 m2',
-            options: exports.evidenceLevelOptions,
-        },
-        {
-            id: 'owner',
-            label: 'Owner',
-            type: 'select',
-            options: users.map(function (u) { return ({ id: u.id, label: u.name }); }),
-            className: 'col s12 m3',
-        },
-        // {
-        //   id: 'evidenceScore',
-        //   label: 'Quality of evidence',
-        //   type: 'radio',
-        //   checkboxClass: 'col s4',
-        //   className: 'col s12',
-        //   options: evidenceLevelOptions,
-        // },
-        {
-            id: 'url',
-            label: 'Use default image',
-            type: 'select',
-            className: 'col s3',
-            options: [
-                { id: 'nutrition', label: 'Nutrition' },
-                { id: 'pharma', label: 'Pharma/supplement' },
-                { id: 'beverage', label: 'Beverage' },
-                { id: 'upload', label: 'Upload your own' },
-            ],
-        },
-        { id: 'img', label: 'Upload image', type: 'base64', className: 'col s9', show: 'url=upload' },
-        {
-            id: 'literature',
-            label: 'Literature',
-            className: 'col s12',
-            repeat: true,
-            pageSize: 20,
-            type: literatureForm,
-        },
+        [
+            { id: 'id', type: 'none', autogenerate: 'id' },
+            { id: 'updated', type: 'none', autogenerate: 'timestamp' },
+            {
+                id: 'intervention',
+                label: 'Intervention title',
+                required: true,
+                type: 'text',
+                className: 'col s6 m8',
+            },
+            {
+                id: 'category',
+                label: 'Category',
+                type: 'select',
+                multiple: true,
+                options: exports.interventionCategoryOptions,
+                className: 'col s6 m4',
+            },
+            {
+                id: 'desc',
+                label: 'Description',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'keywords',
+                label: 'Synonyms and keywords',
+                type: 'tags',
+                className: 'col s12',
+            },
+            // {
+            //   id: 'owner',
+            //   label: 'Owner',
+            //   type: 'select',
+            //   options: users.map((u) => ({ id: u.id, label: u.name })),
+            //   className: 'col s12',
+            // },
+            // {
+            //   id: 'status',
+            //   label: 'Status',
+            //   type: 'select',
+            //   options: statusOptions,
+            //   className: 'col s4',
+            // },
+            // {
+            //   id: 'reviewer',
+            //   label: 'Reviewer',
+            //   type: 'select',
+            //   multiple: true,
+            //   options: users.map((u) => ({ id: u.id, label: u.name })),
+            //   className: 'col s4',
+            // },
+            {
+                id: 'mainCap',
+                label: 'Main capability',
+                required: true,
+                type: 'select',
+                className: 'col s6 m3',
+                options: exports.mainCapabilityOptions,
+            },
+            {
+                id: 'hpeClassification',
+                label: 'HPE classification',
+                type: 'select',
+                className: 'col s6 m3',
+                options: exports.hpeClassificationOptions,
+            },
+            {
+                id: 'invasive',
+                label: 'Invasive?',
+                type: 'select',
+                className: 'col s6 m2',
+                options: exports.invasivenessOptions,
+            },
+            {
+                id: 'booster',
+                label: 'Can be applied as booster?',
+                type: 'checkbox',
+                className: 'col s6 m4',
+            },
+            {
+                id: 'specificCap',
+                label: 'Specific cognitive capabilities',
+                type: 'options',
+                multiple: true,
+                options: exports.specificCognitiveCapabilityOptions,
+                className: 'col s12',
+                checkboxClass: 'col s4',
+                show: 'mainCap = 1',
+            },
+            {
+                id: 'specificCap',
+                label: 'Specific physical capabilities',
+                type: 'options',
+                multiple: true,
+                options: exports.specificPhysicalCapabilityOptions,
+                className: 'col s12',
+                checkboxClass: 'col s4',
+                show: 'mainCap = 2',
+            },
+            {
+                id: 'specificCap',
+                label: 'Specific mental capabilities',
+                type: 'options',
+                multiple: true,
+                options: exports.specificMentalCapabilityOptions,
+                className: 'col s12',
+                checkboxClass: 'col s4',
+                show: 'mainCap = 3',
+            },
+            {
+                id: 'specificCap',
+                label: 'Specific social capabilities',
+                type: 'options',
+                multiple: true,
+                options: exports.specificSocialCapabilityOptions,
+                className: 'col s12',
+                checkboxClass: 'col s4',
+                show: 'mainCap = 4',
+            },
+            {
+                id: 'specificCap',
+                label: 'Specific personality capabilities',
+                type: 'options',
+                multiple: true,
+                options: exports.specificPersonalityCapabilityOptions,
+                className: 'col s12',
+                checkboxClass: 'col s4',
+                show: 'mainCap = 5',
+            },
+        ],
+        [
+            {
+                id: 'similar',
+                label: 'Similar interventions',
+                type: 'select',
+                multiple: true,
+                options: interventionOptions,
+                className: 'col s12',
+            },
+            {
+                id: 'mechanism',
+                label: 'How it works',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'effectDuration',
+                label: 'Effect duration',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'incubation',
+                label: 'Effect incubation',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'practical',
+                label: 'Practical execution',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'hasIndDiff',
+                label: 'Has individual differences?',
+                type: 'select',
+                options: exports.NoYesUnknown,
+                className: 'col s4',
+            },
+            {
+                id: 'hasSideEffects',
+                label: 'Has side effects?',
+                type: 'select',
+                options: exports.NoYesUnknown,
+                className: 'col s4',
+            },
+            {
+                id: 'hasEthical',
+                label: 'Has ethical considerations?',
+                type: 'select',
+                options: exports.NoYesUnknown,
+                className: 'col s4',
+            },
+            {
+                id: 'diff',
+                label: 'Individual differences',
+                type: 'textarea',
+                className: 'col s12',
+                show: 'hasIndDiff > 2',
+            },
+            {
+                id: 'sideEffects',
+                label: 'Side effects',
+                type: 'textarea',
+                className: 'col s12',
+                show: 'hasSideEffects > 2',
+            },
+            {
+                id: 'ethical',
+                label: 'Ethical considerations',
+                type: 'textarea',
+                className: 'col s12',
+                show: 'hasEthical > 2',
+            },
+            {
+                id: 'examples',
+                label: 'Examples of the intervention being used in practice',
+                type: 'textarea',
+                className: 'col s12',
+            },
+            {
+                id: 'maturity',
+                label: 'Maturity',
+                type: 'select',
+                className: 'col s6 m2',
+                options: exports.maturityOptions,
+            },
+            {
+                id: 'availability',
+                label: 'Availability',
+                type: 'select',
+                className: 'col s12 m3',
+                options: exports.availabilityOptions,
+            },
+            {
+                id: 'evidenceDir',
+                label: 'Evidence indication',
+                type: 'select',
+                className: 'col s12 m2',
+                options: exports.evidenceDirOptions,
+            },
+            {
+                id: 'evidenceScore',
+                label: 'Evidence quality',
+                type: 'select',
+                className: 'col s12 m2',
+                options: exports.evidenceLevelOptions,
+            },
+            {
+                id: 'owner',
+                label: 'Owner',
+                type: 'select',
+                options: users.map(function (u) { return ({ id: u.id, label: u.name }); }),
+                className: 'col s12 m3',
+            },
+            // {
+            //   id: 'evidenceScore',
+            //   label: 'Quality of evidence',
+            //   type: 'radio',
+            //   checkboxClass: 'col s4',
+            //   className: 'col s12',
+            //   options: evidenceLevelOptions,
+            // },
+            {
+                id: 'url',
+                label: 'Use default image',
+                type: 'select',
+                className: 'col s3',
+                options: [
+                    { id: 'nutrition', label: 'Nutrition' },
+                    { id: 'pharma', label: 'Pharma/supplement' },
+                    { id: 'beverage', label: 'Beverage' },
+                    { id: 'upload', label: 'Upload your own' },
+                ],
+            },
+            { id: 'img', label: 'Upload image', type: 'base64', className: 'col s9', show: 'url=upload' },
+            {
+                id: 'literature',
+                label: 'Literature',
+                className: 'col s12',
+                repeat: true,
+                pageSize: 20,
+                type: literatureForm,
+            },
+        ],
     ];
 };
 exports.interventionForm = interventionForm;
@@ -18846,7 +18871,7 @@ exports.isUnique = isUnique;
 
 /***/ }),
 
-/***/ 7922:
+/***/ 1444:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -18866,7 +18891,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -19207,7 +19232,7 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(5174);
+/******/ 	var __webpack_exports__ = __webpack_require__(1879);
 /******/ 	
 /******/ })()
 ;
