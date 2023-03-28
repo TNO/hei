@@ -499,7 +499,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
                       .filter(isUnique)
                       .join(', ')
                   ),
-                  m('p.overflow', t.desc),
+                  m('p.overflow', t.desc[0]),
                 ]),
                 m(
                   '.card-action',
