@@ -68,7 +68,7 @@ export const Layout: MeiosisComponent = () => ({
                 },
               },
               routes.map((d) =>
-                m(`li.tooltip${isActive(d)}`, [
+                m(`li.tooltip${isActive(d)}.unselectable`, [
                   m(
                     'a',
                     { href: routingSvc.href(d.id) },
@@ -84,7 +84,7 @@ export const Layout: MeiosisComponent = () => ({
             m(
               'ul.right.hide-on-med-and-down',
               routes.map((d) =>
-                m(`li.tooltip${isActive(d)}`, [
+                m(`li.tooltip${isActive(d)}.unselectable`, [
                   m(Icon, {
                     className: 'hoverable' + (d.iconClass ? ` ${d.iconClass}` : ''),
                     style: 'font-size: 2.2rem; width: 4rem;',
