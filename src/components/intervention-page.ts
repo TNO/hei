@@ -53,7 +53,8 @@ export const InterventionPage: MeiosisComponent = () => {
 
   let id = '';
   let isEditing = false;
-  let form: UIForm<Intervention> = [];
+  let form1a: UIForm<Intervention> = [];
+  let form1b: UIForm<Intervention> = [];
   let allInterventions = [] as Intervention[];
   let isBookmarked = false;
   let formValid = false;
@@ -69,7 +70,7 @@ export const InterventionPage: MeiosisComponent = () => {
       setPage(Dashboards.INTERVENTION);
       id = m.route.param('id') || curIntervention.id || '';
       isEditing = (m.route.param('edit') as unknown as boolean) === true ? true : false;
-      form = initInterventionForm(technologies, id, users);
+      [form1a, form1b] = initInterventionForm(technologies, id, users);
       const found =
         id === curIntervention.id
           ? curIntervention
@@ -95,7 +96,7 @@ export const InterventionPage: MeiosisComponent = () => {
       id = m.route.param('id') || curIntervention.id || '';
       const { users, interventions } = model;
       if (!curIntervention.id || curIntervention.id !== id) {
-        form = initInterventionForm(interventions, id, users);
+        [form1a, form1b] = initInterventionForm(interventions, id, users);
         const found = interventions.filter((t) => t.id === id).shift() || interventions[0];
         if (found) {
           allInterventions = interventions.filter((t) => t.intervention === found.intervention);
@@ -160,20 +161,6 @@ export const InterventionPage: MeiosisComponent = () => {
                       iconName: 'delete',
                       modalId: 'deleteIntervention',
                     }),
-                    m(FlatButton, {
-                      className: 'right',
-                      label: 'Suggest similar',
-                      iconName: 'auto_awesome',
-                      disabled: !(
-                        curIntervention.mainCap &&
-                        curIntervention.specificCap &&
-                        (!(curIntervention.specificCap instanceof Array) ||
-                          curIntervention.specificCap.length > 0)
-                      ),
-                      onclick: () => {
-                        curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
-                      },
-                    }),
                   ]
                 : m(FlatButton, {
                     className: 'right no-print',
@@ -191,10 +178,9 @@ export const InterventionPage: MeiosisComponent = () => {
                   }),
             ],
           isEditing
-            ? m(
-                '.col.s12',
+            ? m('.col.s12', [
                 m(LayoutForm, {
-                  form,
+                  form: form1a,
                   obj: curIntervention,
                   onchange: (isValid) => {
                     formValid = isValid;
@@ -206,8 +192,42 @@ export const InterventionPage: MeiosisComponent = () => {
                     );
                     saveModel(model);
                   },
-                } as ILayoutForm<Intervention>)
-              )
+                } as ILayoutForm<Intervention>),
+                m(
+                  '.row',
+                  m(
+                    '.col.s12.margin-top7',
+                    m(FlatButton, {
+                      className: 'right',
+                      label: 'Suggest similar',
+                      iconName: 'auto_awesome',
+                      disabled: !(
+                        curIntervention.mainCap &&
+                        curIntervention.specificCap &&
+                        (!(curIntervention.specificCap instanceof Array) ||
+                          curIntervention.specificCap.length > 0)
+                      ),
+                      onclick: () => {
+                        curIntervention.similar = suggestSimilarInt(curIntervention, interventions);
+                      },
+                    })
+                  )
+                ),
+                m(LayoutForm, {
+                  form: form1b,
+                  obj: curIntervention,
+                  onchange: (isValid) => {
+                    formValid = isValid;
+                    if (!isValid) {
+                      return;
+                    }
+                    model.interventions = model.interventions.map((t) =>
+                      t.id === curIntervention.id ? curIntervention : t
+                    );
+                    saveModel(model);
+                  },
+                } as ILayoutForm<Intervention>),
+              ])
             : [
                 m('h3', [
                   curIntervention.intervention,
@@ -238,7 +258,7 @@ export const InterventionPage: MeiosisComponent = () => {
                 m(
                   '.col.s12.m6',
                   m(
-                    '.row.bottom-margin0',
+                    '.row.bottom-margin-15',
                     allInterventions.length === 1
                       ? m('h5.separator', 'Description')
                       : m('h5.separator.button-row', [
@@ -312,6 +332,30 @@ export const InterventionPage: MeiosisComponent = () => {
                       alt: curIntervention.intervention,
                     })
                   ),
+                similarTech &&
+                  m(
+                    '.col.s12',
+                    m(
+                      '.row.bottom-margin0',
+                      m(
+                        'p',
+                        m(
+                          'span.bold',
+                          `Similar intervention${similarTech.length > 1 ? 's' : ''}: `
+                        ),
+                        similarTech.map((s, i) =>
+                          m(
+                            'a',
+                            {
+                              href: routingSvc.href(Dashboards.INTERVENTION, `?id=${s.id}`),
+                              onclick: () => changePage(Dashboards.INTERVENTION, { id: s.id }),
+                            },
+                            s.intervention + (i < similarTech.length - 1 ? ', ' : '.')
+                          )
+                        )
+                      )
+                    )
+                  ),
                 m(
                   '.col.s12',
                   m('.row.bottom-margin0', [
@@ -355,24 +399,6 @@ export const InterventionPage: MeiosisComponent = () => {
                         m('span.bold', 'Ethical considerations: '),
                         md(resolveChoice(curIntervention.hasEthical, curIntervention.ethical)),
                       ]),
-                    similarTech &&
-                      m(
-                        'p',
-                        m(
-                          'span.bold',
-                          `Similar intervention${similarTech.length > 1 ? 's' : ''}: `
-                        ),
-                        similarTech.map((s, i) =>
-                          m(
-                            'a',
-                            {
-                              href: routingSvc.href(Dashboards.INTERVENTION, `?id=${s.id}`),
-                              onclick: () => changePage(Dashboards.INTERVENTION, { id: s.id }),
-                            },
-                            s.intervention + (i < similarTech.length - 1 ? ', ' : '.')
-                          )
-                        )
-                      ),
                     curIntervention.evidenceDir &&
                       m('p', [
                         m('span.bold', 'Evidence indication: '),

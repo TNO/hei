@@ -607,6 +607,11 @@ ul.projects > li > span.project-id {
   margin-bottom: 0;
 }
 
+.col.bottom-margin-15,
+.row.bottom-margin-15 {
+  margin-bottom: -15px;
+}
+
 .card .card-title.bold,
 .bold {
   font-weight: bold;
@@ -737,4 +742,12 @@ table th {
   .modal.bottom-sheet {
     max-height: 65%;
   }
+}
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
