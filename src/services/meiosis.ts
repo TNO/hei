@@ -1,7 +1,15 @@
 import m, { FactoryComponent } from 'mithril';
 import { meiosisSetup } from 'meiosis-setup';
 import { routingSvc } from '.';
-import { Dashboards, DataModel, defaultModel, ID, SearchFilter, Intervention } from '../models';
+import {
+  Dashboards,
+  DataModel,
+  defaultModel,
+  ID,
+  SearchFilter,
+  Intervention,
+  FutureInterventions,
+} from '../models';
 import { ldb } from '../utils/local-ldb';
 import { MeiosisCell, Update } from 'meiosis-setup/types';
 
@@ -9,6 +17,7 @@ const MODEL_KEY = 'HPET_MODEL';
 const CUR_USER_KEY = 'HPET_CUR_USER';
 const BOOKMARKS_KEY = 'HPET_BOOKMARK';
 const COMPARE_LIST_KEY = 'HPET_COMPARE_LIST_KEY';
+const SHOW_FUTURE_INTERVENTIONS = 'HPET_SHOW_FUTURE_INTERVENTIONS';
 
 export interface State {
   page: Dashboards;
@@ -18,6 +27,7 @@ export interface State {
   bookmarks: ID[];
   compareList: ID[];
   searchFilters: SearchFilter;
+  showFutureInterventions: FutureInterventions;
 }
 
 export interface Actions {
@@ -34,6 +44,7 @@ export interface Actions {
   compare: (id: ID) => void;
   setCompareList: (ids: ID[]) => void;
   setSearchFilters: (sf: Partial<SearchFilter>) => void;
+  setFutureInterventions: (showFutureInterventions: FutureInterventions) => void;
 }
 
 export type MeiosisComponent<T extends { [key: string]: any } = {}> = FactoryComponent<{
@@ -100,6 +111,10 @@ export const appActions: (cell: MeiosisCell<State>) => Actions = ({ update }) =>
     // console.log(JSON.stringify(searchFilters, null, 2));
     update({ searchFilters });
   },
+  setFutureInterventions: (showFutureInterventions: FutureInterventions) => {
+    ldb.set(SHOW_FUTURE_INTERVENTIONS, showFutureInterventions);
+    update({ showFutureInterventions });
+  },
 });
 
 const initialize = async (update: Update<State>) => {
@@ -109,12 +124,15 @@ const initialize = async (update: Update<State>) => {
   const bookmarks = b ? JSON.parse(b) : [];
   const c = await ldb.get(COMPARE_LIST_KEY);
   const compareList = c ? JSON.parse(c) : [];
+  const showFutureInterventions = (await ldb.get(SHOW_FUTURE_INTERVENTIONS)) || 'HIDE';
+
   const curUser = (await ldb.get(CUR_USER_KEY)) || '';
   update({
     model: () => model,
     bookmarks: () => bookmarks,
     compareList: () => compareList,
     curUser,
+    showFutureInterventions,
   });
 };
 
@@ -127,6 +145,7 @@ const app = {
     compareList: [],
     curUser: 'mod',
     searchFilters: {} as SearchFilter,
+    showFutureInterventions: 'HIDE',
   } as State,
 };
 export const cells = meiosisSetup<State>({ app });
