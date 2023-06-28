@@ -1,6 +1,6 @@
 import m from 'mithril';
 import { FlatButton, Icon, ModalPanel, uniqueId } from 'mithril-materialized';
-import { ILayoutForm, LayoutForm, UIForm } from 'mithril-ui-form';
+import { FormAttributes, LayoutForm, UIForm } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import {
   AVAILABILITY,
@@ -720,7 +720,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
               ] as UIForm<SearchFilter>,
               obj: searchFilters,
               onchange: () => setSearchFilters(searchFilters),
-            } as ILayoutForm<SearchFilter>)
+            } as FormAttributes)
           ),
           bottomSheet: true,
           fixedFooter: true,

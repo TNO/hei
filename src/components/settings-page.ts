@@ -1,7 +1,7 @@
 import m from 'mithril';
-import { Collapsible, FlatButton } from 'mithril-materialized';
-import { ILayoutForm, LayoutForm, UIForm } from 'mithril-ui-form';
-import { Dashboards, defaultModel, User } from '../models';
+import { Collapsible, FlatButton, ISelectOptions, Select } from 'mithril-materialized';
+import { FormAttributes, LayoutForm, UIForm } from 'mithril-ui-form';
+import { Dashboards, defaultModel, FutureInterventions, User } from '../models';
 import { MeiosisComponent } from '../services';
 
 const userForm = [
@@ -58,13 +58,31 @@ export const SettingsPage: MeiosisComponent = () => {
     }) => setPage(Dashboards.SETTINGS),
     view: ({
       attrs: {
-        state: { model = defaultModel },
-        actions: { saveModel },
+        state: { model = defaultModel, showFutureInterventions },
+        actions: { saveModel, setFutureInterventions },
       },
     }) => {
       const { users = [] } = model;
       return [
-        m('.settings', [
+        m('.settings.page', [
+          m(
+            '.row',
+            m('.col.s12', [
+              m('h4', 'Settings'),
+              m(Select, {
+                checkedId: showFutureInterventions,
+                label: 'Database settings',
+                options: [
+                  { id: 'HIDE', label: 'Standard: Include only currently available interventions' },
+                  { id: 'SHOW', label: 'All: Include currently possible and future interventions' },
+                  { id: 'ONLY', label: 'Future: Include only future interventions' },
+                ],
+                onchange: (showFutureInterventions) => {
+                  setFutureInterventions(showFutureInterventions[0]);
+                },
+              } as ISelectOptions<FutureInterventions>),
+            ])
+          ),
           m('.row.users', [
             m('h4', 'Users'),
             m(Collapsible, {
@@ -76,7 +94,7 @@ export const SettingsPage: MeiosisComponent = () => {
                     form: userForm,
                     obj: user,
                     onchange: () => saveModel(model),
-                  } as ILayoutForm<User>),
+                  } as FormAttributes),
                   m(FlatButton, {
                     label: 'Delete',
                     iconName: 'delete',
@@ -102,7 +120,7 @@ export const SettingsPage: MeiosisComponent = () => {
                 onchange: (isValid) => {
                   canSaveUser = isValid;
                 },
-              } as ILayoutForm<User>),
+              } as FormAttributes),
             m(FlatButton, {
               label: addUser ? 'Save' : 'Add User',
               disabled: addUser ? !canSaveUser : false,

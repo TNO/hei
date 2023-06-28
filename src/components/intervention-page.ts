@@ -1,6 +1,6 @@
 import m from 'mithril';
 import { FlatButton, Icon, ModalPanel, uuid4 } from 'mithril-materialized';
-import { UIForm, LayoutForm, ILayoutForm } from 'mithril-ui-form';
+import { UIForm, LayoutForm, FormAttributes } from 'mithril-ui-form';
 import { resolveImg } from '../assets/images';
 import { Dashboards, defaultModel, Intervention, User } from '../models';
 import { MeiosisComponent, routingSvc } from '../services';
@@ -192,7 +192,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     );
                     saveModel(model);
                   },
-                } as ILayoutForm<Intervention>),
+                } as FormAttributes),
                 m(
                   '.row',
                   m(
@@ -226,7 +226,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     );
                     saveModel(model);
                   },
-                } as ILayoutForm<Intervention>),
+                } as FormAttributes),
               ])
             : [
                 m('h3', [

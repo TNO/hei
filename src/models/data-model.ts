@@ -240,6 +240,8 @@ export type Measurement = {
   url?: string;
 };
 
+export type FutureInterventions = 'HIDE' | 'SHOW' | 'ONLY';
+
 export type Intervention = {
   id: ID;
   owner: ID;
