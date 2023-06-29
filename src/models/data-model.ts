@@ -292,6 +292,14 @@ export type Intervention = {
   measurementIDs: ID[];
   /** Literature referred to in this article */
   literature: Literature[];
+  /** If true, we are dealing with a future intervention */
+  future?: boolean;
+  /** Future possibilities & implications */
+  implications: string;
+  /** State of the art */
+  sota: string;
+  /** Challenges */
+  challenges: string;
 };
 
 export type User = {

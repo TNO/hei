@@ -20,9 +20,15 @@ import {
   resolveChoice,
   optionsToTxt,
   specificCapabilityOptions,
+  createInterventionFilter,
 } from '../utils';
 
 export const InterventionPage: MeiosisComponent = () => {
+  let futureInterventionFilter: (
+    intervention: Intervention,
+    _index: number,
+    _arr: Intervention[]
+  ) => boolean;
   const initInterventionForm = (interventions: Intervention[], id: string, users: User[]) => {
     const added = new Set<string>();
     const interventionOptions = interventions
@@ -57,16 +63,16 @@ export const InterventionPage: MeiosisComponent = () => {
   let form1b: UIForm<Intervention> = [];
   let allInterventions = [] as Intervention[];
   let isBookmarked = false;
-  let formValid = false;
 
   return {
     oninit: ({
       attrs: {
-        state: { model, curIntervention = {} as Intervention },
+        state: { model, curIntervention = {} as Intervention, showFutureInterventions },
         actions: { setPage, setIntervention },
       },
     }) => {
       const { interventions: technologies = [], users = [] } = model;
+      futureInterventionFilter = createInterventionFilter(showFutureInterventions);
       setPage(Dashboards.INTERVENTION);
       id = m.route.param('id') || curIntervention.id || '';
       isEditing = (m.route.param('edit') as unknown as boolean) === true ? true : false;
@@ -94,7 +100,8 @@ export const InterventionPage: MeiosisComponent = () => {
       },
     }) => {
       id = m.route.param('id') || curIntervention.id || '';
-      const { users, interventions } = model;
+      const { users, interventions: allTechnologies = [] } = model;
+      const interventions = allTechnologies.filter(futureInterventionFilter);
       if (!curIntervention.id || curIntervention.id !== id) {
         [form1a, form1b] = initInterventionForm(interventions, id, users);
         const found = interventions.filter((t) => t.id === id).shift() || interventions[0];
@@ -104,10 +111,6 @@ export const InterventionPage: MeiosisComponent = () => {
         }
         return;
       }
-      // interventions.forEach((i) => {
-      //   i.similar = suggestSimilarInt(i, interventions);
-      // });
-      // saveModel({ ...model, interventions });
       isBookmarked = bookmarks.indexOf(curIntervention.id) >= 0;
       const selectedForComparison = compareList.indexOf(curIntervention.id) >= 0;
       const ownerId = curIntervention.owner;
@@ -128,6 +131,12 @@ export const InterventionPage: MeiosisComponent = () => {
         (c) => c.mc === curIntervention.mainCap
       );
 
+      const separatorClassName = curIntervention.future
+        ? 'black-text future-intervention-color'
+        : undefined;
+      console.log(curIntervention);
+      console.log(getOptionsLabel(interventionCategoryOptions, curIntervention.category));
+
       return [
         m(
           '.row.intervention-page',
@@ -137,7 +146,7 @@ export const InterventionPage: MeiosisComponent = () => {
               m(FlatButton, {
                 className: 'right no-print',
                 label: isEditing ? 'Save' : 'Edit',
-                disabled: isEditing && !formValid,
+                // disabled: isEditing,
                 iconName: isEditing ? 'save' : 'edit',
                 onclick: () => {
                   // if (
@@ -182,11 +191,7 @@ export const InterventionPage: MeiosisComponent = () => {
                 m(LayoutForm, {
                   form: form1a,
                   obj: curIntervention,
-                  onchange: (isValid) => {
-                    formValid = isValid;
-                    if (!isValid) {
-                      return;
-                    }
+                  onchange: () => {
                     model.interventions = model.interventions.map((t) =>
                       t.id === curIntervention.id ? curIntervention : t
                     );
@@ -216,11 +221,7 @@ export const InterventionPage: MeiosisComponent = () => {
                 m(LayoutForm, {
                   form: form1b,
                   obj: curIntervention,
-                  onchange: (isValid) => {
-                    formValid = isValid;
-                    if (!isValid) {
-                      return;
-                    }
+                  onchange: () => {
                     model.interventions = model.interventions.map((t) =>
                       t.id === curIntervention.id ? curIntervention : t
                     );
@@ -242,17 +243,18 @@ export const InterventionPage: MeiosisComponent = () => {
                       className: isBookmarked ? 'amber-text white' : 'white',
                     })
                   ),
-                  m(
-                    'a.btn-flat.btn-large.clean',
-                    {
-                      style: 'padding: 0 5px',
-                      onclick: () => compare(curIntervention.id),
-                    },
-                    m(Icon, {
-                      iconName: 'balance',
-                      className: selectedForComparison ? 'amber-text white' : 'white',
-                    })
-                  ),
+                  !curIntervention.future &&
+                    m(
+                      'a.btn-flat.btn-large.clean',
+                      {
+                        style: 'padding: 0 5px',
+                        onclick: () => compare(curIntervention.id),
+                      },
+                      m(Icon, {
+                        iconName: 'balance',
+                        className: selectedForComparison ? 'amber-text white' : 'white',
+                      })
+                    ),
                 ]),
                 curIntervention.desc && m('p.bold', md(curIntervention.desc)),
                 m(
@@ -260,8 +262,8 @@ export const InterventionPage: MeiosisComponent = () => {
                   m(
                     '.row.bottom-margin-15',
                     allInterventions.length === 1
-                      ? m('h5.separator', 'Description')
-                      : m('h5.separator.button-row', [
+                      ? m('h5.separator', { className: separatorClassName }, 'Description')
+                      : m('h5.separator.button-row', { className: separatorClassName }, [
                           'Description',
                           ...allInterventions.map((t, i) =>
                             m(FlatButton, {
@@ -359,9 +361,12 @@ export const InterventionPage: MeiosisComponent = () => {
                 m(
                   '.col.s12',
                   m('.row.bottom-margin0', [
-                    m('h5.separator', 'How it works'),
+                    m('h5.separator', { className: separatorClassName }, 'How it works'),
                     curIntervention.mechanism &&
                       m('p', [m('span.bold', 'Mechanism: '), md(curIntervention.mechanism)]),
+                    curIntervention.future &&
+                      curIntervention.sota &&
+                      m('p', [m('span.bold', 'State of the art: '), md(curIntervention.sota)]),
                     curIntervention.examples &&
                       m('p', [m('span.bold', 'Examples: '), md(curIntervention.examples)]),
                     curIntervention.incubation &&
@@ -371,7 +376,23 @@ export const InterventionPage: MeiosisComponent = () => {
                         m('span.bold', 'Effect duration: '),
                         md(curIntervention.effectDuration),
                       ]),
-                    m('h5.separator', 'Keep in mind'),
+                    curIntervention.future &&
+                      curIntervention.implications &&
+                      m(
+                        'h5.separator',
+                        { className: separatorClassName },
+                        'Future possibilities & implications'
+                      ),
+                    m('p.white', md(curIntervention.implications)),
+                    (curIntervention.practical ||
+                      curIntervention.sideEffects ||
+                      curIntervention.diff ||
+                      curIntervention.ethical ||
+                      curIntervention.evidenceDir ||
+                      curIntervention.evidenceScore ||
+                      curIntervention.availability ||
+                      (curIntervention.future && curIntervention.challenges)) &&
+                      m('h5.separator', { className: separatorClassName }, 'Keep in mind'),
                     curIntervention.practical &&
                       m('p', [
                         m(
@@ -389,6 +410,9 @@ export const InterventionPage: MeiosisComponent = () => {
                           resolveChoice(curIntervention.hasSideEffects, curIntervention.sideEffects)
                         ),
                       ]),
+                    curIntervention.future &&
+                      curIntervention.challenges &&
+                      m('p', [m('span.bold', 'Challenges: '), md(curIntervention.challenges)]),
                     curIntervention.diff &&
                       m('p', [
                         m('span.bold', 'Individual differences: '),
@@ -414,7 +438,9 @@ export const InterventionPage: MeiosisComponent = () => {
                         m('span.bold', 'Availability: '),
                         getOptionsLabel(availabilityOptions, curIntervention.availability) + '.',
                       ]),
-                    m('h5.separator', 'References'),
+                    usedLiterature &&
+                      usedLiterature.length > 0 &&
+                      m('h5.separator', { className: separatorClassName }, 'References'),
                   ])
                 ),
                 m(

@@ -39,6 +39,7 @@ import {
   specificPhysicalCapabilityOptions,
   specificSocialCapabilityOptions,
   interventionCategoryOptions,
+  createInterventionFilter,
 } from '../utils';
 import { TextInputWithClear } from './ui';
 
@@ -86,6 +87,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           hasEthical,
           evidenceDir,
           evidenceScore,
+          future = false,
         } = cur;
         const key = intervention;
 
@@ -136,6 +138,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
             evidenceDir: [],
             evidenceScore: [],
             search,
+            future,
           };
         }
         return acc;
@@ -162,6 +165,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
     evidenceDir: EVIDENCE_DIRECTION[];
     evidenceScore: EVIDENCE_LEVEL[];
     search: string;
+    future: boolean;
   };
 
   let interventions = [] as INTERVENTION_COMBINATION[];
@@ -169,23 +173,32 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
   return {
     oninit: ({
       attrs: {
-        state: { model },
+        state: { model, showFutureInterventions },
         actions: { setPage },
       },
     }) => {
       const { interventions: allInterventions = [] } = model;
-      interventions = toInterventions(allInterventions);
+      const futureInterventionFilter = createInterventionFilter(showFutureInterventions);
+      interventions = toInterventions(allInterventions.filter(futureInterventionFilter));
       setPage(Dashboards.INTERVENTIONS);
     },
     view: ({
       attrs: {
-        state: { model, curUser, bookmarks = [], compareList = [], searchFilters },
+        state: {
+          model,
+          curUser,
+          bookmarks = [],
+          compareList = [],
+          searchFilters,
+          showFutureInterventions,
+        },
         actions: { saveModel, changePage, bookmark, compare, setSearchFilters },
       },
     }) => {
       if (interventions.length === 0) {
+        const futureInterventionFilter = createInterventionFilter(showFutureInterventions);
         const { interventions: allInterventions } = model;
-        interventions = toInterventions(allInterventions);
+        interventions = toInterventions(allInterventions.filter(futureInterventionFilter));
       }
       const {
         searchFilter,
@@ -464,98 +477,116 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
             const selectedForComparison = t.id.some((id) => compareList.indexOf(id) >= 0);
             return m(
               '.col.s12.m6.l4.xl3',
-              m('.card.medium', [
-                m('.v-responsive.card-img-height', [
+              m(
+                '.card.medium',
+                {
+                  className: t.future ? 'future-intervention-color' : undefined,
+                },
+                [
+                  m('.v-responsive.card-img-height', [
+                    m(
+                      'a',
+                      {
+                        href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
+                      },
+                      [
+                        (t.url || t.img) &&
+                          m('.v-image', {
+                            style: `background-image: url(${resolveImg(t.url, t.img)})`,
+                            // alt: t.intervention,
+                          }),
+                        m(
+                          'span.card-title.bold.sharpen.black-text',
+                          { title: t.intervention, style: 'z-index: 100' },
+                          // { className: isBookmarked ? 'amber-text' : 'black-text' },
+                          t.intervention
+                        ),
+                      ]
+                    ),
+                  ]),
+                  m('.card-content', [
+                    m(
+                      'span.bold',
+                      t.mainCap
+                        .map((c, i) =>
+                          `${getOptionsLabel(mainCapabilityOptions, c, false)} ${getOptionsLabel(
+                            hpeClassificationOptions,
+                            t.hpeClassification[i],
+                            false
+                          )}`.toUpperCase()
+                        )
+                        .filter(isUnique)
+                        .join(', ')
+                    ),
+                    m('p.overflow', t.desc[0]),
+                  ]),
                   m(
-                    'a',
-                    {
-                      href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
-                    },
-                    [
-                      m('.v-image', {
-                        style: `background-image: url(${resolveImg(t.url, t.img)})`,
-                        // alt: t.intervention,
+                    '.card-action',
+                    m(
+                      'a.tooltip',
+                      // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
+                      {
+                        href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
+                      },
+                      m(Icon, { iconName: 'visibility' }),
+                      m('span.tooltiptext', 'SHOW')
+                    ),
+                    m(
+                      'a.tooltip',
+                      // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
+                      {
+                        href: routingSvc.href(Dashboards.INTERVENTIONS),
+                        onclick: () => {
+                          if (isBookmarked) {
+                            t.id.forEach((id) => {
+                              if (bookmarks.indexOf(id) >= 0) bookmark(id);
+                            });
+                          } else {
+                            bookmark(t.id[0]);
+                          }
+                        },
+                      },
+                      m(Icon, {
+                        iconName: isBookmarked ? 'star' : 'star_border',
+                        className: isBookmarked ? 'amber-text' : '',
                       }),
-                      m(
-                        'span.card-title.bold.sharpen.black-text',
-                        { title: t.intervention, style: 'z-index: 100' },
-                        // { className: isBookmarked ? 'amber-text' : 'black-text' },
-                        t.intervention
-                      ),
-                    ]
+                      m('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')
+                    ),
+                    t.future
+                      ? m(
+                          'a.tooltip',
+                          {
+                            href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
+                          },
+                          m(Icon, {
+                            iconName: 'new_releases',
+                            className: 'right amber-text',
+                          }),
+                          m('span.tooltiptext', 'FUTURE')
+                        )
+                      : m(
+                          'a.tooltip',
+                          {
+                            href: routingSvc.href(Dashboards.INTERVENTIONS),
+                            onclick: () => {
+                              if (selectedForComparison) {
+                                t.id.forEach((id) => {
+                                  if (compareList.indexOf(id) >= 0) compare(id);
+                                });
+                              } else {
+                                compare(t.id[0]);
+                              }
+                            },
+                          },
+                          m(Icon, {
+                            iconName: 'balance',
+                            className: selectedForComparison ? 'amber-text' : '',
+                          }),
+                          m('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE')
+                        )
                   ),
-                ]),
-                m('.card-content', [
-                  m(
-                    'span.bold',
-                    t.mainCap
-                      .map((c, i) =>
-                        `${getOptionsLabel(mainCapabilityOptions, c, false)} ${getOptionsLabel(
-                          hpeClassificationOptions,
-                          t.hpeClassification[i],
-                          false
-                        )}`.toUpperCase()
-                      )
-                      .filter(isUnique)
-                      .join(', ')
-                  ),
-                  m('p.overflow', t.desc[0]),
-                ]),
-                m(
-                  '.card-action',
-                  m(
-                    'a.tooltip',
-                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=SHOW]',
-                    {
-                      href: routingSvc.href(Dashboards.INTERVENTION, `?id=${t.id[0]}`),
-                    },
-                    m(Icon, { iconName: 'visibility' }),
-                    m('span.tooltiptext', 'SHOW')
-                  ),
-                  m(
-                    'a.tooltip',
-                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=BOOKMARK]',
-                    {
-                      href: routingSvc.href(Dashboards.INTERVENTIONS),
-                      onclick: () => {
-                        if (isBookmarked) {
-                          t.id.forEach((id) => {
-                            if (bookmarks.indexOf(id) >= 0) bookmark(id);
-                          });
-                        } else {
-                          bookmark(t.id[0]);
-                        }
-                      },
-                    },
-                    m(Icon, {
-                      iconName: isBookmarked ? 'star' : 'star_border',
-                      className: isBookmarked ? 'amber-text' : '',
-                    }),
-                    m('span.tooltiptext', isBookmarked ? 'BOOKMARKED' : 'BOOKMARK')
-                  ),
-                  m(
-                    'a.tooltip',
-                    // 'a.tooltip.tooltipped[data-position=bottom][data-tooltip=COMPARE]',
-                    {
-                      href: routingSvc.href(Dashboards.INTERVENTIONS),
-                      onclick: () => {
-                        if (selectedForComparison) {
-                          t.id.forEach((id) => {
-                            if (compareList.indexOf(id) >= 0) compare(id);
-                          });
-                        } else {
-                          compare(t.id[0]);
-                        }
-                      },
-                    },
-                    m(Icon, {
-                      iconName: 'balance',
-                      className: selectedForComparison ? 'amber-text' : '',
-                    }),
-                    m('span.tooltiptext', selectedForComparison ? 'COMPARING' : 'COMPARE')
-                  )
-                ),
-              ])
+                ]
+              )
             );
           }),
         ]),

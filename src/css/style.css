@@ -751,3 +751,15 @@ table th {
   -ms-user-select: none;
   user-select: none;
 }
+
+.future-intervention-color {
+  background-color: #fbe3d3;
+}
+
+.intervention-page p {
+  margin-left: 8px;
+}
+
+.col.form-checkbox {
+  margin-top: 24px;
+}

@@ -18,6 +18,7 @@ import {
   INTERVENTION_CATEGORY,
   User,
   Intervention,
+  FutureInterventions,
 } from '../models';
 
 const supRegex = /\^([^_ ]+)(_|$|\s)/g;
@@ -71,20 +72,26 @@ export const getTextColorFromBackground = (backgroundColor?: string) => {
   return luma < 105 ? 'white-text' : 'black-text';
 };
 
-export const getOptionsLabel = <T>(
-  options: Array<{ id: T; label: string; title?: string }>,
-  id?: T,
-  showTitle = true
-) => {
+type Option<T> = {
+  id: T;
+  label: string;
+  title?: string;
+};
+
+export const getOptionsLabel = <T>(options: Array<Option<T>>, id?: T | T[], showTitle = true) => {
   if (!id) {
     return '';
   }
+  const print = (o: Option<T>) =>
+    showTitle ? `${o.label}${o.title ? ` (${o.title.replace(/\.\s*$/, '')})` : ''}` : o.label;
+  if (id instanceof Array) {
+    return options
+      .filter((o) => id.indexOf(o.id) >= 0)
+      .map((o) => print(o))
+      .join(', ');
+  }
   const found = options.filter((o) => o.id === id).shift();
-  return found
-    ? showTitle
-      ? `${found.label}${found.title ? ` (${found.title.replace(/\.\s*$/, '')})` : ''}`
-      : found.label
-    : '';
+  return found ? print(found) : '';
 };
 
 /** Join a list of items with a comma, and use AND for the last item in the list. */
@@ -669,15 +676,22 @@ export const interventionForm = (
         label: 'Intervention title',
         required: true,
         type: 'text',
-        className: 'col s6 m8',
+        className: 'col s6 m4',
       },
       {
         id: 'category',
         label: 'Category',
         type: 'select',
+        required: true,
         multiple: true,
         options: interventionCategoryOptions,
-        className: 'col s6 m4',
+        className: 'col s3 m6',
+      },
+      {
+        id: 'future',
+        label: 'Future',
+        type: 'checkbox',
+        className: 'col s3 m2 form-checkbox',
       },
       {
         id: 'desc',
@@ -739,7 +753,7 @@ export const interventionForm = (
         id: 'booster',
         label: 'Can be applied as booster?',
         type: 'checkbox',
-        className: 'col s6 m4',
+        className: 'col s6 m4 form-checkbox',
       },
       {
         id: 'specificCap',
@@ -805,6 +819,27 @@ export const interventionForm = (
         id: 'mechanism',
         label: 'How it works',
         type: 'textarea',
+        className: 'col s12',
+      },
+      {
+        id: 'sota',
+        label: 'State of the art',
+        type: 'textarea',
+        show: 'future = true',
+        className: 'col s12',
+      },
+      {
+        id: 'implications',
+        label: 'Future possibilities & implications',
+        type: 'textarea',
+        show: 'future = true',
+        className: 'col s12',
+      },
+      {
+        id: 'challenges',
+        label: 'Challenges',
+        type: 'textarea',
+        show: 'future = true',
         className: 'col s12',
       },
       {
@@ -982,3 +1017,16 @@ export const resolveRefs = (literature: Literature[] = []) => {
 };
 
 export const isUnique = <T>(item: T, pos: number, arr: T[]) => arr.indexOf(item) == pos;
+
+export const createInterventionFilter = (showFutureInterventions: FutureInterventions = 'HIDE') => {
+  switch (showFutureInterventions) {
+    case 'HIDE':
+      return (intervention: Intervention, _index: number, _arr: Intervention[]) =>
+        intervention.future !== true;
+    case 'SHOW':
+      return (_intervention: Intervention, _index: number, _arr: Intervention[]) => true;
+    case 'ONLY':
+      return (intervention: Intervention, _index: number, _arr: Intervention[]) =>
+        intervention.future === true;
+  }
+};
