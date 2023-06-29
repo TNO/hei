@@ -88,7 +88,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:url',
-              content: 'https://tno.github.io/hei',
+              content: publicPath,
             },
           },
           {
@@ -178,7 +178,7 @@ module.exports = (env) => {
       ],
     },
     output: {
-      filename: '[name].bundle.js',
+      filename: '[name]-beta.bundle.js',
       path: outputPath,
       publicPath,
       clean: true,

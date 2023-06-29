@@ -15267,7 +15267,7 @@ __webpack_require__(1034);
 __webpack_require__(4641);
 var routing_service_1 = __webpack_require__(2840);
 var register_service_worker_1 = __webpack_require__(4799);
-console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}));
+console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}));
 (0, register_service_worker_1.registerServiceWorker)({
     onSuccess: function (registration) { return console.log('SW registered: ', registration); },
     onUpdate: function (registration) { return console.log('SW updated: ', registration); },
@@ -17730,7 +17730,7 @@ var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
 function registerServiceWorker(config) {
     if ( true && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
-        var publicUrl = new URL({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, window.location.href);
+        var publicUrl = new URL({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}.PUBLIC_URL, window.location.href);
         if (publicUrl.origin !== window.location.origin) {
             // Our service worker won't work if PUBLIC_URL is on a different origin
             // from what our page is served on. This might happen if a CDN is used to
@@ -17739,7 +17739,7 @@ function registerServiceWorker(config) {
             return;
         }
         window.addEventListener('load', function () {
-            var swUrl = "".concat({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, "service-worker.js");
+            var swUrl = "".concat({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}.PUBLIC_URL, "service-worker.js");
             if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
                 checkValidServiceWorker(swUrl, config);
@@ -19334,7 +19334,7 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	
 /******/ 	/* webpack/runtime/publicPath */
 /******/ 	(() => {
-/******/ 		__webpack_require__.p = "https://tno.github.io/hei/";
+/******/ 		__webpack_require__.p = "https://tno.github.io/hei-beta/";
 /******/ 	})();
 /******/ 	
 /************************************************************************/
@@ -19346,4 +19346,4 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main.bundle.js.map
+//# sourceMappingURL=main-beta.bundle.js.map
