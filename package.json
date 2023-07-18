@@ -7,7 +7,7 @@
     "cleanup": "npm run clean",
     "dev": "npm start",
     "start": "webpack serve --env development --open",
-    "build": "webpack --env production --env PUBLIC_URL=https://tno.github.io/hei/",
+    "build": "webpack --env production --env PUBLIC_URL=https://tno.github.io/hei-beta/",
     "build:domain": "npm run clean && npm run build"
   },
   "repository": {
