@@ -1,32 +1,32 @@
 {
   "icons": [
     {
-      "src": "https://tno.github.io/hei-beta/icon_512x512.3acaf2d3c112187896e8bafdceec8a9a.png",
+      "src": "https://tno.github.io/hei/icon_512x512.3acaf2d3c112187896e8bafdceec8a9a.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "https://tno.github.io/hei-beta/icon_384x384.89b8cf34e99797c39b7f7635ec049ecf.png",
+      "src": "https://tno.github.io/hei/icon_384x384.89b8cf34e99797c39b7f7635ec049ecf.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "https://tno.github.io/hei-beta/icon_256x256.b80e196a30e885316f100dec75b80e0d.png",
+      "src": "https://tno.github.io/hei/icon_256x256.b80e196a30e885316f100dec75b80e0d.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "https://tno.github.io/hei-beta/icon_192x192.fc357684f126c6906b5cb4cd957c5d45.png",
+      "src": "https://tno.github.io/hei/icon_192x192.fc357684f126c6906b5cb4cd957c5d45.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://tno.github.io/hei-beta/icon_128x128.b4d94b08a5acf870d9a3948c4bb4e2ab.png",
+      "src": "https://tno.github.io/hei/icon_128x128.b4d94b08a5acf870d9a3948c4bb4e2ab.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "https://tno.github.io/hei-beta/icon_96x96.227ac3ce5dae13c5cf8e9b8fa26b42d7.png",
+      "src": "https://tno.github.io/hei/icon_96x96.227ac3ce5dae13c5cf8e9b8fa26b42d7.png",
       "sizes": "96x96",
       "type": "image/png"
     }
@@ -35,7 +35,7 @@
   "short_name": "HEI",
   "orientation": "portrait",
   "display": "standalone",
-  "start_url": "https://tno.github.io/hei-beta/",
+  "start_url": "https://tno.github.io/hei/",
   "scope": "/",
   "description": "A database with known interventions to enhance human performance.",
   "background_color": "#ffffff",

@@ -12727,7 +12727,7 @@ const e=Object.assign||((e,t)=>(t&&Object.keys(t).forEach(o=>e[o]=t[o]),e)),t=(e
 
 /***/ }),
 
-/***/ 3723:
+/***/ 3568:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12737,7 +12737,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 1034:
+/***/ 6911:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12747,7 +12747,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 4641:
+/***/ 1650:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12838,7 +12838,7 @@ const a=()=>"idxxxxxxxx".replace(/[x]/g,()=>(16*Math.random()|0).toString(16)),i
 
 /***/ }),
 
-/***/ 498:
+/***/ 6813:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -12878,7 +12878,7 @@ const t=[[/\r\n/g,"\n"],[/\n(#+)(.*)/g,(t,n,e="")=>{const r=n.length;return`<h${
 
 // EXTERNAL MODULE: ./node_modules/.pnpm/mithril-materialized@1.0.1/node_modules/mithril-materialized/dist/index.modern.js
 var index_modern = __webpack_require__(6777);
-;// CONCATENATED MODULE: ./node_modules/.pnpm/mithril-ui-form@1.8.6/node_modules/mithril-ui-form/lib/index.esm.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/mithril-ui-form@1.9.1/node_modules/mithril-ui-form/lib/index.esm.js
 const N=e=>e.charAt(0).toUpperCase()+e.slice(1),S=e=>"string"==typeof e,j=function(e,t,n){return void 0===t&&(t=2),void 0===n&&(n="0"),e.toString().length>=t?e.toString():j(n+e,t,n)},$=e=>`${j(e.getHours())}:${j(e.getMinutes())}`,A=(e,t)=>{const n=(t=(t=t.replace(/\[(\w+)\]/g,".$1")).replace(/^\./,"")).split(".");let a={...e};for(let t=0,i=n.length;t<i;++t){const i=n[t];if("object"==typeof a&&i in a)a=a[i];else{if(!(a instanceof Array))return;{const t=e[i]||i,n=/([A-Z]\w+)/.exec(i),o=n&&n[0][0].toLowerCase()+n[0].substr(1)||i,r=a.filter(e=>e[o]===t).shift();if(!r)return;a=r}}}return a},V=e=>e.reduce((e,t)=>t instanceof Array?[...e,...t]:[...e,t],[]),L=/([^ =><]*)\s*([=><]*)\s*(\S*)/i,C=/^\s*!\s*/,T=(e,t)=>{const n=e.split("&"),a=V(t);return n.reduce((e,t)=>{const n=C.test(t),i=n?t.replace(C,""):t;return e=e&&a.filter(Boolean).reduce((e,t)=>e||((e,t)=>{if(!t||0===Object.keys(t).length)return!1;const n=L.exec(e);if(n){const[e,a,i,o]=n,r=A(t,a.trim());if(void 0===r||"string"==typeof r&&0===r.length)return!1;if(!i||!o)return!0;{const t=isNaN(+o)?"true"===o||"false"!==o&&o:+o;switch(i){case"=":return r instanceof Array?r.indexOf(t)>=0:r===t;case"<=":return r<=t;case">=":return r>=t;case"<":return r<t;case">":return r>t;default:return console.error(`Unrecognized operand (${i}) in expression: ${e}`),!1}}}return!0})(i.trim(),t),!1),n?!e:e},!0)},P=function(e){const t=e instanceof Array?e:[e];return 0===e.length||t.some(e=>T(e,[].slice.call(arguments,1)))},M=(e,t)=>A(t.filter(Boolean).reduceRight((e,t)=>({...t,...e})),e.trim()),E=(e,t)=>void 0!==M(e,t),F=/{{\s*([^\s"'`:]*):?([^\s]*)\s*}}/g,H=function(e){if(!F.test(e))return!0;let t;F.lastIndex=0;let n=!0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((e,t,a)=>{let[,i]=a;n=n&&E(i,[].slice.call(arguments,1))}))}while(n&&null!==t);return n},U=(e,t)=>{if(void 0===e)return"";if(e instanceof Array)return e.map(e=>U(e,t)).join(", ");if(!t)return e.toString();if("boolean"==typeof e){const n=t.indexOf(":");return e?t.substring(0,n):t.substring(n+1)}switch(t){default:return e.toString();case"date":return new Date(e).toLocaleDateString();case"time":return new Date(e).toLocaleTimeString();case"iso":return new Date(e).toISOString();case"utc":return new Date(e).toUTCString()}},_=function(e){if(!F.test(e))return e;let t;F.lastIndex=0;do{t=F.exec(e),t&&(t.index===F.lastIndex&&F.lastIndex++,t.forEach((t,n,a)=>{let[i,o,r]=a;const l=M(o,[].slice.call(arguments,1));!l||l instanceof Array||(e=e.replace(i,U(l,r)))}))}while(null!==t);return e},R=e=>{if(null===e)return e;if(e instanceof Date)return new Date(e.getTime());if(e instanceof Array){const t=[];return e.forEach(e=>{t.push(e)}),t.map(e=>R(e))}if("object"==typeof e){const t={...e};return Object.keys(t).forEach(e=>{t[e]=R(t[e])}),t}return e},J=e=>{const t=function(e,n){return void 0===n&&(n=""),e.filter(e=>"section"!==e.type&&"md"!==e.type).reduce((e,a)=>{const i=(n?`${n}.`:"")+String(a.id),o=a.type||(a.options&&a.options.length>0?"select":"text");return"string"==typeof o?e[i]=a:e={...e,...t(o,i)},e},{})},n=t(e),a=(e,t)=>{if(!n.hasOwnProperty(e)||void 0===t)return t;const a=n[e],i=t instanceof Array?t.filter(e=>null!=e):[t];switch(a.type||(a.options?"options":"none")){default:return t;case"radio":case"select":case"options":const e="string"==typeof a.options?M(a.options,[n]):a.options;return i.map(t=>e.filter(e=>e.id===t).map(e=>e.label||N(e.id)).shift()).filter(e=>void 0!==e)}},i=function(e,t){if(void 0===t&&(t=""),e&&("object"!=typeof e||0!==Object.keys(e).length)){if(e instanceof Array)return e.map(e=>i(e,t));{const n={};return Object.keys(e).forEach(o=>{const r=t?`${t}.${o}`:o,l=e[o];if("boolean"==typeof l)n[o]=l;else if("number"==typeof l||"string"==typeof l){const e=a(r,l);e&&(n[o]=e instanceof Array&&1===e.length?e[0]:e)}else if(l instanceof Array)if("string"==typeof l[0]||null===l[0]){const e=a(r,l);e&&(n[o]=e)}else n[o]=i(l,o);else"object"==typeof l&&(n[o]=l)}),n}}};return i},q=function(e){return void 0===e&&(e=""),e.replace(/\s|,|\./g,"").toLowerCase()},z=function(e,t,n){void 0===n&&(n=1);const a=[];for(let i=e;i<=t;i+=n)a.push(i);return a},W=e=>{"string"!=typeof e&&(e=JSON.stringify(e));let t=0;if(0===e.length)return t;for(var n=0;n<e.length;n++)t=(t<<5)-t+e.charCodeAt(n),t&=t;return t},B=(e,t,n)=>{const a=Object.assign({},t,n);return`${e}?${Object.keys(a).map(e=>`${e}=${a[e]}`).join("&")}`},Y=()=>({view:n=>{let{attrs:{md:a="",removeParagraphs:i=!1,externalLinks:o=!1,...r}}=n;return mithril_default()(".slimdown-view.markdown",r,mithril_default().trust(slimdown_modern_n(a,i,o)))}}),G=()=>({view:t=>{let{attrs:{type:n,props:a,label:i="",initialValue:o,inline:r=!1}}=t;const l={className:a.className||"col s12"};if(o instanceof Array&&o.length>3)return mithril_default()(".readonly",l,[mithril_default()("label",i),mithril_default()(Y,{md:"\n- "+o.join("\n- ")})]);if("string"==typeof o)return mithril_default()(".readonly",l,"url"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()("a[target=_blank]",{href:o},o)]:"color"===n?[mithril_default()("label",`${i.trim()}: `),mithril_default()(".color",{style:`height: 1rem; width: 40px; border-radius: 4px; background-color: ${o}`})]:[mithril_default()("label",i),mithril_default()(Y,{md:o})]);const s=o instanceof Array?o.join(", "):o;return mithril_default()(".readonly",l,[i&&mithril_default()("label",i),r?mithril_default()("span",s?`: ${s}`:mithril_default().trust("&nbsp;")):mithril_default()("p",s||mithril_default().trust("&nbsp;"))])}}),K=function(x,I){return void 0===x&&(x={}),void 0===I&&(I={}),()=>{const k={key:Date.now()};return{view:D=>{let{attrs:{i18n:O,field:S,obj:j,autofocus:A,onchange:V,context:L=[],containerId:C,disabled:T,readonly:E}}=D;const{id:F="",type:U,disabled:R=T,readonly:J=E,value:q,required:z,autogenerate:W,show:B,label:K,description:Z,i18n:Q=O||{},checkAllOptions:X,transform:ee,effect:te}=S;if(B&&!P(B,j,L)||K&&!H(K,j,L)||Z&&!H(Z,j,L))return;const ne="string"==typeof S.options?M(S.options,[j,...L]):S.options,ie=ne&&ne instanceof Array?ne.filter(e=>void 0!==e.id&&(e.label||!/[0-9]/.test(e.id))&&(!e.show||P(e.show,j,L))).map(e=>e.label?e:{...e,label:N(e.id)}):[],oe="boolean"==typeof T&&T,re=function(e,n,i){void 0===n&&(n=!1),void 0===i&&(i=!1);const{id:o="",label:r,description:l,required:s,multiple:c,className:d,checkboxClass:u,icon:p,iconClass:m,placeholder:f,maxLength:h,minLength:g,max:b,min:y,step:v,dateTimeOutput:w,dateTimeSeconds:x,dateFormat:I,twelveHour:k}=e,D={id:`${String(o)}-${(0,index_modern.uniqueId)()}`,label:r};return void 0===r&&o&&(D.label=N(String(o))),l&&(D.helperText=slimdown_modern_n(l,!0)),d&&(D.className=d),p&&(D.iconName=p),m&&(D.iconClass=m),u&&(D.checkboxClass=u),f&&(D.placeholder=f),s&&(D.isMandatory=!0),c&&(D.multiple=c),i&&(D.disabled=!0),n&&(D.autofocus=!0),void 0!==h&&(D.maxLength=h),void 0!==g&&(D.minLength=g),void 0!==b&&(D.max=b),void 0!==y&&(D.min=y),void 0!==v&&(D.step=v),w&&(D.dateTimeOutput=w),x&&(D.dateTimeSeconds=x),I&&(D.dateFormat=I),k&&(D.twelveHour=k),D}(S,A,"boolean"==typeof R||void 0===R?oe||R:oe||P(R,j,L));K&&(re.label=slimdown_modern_n(_(re.label||K,j,L),!0)),Z&&(re.description=slimdown_modern_n(_(re.description||Z,j,L),!0));const le=z?e=>e instanceof Array?e&&e.length>0:void 0!==typeof e:void 0;if(j instanceof Array)return void console.warn("Only a repeat list can deal with arrays!");const se=function(e){try{return void 0===e||"undefined"===e?(delete j[F],V(j),Promise.resolve()):(j[F]=ee?ee("to",e):e,te?Promise.resolve(te(j,j[F],L)).then(function(e){V(void 0!==e?e:j)}):Promise.resolve(V(j)))}catch(e){return Promise.reject(e)}};if(U instanceof Array)return F?(j.hasOwnProperty(F)||(j[F]={}),mithril_default()(".muf-form",{className:S.className},[mithril_default()(".muf-form-header",mithril_default().trust(slimdown_modern_n(re.label||N(String(F)),!0))),re.description&&mithril_default()("div",mithril_default().trust(slimdown_modern_n(re.description))),mithril_default()(".row",mithril_default()(ae,{...re,i18n:Q,readonly:J,form:U,obj:j[F],context:L instanceof Array?[j,...L]:[j,L],onchange:()=>V&&V(j),containerId:C}))])):void console.warn("Missing ID for type "+JSON.stringify(U));W&&!j[F]&&(j[F]="guid"===W?(0,index_modern.uuid4)():"id"===W?(0,index_modern.uniqueId)():Date.now());const ce=j.hasOwnProperty(F)&&void 0!==j[F]?ee?ee("from",j[F]):j[F]:q;F&&void 0!==q&&void 0!==ce&&(j[F]=ee?ee("to",ce):ce);const[de,ue]=X?X.split("|"):["",""];if(J&&U&&["md","none"].indexOf(U)<0){if(I.hasOwnProperty(U))return mithril_default()(I[U],{iv:ce,field:S,props:re,label:re.label,obj:j,context:L});if(U&&x.hasOwnProperty(U))return mithril_default()(x[U],{iv:ce,field:S,props:re,label:re.label,onchange:se,obj:j,context:L});switch(U){case"time":{const t=ce||new Date,n=$(t);return mithril_default()(G,{props:re,label:re.label,initialValue:n})}case"date":{const t="number"==typeof ce||"string"==typeof ce||ce instanceof Date?new Date(ce).toLocaleDateString():"";return mithril_default()(G,{props:re,label:re.label,initialValue:t})}case"checkbox":return mithril_default()(G,{props:re,label:re.label,initialValue:ce?"✔":"✘",inline:!0});case"tags":return mithril_default()(G,{props:re,label:re.label,initialValue:ce||[]});case"options":case"select":{const t=void 0!==ce?ce instanceof Array?ce:[ce]:[],n=ie.filter(e=>t.indexOf(e.id)>=0),a=n&&0===n.length?"?":1===n.length?n[0].label:n.map(e=>e.label);return mithril_default()(G,{props:re,label:re.label,initialValue:a})}case"radio":{const t=ce,n=ie.filter(e=>e.id===t);return mithril_default()(G,{props:re,label:re.label,initialValue:n&&n.length?n[0].label:"?"})}case"base64":{const t=ce;return!(!t||!/data:image/i.test(t))&&mithril_default()("div",mithril_default()("img.responsive-img",{src:t,alt:j.title||j.alt||j.name||"",style:`max-height: ${S.max||50}px`}))}case"file":return mithril_default()("div",re,(ce instanceof Array?ce:[ce]).map(function(t){void 0===t&&(t="");const n=/data:image|.jpg$|.jpeg$|.png$|.gif$|.svg$|.bmp$|.tif$|.tiff$/i.test(t),a=`${new URL(S.url).origin}${t}`;return mithril_default()("a[target=_blank]",{href:a},n?mithril_default()("img",{src:a,alt:a,style:`max-height: ${S.max||50}`}):mithril_default()(G,{props:re,label:S.placeholder||"File",initialValue:t}))}));case"md":case"markdown":{const n="string"==typeof ce&&ce?slimdown_modern_n(ce):"";return mithril_default()(G,{props:re,label:re.label,initialValue:n})}default:return mithril_default()(G,{props:re,type:U,label:re.label,initialValue:ce})}}else{if(U&&x.hasOwnProperty(U))return mithril_default()(x[U],{iv:ce,field:S,props:re,label:re.label,onchange:se,obj:j,context:L});switch(U){case"colour":case"color":{const t=ce;return mithril_default()(index_modern.ColorInput,{...re,initialValue:t,onchange:se})}case"time":{const{twelveHour:t=!1}=re,n=ce?"number"==typeof ce||"string"==typeof ce?new Date(ce):ce:new Date,a=$(n);return j[F]=ee?ee("to",n):n,mithril_default()(index_modern.TimePicker,{...re,twelveHour:t,initialValue:a,onchange:e=>{const t=e.split(":").map(e=>+e);n.setHours(t[0],t[1]),se(n)},container:C})}case"date":{const{format:t="mmmm d, yyyy"}=re,n="number"==typeof ce||"string"==typeof ce?new Date(ce):ce;j[F]=n?ee?ee("to",n.valueOf()):n.valueOf():n;const{min:a,max:i}=re,o=a?!n||a<n.valueOf()?new Date(a):n:void 0,r=i?!n||i>n.valueOf()?new Date(i):n:void 0;return mithril_default()(index_modern.DatePicker,{...re,minDate:o,maxDate:r,setDefaultDate:!!n,format:t,initialValue:n,onchange:e=>{se(new Date(e))},container:C})}case"datetime":{const{label:t,className:n="col s12",dateTimeSeconds:a=!1,twelveHour:i=!1,format:o="mmmm d, yyyy",...r}=re,l="number"==typeof ce||"string"==typeof ce?new Date(ce):ce,s={initialDateTime:l},c=l||void 0,d=l?$(l):"",{min:u,max:p}=re,m=u?!l||u<l.valueOf()?new Date(u):l:void 0,f=p?!l||p>l.valueOf()?new Date(p):l:void 0,h=re.dateTimeOutput||"UTC",b=e=>{s.initialDateTime=e,se("UTC"===h?e.toUTCString():"ISO"===h?e.toISOString():e.valueOf())};return mithril_default()("div",{className:n},mithril_default()(".row",[mithril_default()(a?".col.s6":".col.s8",{style:"padding-right: 0"},mithril_default()(index_modern.DatePicker,{...r,label:t,minDate:m,maxDate:f,setDefaultDate:!!l,format:o,initialValue:c,container:C,onchange:e=>{const t=new Date(s.initialDateTime);t.setFullYear(e.getFullYear()),t.setMonth(e.getMonth()),t.setDate(e.getDate()),b(t)}})),mithril_default()(".col.s4",{style:"min-width: 6rem; padding-right: 0; padding-left: 0"},mithril_default()(index_modern.TimePicker,{...r,label:"",helperText:"",twelveHour:i,initialValue:d,container:C,onchange:e=>{const t=e.split(":").map(e=>+e),n=s.initialDateTime||new Date((new Date).setSeconds(0,0));n.setHours(t[0],t[1]),b(n)}})),a&&mithril_default()(index_modern.NumberInput,{style:"min-width: 4rem; padding-right: 0; padding-left: 0",className:"col s2",min:0,max:59,onchange:e=>{const t=s.initialDateTime||new Date((new Date).setSeconds(0,0));t.setSeconds(e,0),b(t)}})]))}case"email":{const t=ce;return mithril_default()(index_modern.EmailInput,{...re,validate:le,autofocus:A,onchange:se,initialValue:t})}case"number":{const t=ce;return mithril_default()(index_modern.NumberInput,{...re,validate:le,autofocus:A,onchange:se,initialValue:t})}case"radio":{const t=ce;return mithril_default()(index_modern.RadioButtons,{label:"",...re,options:ie,checkedId:t,onchange:se})}case"checkbox":{const t=ce;return mithril_default()(index_modern.InputCheckbox,{...re,checked:t,onchange:se})}case"options":{const t=ce;return[[mithril_default()(index_modern.Options,{key:k.key,checkboxClass:"col s6 m4 l3",className:"input-field col s12",...re,disabled:re.disabled||!ie||0===ie.length,options:ie,checkedId:t,onchange:e=>se(1===e.length?e[0]:e.filter(e=>null!==e))})],void 0!==X&&mithril_default()(".col.s12.option-buttons",[mithril_default()(index_modern.FlatButton,{disabled:re.disabled,label:de,iconName:"check",onclick:()=>{k.key=Date.now(),se(ie.map(e=>e.id))}}),ue&&mithril_default()(index_modern.FlatButton,{disabled:re.disabled,label:ue,iconName:"check_box_outline_blank",onclick:()=>{const e=j[F]||[];e.length=0,k.key=Date.now(),se(e)}})])]}case"select":{const t=ce;return mithril_default()(index_modern.Select,{placeholder:re.multiple?Q.pickOneOrMore||"Pick one or more":Q.pickOne||"Pick one",...re,disabled:re.disabled||!ie||0===ie.length,options:ie,checkedId:t,onchange:e=>se(1!==e.length||re.multiple?e.filter(e=>null!==e||void 0!==e):e[0])})}case"markdown":case"md":{const{label:t,className:n="col s12"}=re,a=_((F?ce:q||t)||"",j,L);return mithril_default()(Y,{md:a,className:n})}case"section":return mithril_default()(".divider");case"switch":{const t=ce,n=ie&&ie.length>0?ie[0].label:"",a=ie&&ie.length>1?ie[1].label:"";return mithril_default()(index_modern.Switch,{...re,left:n,right:a,checked:t,onchange:se})}case"tags":{const t=(ce?ce instanceof Array?ce:[ce]:[]).map(e=>({tag:e})),n=ie&&ie.length>0?{data:ie.reduce((e,t)=>(e[t.id]=null,e),{}),limit:S.maxLength||Infinity,minLength:S.minLength||1}:{},{label:a,isMandatory:i,className:o,helperText:r}=re;return mithril_default()(index_modern.Chips,{className:o,label:a,isMandatory:i,helperText:r,onchange:e=>se(e.map(e=>e.tag)),placeholder:S.placeholder||"Add a tag",secondaryPlaceholder:S.secondaryPlaceholder||"+tag",data:t,autocompleteOptions:n})}case"autocomplete":{const t=ce,n=ie&&ie.length>0?{data:ie.reduce((e,t)=>(e[t.id]=null,e),{}),limit:S.maxLength||Infinity,minLength:S.minLength||1}:{data:{}},{label:a,isMandatory:i,className:o,helperText:r}=re;return mithril_default()(index_modern.Autocomplete,{initialValue:t,className:o,label:a,isMandatory:i,helperText:r,onchange:se,placeholder:S.placeholder||"...",...n})}case"textarea":{const t=ce;return mithril_default()(index_modern.TextArea,{...re,validate:le,autofocus:A,onchange:se,initialValue:t})}case"file":{const t=ce,{url:n,placeholder:a}=S;if(!n)throw Error('Input field "url" not defined, which indicates the URL to the upload folder.');const i=ie?ie.map(e=>e.id):void 0,o=t=>{if(!t||t.length<1)return void se("");const a=new FormData;a.append("file",t[0]),mithril_default().request({method:"POST",url:n,body:a}).then(e=>se(e)).catch(console.error)};return mithril_default()(index_modern.FileInput,{...re,accept:i,placeholder:a,onchange:o,initialValue:t})}case"base64":{const t=ce,n=!(!t||!/data:image/i.test(t)),{placeholder:a}=S,i=ie?ie.map(e=>e.id).join(","):void 0,o=t=>{if(!t||t.length<1)return void se("");const n=new FileReader;n.onloadend=()=>{"string"==typeof n.result&&se(n.result),mithril_default().redraw()},n.readAsDataURL(t[0])};return n?mithril_default()("div",[mithril_default()("img.responsive-img",{src:t,alt:j.title||j.alt||j.name||"",style:`max-height: ${S.max||50}px`}),mithril_default()(index_modern.FlatButton,{iconName:"clear",onclick:()=>se("")})]):mithril_default()(index_modern.FileInput,{...re,accept:i,placeholder:a,onchange:o,initialValue:t})}case"url":{const t=ce;return mithril_default()(index_modern.UrlInput,{placeholder:"http(s)://www.example.com",...re,validate:le,autofocus:A,onchange:se,initialValue:t})}case"text":{const t=ce;return mithril_default()(index_modern.TextInput,{...re,validate:le,autofocus:A,onchange:se,initialValue:t,tabindex:15})}default:return}}}}}},Z=()=>{const t={},n=(e,n)=>{const a=t.onNewItem?t.onNewItem(e,n):{};e instanceof Array?e.push(a):e.hasOwnProperty(n)?e[n].push(a):e[n]=[a]};let o;return{oninit:e=>{let{attrs:{i18n:n={},field:{id:a="",sortProperty:i,onNewItem:r}}}=e;t.editLabel=n.editRepeat||`Edit ${String(a)}`,t.createLabel=n.createRepeat||`Create new ${String(a)}`,t.onNewItem=r,o=(e=>{if(!e)return(e,t)=>0;const t="!"===e[0],n=t?e.substring(1):e;return t?(e,t)=>e[n]>t[n]?-1:e[n]<t[n]?1:0:(e,t)=>e[n]>t[n]?1:e[n]<t[n]?-1:0})(i)},view:l=>{let{attrs:{field:s,obj:c,context:d,className:u=(s.className?"."+s.className.split(" ").join("."):".col.s12"),section:p,containerId:m,disabled:f=("boolean"==typeof s.disabled?s.disabled:void 0),readonly:h,i18n:g={},onchange:b}}=l;const{modalKey:y,filterValue:v}=t,{id:w,label:D,type:O,min:N,max:S,pageSize:j,propertyFilter:$,filterLabel:A,readonly:V=h,repeatItemClass:L=""}=s,C="edit_"+(D?D.toLowerCase().replace(/\s/gi,"_"):(0,index_modern.uniqueId)()),T=((e,t)=>e instanceof Array?e:(e.hasOwnProperty(t)||(e[t]=[]),e[t]))(c,w),P=v?q(v):void 0,M=$&&P&&P.length>2?T.filter(e=>q(`${e[$]}`).indexOf(P)>=0):T,E=mithril_default().route.param(String(w))?Math.min(M.length,+mithril_default().route.param(String(w))):1,F=j&&M&&(E-1)*j<M.length?E:1,H=j?(e,t)=>(F-1)*j<=t&&t<F*j:()=>!0,U=mithril_default().route.get(),_=j?Math.ceil(M.length/j):0,R=!!(S&&M.length>=S),J=!f&&(!N||M.length>N),Y=U.split("?")[0],G=(e=>{const t=e?e.split("?")[1]:window.location.search.slice(1),n={};if(t){const e=t.split("&");for(var a=0;a<e.length;a++){const t=e[a].split("="),i=t[0],o=void 0===t[1]||t[1];if(i.match(/\[(\d+)?\]$/)){const e=n[i.replace(/\[(\d+)?\]/,"")]||[];i.match(/\[\d+\]$/)?e[+/\[(\d+)\]/.exec(i)[1]]=o:e.push(o)}else n[i]?"string"==typeof n[i]?(n[i]=[n[i]],n[i].push(o)):n[i].push(o):n[i]=o}}return n})(U);return[[mithril_default()(`#${String(w)}.mui-repeat-list${u}`,[mithril_default()(".row.mui-repeat-list-controls",mithril_default()(".col.s12",[mithril_default()(index_modern.FlatButton,{iconName:f||R?"":"add",iconClass:"right",label:D,onclick:()=>{n(c,String(w)),w&&mithril_default().route.set(Y,Object.assign(G,{[w]:M.length})),b&&b(c)},style:"padding: 0",className:"left",disabled:f||R,readonly:V}),_>1&&mithril_default()(".right",mithril_default()(index_modern.Pagination,{curPage:F,items:z(1,_).map(e=>({href:B(Y,G,{[w]:e})}))})),(M.length>1||v)&&$&&!f&&mithril_default()(index_modern.TextInput,{style:"margin-top: -6px; margin-bottom: -1rem;",iconName:"filter_list",iconClass:"small",placeholder:A,onkeyup:(e,n)=>t.filterValue=n,className:"right",disabled:f,readonly:V})])),M&&M.length>0&&"string"!=typeof O&&M.sort(o).filter(H).map((n,a)=>[J&&[mithril_default()(index_modern.RoundIconButton,{type:"button",iconName:"clear",iconClass:"white black-text",className:"row mui-delete-item btn-small right",style:"padding: 0; margin-top: -10px; margin-right: -25px",disabled:f,readonly:V,onclick:()=>{t.curItemIdx=j?(F-1)*j+a:a}}),(!j||j>1)&&mithril_default()("span.mui-show-item-number",`[${(j?(F-1)*j+a:a)+1}]`)],[mithril_default()(".row.repeat-item",{className:L,key:E+W(n)},[O&&mithril_default()(ae,{form:O,obj:n,i18n:g,context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,disabled:f,readonly:V,onchange:()=>b&&b(c)})])]]),!(f||R||V||!M||0===M.length||1===j)&&mithril_default()(index_modern.RoundIconButton,{iconName:"add",iconClass:"white black-text",className:"row mui-add-new-item btn-small right",title:D,style:"padding: 0; margin-top: -10px; margin-right: -25px",onclick:()=>{n(c,String(w)),mithril_default().route.set(Y,Object.assign(G,{[w]:M.length})),b&&b(c)}})])],void 0!==t.curItemIdx&&mithril_default()(index_modern.ModalPanel,{id:"deleteItem",onCreate:e=>e.open(),options:{onCloseStart:()=>{t.curItemIdx=void 0,mithril_default().redraw()}},fixedFooter:!0,title:g.deleteItem||"Delete item",description:mithril_default()(ae,{form:O,obj:M[t.curItemIdx],context:d instanceof Array?[c,...d]:[c,d],section:p,containerId:m,readonly:!0,i18n:g}),buttons:[{label:g.disagree||"Disagree"},{label:g.agree||"Agree",onclick:()=>{void 0!==t.curItemIdx&&(M.splice(t.curItemIdx,1),c instanceof Array?c=[...M]:c[w]=[...M],b&&b(c))}}]}),"string"==typeof O||void 0===O?void 0:mithril_default()(index_modern.ModalPanel,{onCreate:e=>t.editModal=e,id:C,title:t.editItem?t.editLabel:t.createLabel,fixedFooter:!0,description:mithril_default()(".row.form-item",mithril_default()(ae,{key:y,form:O,i18n:g,obj:t.editItem||t.newItem||{},onchange:e=>t.canSave=e,context:d instanceof Array?[c,...d]:[c,d],containerId:m,disabled:f})),buttons:[{iconName:"cancel",label:g.cancel||"Cancel"},{iconName:"save",label:g.save||"Save",disabled:!t.canSave,onclick:()=>{if(t.editItem&&void 0!==t.curItemIdx){const e=t.editItem,n=t.curItemIdx;O.forEach(t=>{t.id&&(n[t.id]=e[t.id])})}else t.newItem&&M.push(t.newItem);b&&b(c)}}]})]}}},Q=()=>{const t={};return{oninit:e=>{let{attrs:{i18n:n={}}}=e;const{raw:a="RAW",view:i="VIEW"}=n;t.raw=a,t.view=i},view:n=>{let{attrs:{field:{id:a="",type:i,onSelect:o},obj:r,context:l,containerId:c,disabled:d,readonly:u,i18n:p,onchange:m}}=n;if(r instanceof Array)return;const f=r[a],h=f?JSON.parse(f):void 0,g=h&&h.features||[],b=[],y={title:t.raw,vnode:mithril_default()(index_modern.TextArea,{class:"col s12",initialValue:h?JSON.stringify(h,null,2):void 0,placeholder:"Enter GeoJSON",onchange:e=>r[a]=e})};if(!i||"string"==typeof i)return;const v=i,w=v.length>0?v[0].id:void 0,x={title:t.view,vnode:g.length?mithril_default()(index_modern.Collapsible,{oncreate:e=>{let{dom:n}=e;return t.dom=n},onOpenStart:o?e=>{const n=t.dom.children||[];for(let t=0;t<n.length;t++)if(n[t]===e)return void o(t,g[t])}:void 0,className:"geojson-feature-list",items:g.map((t,n)=>(t.properties||(t.properties={}),{id:"erik_"+n,key:n,header:w&&t.properties[w]||t.geometry.type,body:mithril_default()(".row",mithril_default()(ae,{class:"col s12",form:v,obj:t.properties,i18n:p,context:l instanceof Array?[r,...l]:[r,l],containerId:c,disabled:d,readonly:u,onchange:(e,t)=>{t&&(g[n].properties=t),r[a]=JSON.stringify(h,null,2),m&&m(r)}}))}))}):mithril_default()("span","...")};return b.push(x),b.push(y),mithril_default()(index_modern.Tabs,{tabs:b,tabWidth:"fill"})}}},X={},ee={},te=(e,t,n)=>{X[e]=t,n&&(ee[e]=n)},ne=K(X,ee),ae=()=>({view:t=>{let{attrs:{i18n:n,form:a,obj:i,onchange:o,disabled:r,readonly:l,context:s,section:c}}=t;const d=e=>o&&o(((e,t)=>t.filter(e=>e.required&&void 0!==typeof e.id).reduce((t,n)=>t&&!(n.id&&(void 0===e[n.id]||e[n.id]instanceof Array&&0===e[n.id].length||"string"==typeof e[n.id]&&0===e[n.id].length)),!0))(e,a),e);return a.filter((e=>{if(!e)return e=>!0;let t=!1;return n=>{let{type:a,id:i}=n;return"section"===a?(t=i===e,!1):t}})(c)).filter(e=>!e.show||P(e.show,i,...s||[])).reduce((t,a)=>(a.type||(a.type=(e=>{const{autogenerate:t,value:n,options:a}=e;return t?"none":n?"string"==typeof n?"md":"number"==typeof n?"number":"boolean"==typeof n?"checkbox":"none":a&&a.length>0?"select":"none"})(a)),[...t,void 0===a.repeat||!1===a.repeat?mithril_default()(ne,{i18n:n,field:a,obj:i,onchange:d,disabled:r,readonly:l,context:s,section:c,containerId:"body"}):mithril_default()("geojson"===a.repeat?Q:Z,{obj:i,field:a,onchange:d,context:s,i18n:n,containerId:"body",disabled:r,readonly:l})]),[])}});
 //# sourceMappingURL=index.esm.js.map
 
@@ -15252,7 +15252,7 @@ module.exports = {}.hasOwnProperty
 
 /***/ }),
 
-/***/ 8351:
+/***/ 3266:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15262,12 +15262,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var mithril_1 = __importDefault(__webpack_require__(9402));
-__webpack_require__(3723);
-__webpack_require__(1034);
-__webpack_require__(4641);
-var routing_service_1 = __webpack_require__(2840);
-var register_service_worker_1 = __webpack_require__(4799);
-console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}));
+__webpack_require__(3568);
+__webpack_require__(6911);
+__webpack_require__(1650);
+var routing_service_1 = __webpack_require__(767);
+var register_service_worker_1 = __webpack_require__(9763);
+console.log(JSON.stringify({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}));
 (0, register_service_worker_1.registerServiceWorker)({
     onSuccess: function (registration) { return console.log('SW registered: ', registration); },
     onUpdate: function (registration) { return console.log('SW updated: ', registration); },
@@ -15289,7 +15289,7 @@ mithril_1.default.route(document.body, routing_service_1.routingSvc.defaultRoute
 
 /***/ }),
 
-/***/ 3708:
+/***/ 6248:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15316,7 +15316,7 @@ exports.resolveImg = resolveImg;
 
 /***/ }),
 
-/***/ 7896:
+/***/ 9372:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15328,8 +15328,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AboutPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(498);
-var models_1 = __webpack_require__(9694);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var models_1 = __webpack_require__(6505);
 var md = function (highlight) {
     if (highlight === void 0) { highlight = false; }
     return "#### About\n\nThis website offers an overview of state-of-the-art interventions to enhance human performance. In order to use it, contact TNO to obtain the JSON database file describing all interventions.\n\n##### Disclaimer\n\n**This platform is intended for informational purposes only and it does not provide medical advice.** It is not a substitute for professional medical advice, diagnosis or treatment. The information, including but not limited to, text, graphics, images and other material contained on this website are for informational purposes only. No material on this site is intended to be a substitute for professional medical advice, diagnosis or treatment. The use and/or implementation of information presented on this platform is users own responsibility. TNO is not liable for the information which is offered on and/or via this platform.\n\n##### How to use this platform\n\n###### Ministry of Defence employee\n\n<p class=\"".concat(highlight ? 'red-text' : '', "\">In order to use this platform, you will need to upload a configuration file (JSON) on the home page. You can request the latest version of this configuration file by contacting the HCSE (Human Capability & Survivability Enhancement) program leader, [Olaf Binsch](mailto:olaf.binsch@tno.nl). Without this file, there will be no interventions displayed on the platform.</p>\n\nYou can use this platform to browse through the collection of intervention technologies on the overview page. You can use filters in the Advanced Search bar to specify what you are looking for in an intervention.\n\nBy selecting \u2018Compare\u2019, recognizable by the <i class=\"material-icons\">balance</i> icon, for different intervention technologies, you can view them alongside each other on the Compare page. Bookmarking an intervention allows you to find them more easily next time you visit the platform. If you have any questions about the HCSE interventions, you can contact the expert that is listed at the bottom of each intervention page.\n\n###### TNO researcher\n\nIf you are a TNO researcher and you want to contribute to the platform by adding or updating an HCSE intervention, you can change the Current user to TNO researcher. This allows you to add and change interventions using the button \"Add new intervention\". Remember that the changes will only be saved locally on your own PC. If you want to implement your changes in the master file, do the following:\n\n1. Make sure you have uploaded the latest configuration file from the HCSE sharepoint folder\n2. Implement you changes or additions to the platform\n3. Download your new configuration file (.json) and place this file in the HCSE sharepoint folder as the new master file. Make sure to move the previous version into the Archive folder.\n\n**HCSE program leader:** [Olaf Binsch](mailto:olaf.binsch@tno.nl)<br>**Email:** olaf.binsch@tno.nl \n");
@@ -15382,7 +15382,7 @@ exports.AboutPage = AboutPage;
 
 /***/ }),
 
-/***/ 8015:
+/***/ 6200:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15402,10 +15402,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComparisonPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(9694);
+var models_1 = __webpack_require__(6505);
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(754);
-var mithril_ui_form_1 = __webpack_require__(498);
+var utils_1 = __webpack_require__(8124);
+var mithril_ui_form_1 = __webpack_require__(6813);
 var ComparisonPage = function () {
     var ASPECT_COL_WIDTH = 100;
     var isInitialized = false;
@@ -15564,7 +15564,7 @@ exports.ComparisonPage = ComparisonPage;
 
 /***/ }),
 
-/***/ 7723:
+/***/ 101:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15588,10 +15588,10 @@ exports.HomePage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var background_jpg_1 = __importDefault(__webpack_require__(2868));
-var services_1 = __webpack_require__(2171);
-var models_1 = __webpack_require__(9694);
-var utils_1 = __webpack_require__(754);
-var mithril_ui_form_1 = __webpack_require__(498);
+var services_1 = __webpack_require__(4658);
+var models_1 = __webpack_require__(6505);
+var utils_1 = __webpack_require__(8124);
+var mithril_ui_form_1 = __webpack_require__(6813);
 var HomePage = function () {
     var readerAvailable = window.File && window.FileReader && window.FileList && window.Blob;
     return {
@@ -15775,7 +15775,7 @@ exports.HomePage = HomePage;
 
 /***/ }),
 
-/***/ 7977:
+/***/ 4330:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15795,19 +15795,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(7896), exports);
-__exportStar(__webpack_require__(7723), exports);
-__exportStar(__webpack_require__(2017), exports);
-__exportStar(__webpack_require__(4433), exports);
-__exportStar(__webpack_require__(9388), exports);
-__exportStar(__webpack_require__(1708), exports);
-__exportStar(__webpack_require__(8015), exports);
-__exportStar(__webpack_require__(1061), exports);
+__exportStar(__webpack_require__(9372), exports);
+__exportStar(__webpack_require__(101), exports);
+__exportStar(__webpack_require__(3984), exports);
+__exportStar(__webpack_require__(1974), exports);
+__exportStar(__webpack_require__(5742), exports);
+__exportStar(__webpack_require__(1696), exports);
+__exportStar(__webpack_require__(6200), exports);
+__exportStar(__webpack_require__(4111), exports);
 
 
 /***/ }),
 
-/***/ 9388:
+/***/ 5742:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -15828,12 +15828,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InterventionOverviewPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(498);
-var images_1 = __webpack_require__(3708);
-var models_1 = __webpack_require__(9694);
-var services_1 = __webpack_require__(2171);
-var utils_1 = __webpack_require__(754);
-var ui_1 = __webpack_require__(1471);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var images_1 = __webpack_require__(6248);
+var models_1 = __webpack_require__(6505);
+var services_1 = __webpack_require__(4658);
+var utils_1 = __webpack_require__(8124);
+var ui_1 = __webpack_require__(6391);
 var InterventionOverviewPage = function () {
     var toOptions = function (opt) {
         return __spreadArray([{ id: 0, label: '-', title: '' }], opt, true);
@@ -16336,7 +16336,7 @@ exports.InterventionOverviewPage = InterventionOverviewPage;
 
 /***/ }),
 
-/***/ 4433:
+/***/ 1974:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16357,11 +16357,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InterventionPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(498);
-var images_1 = __webpack_require__(3708);
-var models_1 = __webpack_require__(9694);
-var services_1 = __webpack_require__(2171);
-var utils_1 = __webpack_require__(754);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var images_1 = __webpack_require__(6248);
+var models_1 = __webpack_require__(6505);
+var services_1 = __webpack_require__(4658);
+var utils_1 = __webpack_require__(8124);
 var InterventionPage = function () {
     var futureInterventionFilter;
     var initInterventionForm = function (interventions, id, users) {
@@ -16722,7 +16722,7 @@ exports.InterventionPage = InterventionPage;
 
 /***/ }),
 
-/***/ 1061:
+/***/ 4111:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16735,8 +16735,8 @@ exports.Layout = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
 var tno_svg_1 = __importDefault(__webpack_require__(1555));
-var models_1 = __webpack_require__(9694);
-var routing_service_1 = __webpack_require__(2840);
+var models_1 = __webpack_require__(6505);
+var routing_service_1 = __webpack_require__(767);
 var Layout = function () { return ({
     view: function (_a) {
         var children = _a.children, _b = _a.attrs, _c = _b.state, page = _c.page, curUser = _c.curUser, changePage = _b.actions.changePage;
@@ -16810,7 +16810,7 @@ exports.Layout = Layout;
 
 /***/ }),
 
-/***/ 1708:
+/***/ 1696:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16822,8 +16822,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(498);
-var models_1 = __webpack_require__(9694);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var models_1 = __webpack_require__(6505);
 var userForm = [
     { id: 'id', type: 'none', autogenerate: 'id' },
     {
@@ -16966,7 +16966,7 @@ exports.SettingsPage = SettingsPage;
 
 /***/ }),
 
-/***/ 2017:
+/***/ 3984:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -16986,10 +16986,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AllWordsPage = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var mithril_ui_form_1 = __webpack_require__(498);
-var models_1 = __webpack_require__(9694);
-var utils_1 = __webpack_require__(754);
-var ui_1 = __webpack_require__(1471);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var models_1 = __webpack_require__(6505);
+var utils_1 = __webpack_require__(8124);
+var ui_1 = __webpack_require__(6391);
 var md = "#### Definition of terms";
 var toLexicon = function (arr, header) {
     return arr
@@ -17074,7 +17074,7 @@ exports.AllWordsPage = AllWordsPage;
 
 /***/ }),
 
-/***/ 1471:
+/***/ 6391:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17094,13 +17094,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(4735), exports);
-__exportStar(__webpack_require__(4902), exports);
+__exportStar(__webpack_require__(4700), exports);
+__exportStar(__webpack_require__(6412), exports);
 
 
 /***/ }),
 
-/***/ 4735:
+/***/ 4700:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17130,7 +17130,7 @@ exports.CircularSpinner = CircularSpinner;
 
 /***/ }),
 
-/***/ 4902:
+/***/ 6412:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17142,7 +17142,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TextInputWithClear = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var utils_1 = __webpack_require__(754);
+var utils_1 = __webpack_require__(8124);
 var TextInputWithClear = function () {
     var id;
     var input;
@@ -17215,7 +17215,7 @@ exports.TextInputWithClear = TextInputWithClear;
 
 /***/ }),
 
-/***/ 5668:
+/***/ 7681:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17238,7 +17238,7 @@ var Dashboards;
 
 /***/ }),
 
-/***/ 4086:
+/***/ 6561:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17467,7 +17467,7 @@ var AVAILABILITY;
 
 /***/ }),
 
-/***/ 9694:
+/***/ 6505:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17487,14 +17487,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(5668), exports);
-__exportStar(__webpack_require__(4086), exports);
-__exportStar(__webpack_require__(8882), exports);
+__exportStar(__webpack_require__(7681), exports);
+__exportStar(__webpack_require__(6561), exports);
+__exportStar(__webpack_require__(4075), exports);
 
 
 /***/ }),
 
-/***/ 8882:
+/***/ 4075:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17504,7 +17504,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 2171:
+/***/ 4658:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17524,13 +17524,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(4168), exports);
-__exportStar(__webpack_require__(2840), exports);
+__exportStar(__webpack_require__(2336), exports);
+__exportStar(__webpack_require__(767), exports);
 
 
 /***/ }),
 
-/***/ 4168:
+/***/ 2336:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17578,9 +17578,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cells = exports.appActions = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var meiosis_setup_1 = __webpack_require__(9556);
-var _1 = __webpack_require__(2171);
-var models_1 = __webpack_require__(9694);
-var local_ldb_1 = __webpack_require__(7796);
+var _1 = __webpack_require__(4658);
+var models_1 = __webpack_require__(6505);
+var local_ldb_1 = __webpack_require__(2008);
 var MODEL_KEY = 'HPET_MODEL';
 var CUR_USER_KEY = 'HPET_CUR_USER';
 var BOOKMARKS_KEY = 'HPET_BOOKMARK';
@@ -17714,7 +17714,7 @@ exports.cells.map(function () {
 
 /***/ }),
 
-/***/ 4799:
+/***/ 9763:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -17730,7 +17730,7 @@ var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
 function registerServiceWorker(config) {
     if ( true && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
-        var publicUrl = new URL({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}.PUBLIC_URL, window.location.href);
+        var publicUrl = new URL({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, window.location.href);
         if (publicUrl.origin !== window.location.origin) {
             // Our service worker won't work if PUBLIC_URL is on a different origin
             // from what our page is served on. This might happen if a CDN is used to
@@ -17739,7 +17739,7 @@ function registerServiceWorker(config) {
             return;
         }
         window.addEventListener('load', function () {
-            var swUrl = "".concat({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei-beta/"}.PUBLIC_URL, "service-worker.js");
+            var swUrl = "".concat({"NODE_ENV":"production","PUBLIC_URL":"https://tno.github.io/hei/"}.PUBLIC_URL, "service-worker.js");
             if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
                 checkValidServiceWorker(swUrl, config);
@@ -17839,7 +17839,7 @@ exports.unregister = unregister;
 
 /***/ }),
 
-/***/ 2840:
+/***/ 767:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -17861,11 +17861,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.routingSvc = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
-var models_1 = __webpack_require__(9694);
-var meiosis_1 = __webpack_require__(4168);
-var layout_1 = __webpack_require__(1061);
-var components_1 = __webpack_require__(7977);
-var intervention_overview_page_1 = __webpack_require__(9388);
+var models_1 = __webpack_require__(6505);
+var meiosis_1 = __webpack_require__(2336);
+var layout_1 = __webpack_require__(4111);
+var components_1 = __webpack_require__(4330);
+var intervention_overview_page_1 = __webpack_require__(5742);
 var RoutingService = /** @class */ (function () {
     function RoutingService(dashboards) {
         this.setList(dashboards);
@@ -17995,7 +17995,7 @@ exports.routingSvc = new RoutingService([
 
 /***/ }),
 
-/***/ 754:
+/***/ 8124:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -18016,8 +18016,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createInterventionFilter = exports.isUnique = exports.resolveRefs = exports.refRegex = exports.markdown2html = exports.interventionForm = exports.boosterOptions = exports.availabilityOptions = exports.evidenceLevelOptions = exports.evidenceDirOptions = exports.ethicalConsiderationsOptions = exports.effectDirectionOptions = exports.maturityOptions = exports.invasivenessOptions = exports.specificPersonalityCapabilityOptions = exports.specificSocialCapabilityOptions = exports.specificMentalCapabilityOptions = exports.specificPhysicalCapabilityOptions = exports.specificCognitiveCapabilityOptions = exports.specificCapabilityOptions = exports.mainCapabilityOptions = exports.hpeClassificationOptions = exports.interventionCategoryOptions = exports.resolveChoice = exports.NoYesUnknown = exports.statusOptions = exports.optionsToTxt = exports.joinListWithAnd = exports.getOptionsLabel = exports.getTextColorFromBackground = exports.formatDate = exports.debounce = exports.capitalize = exports.subSup = void 0;
 var mithril_1 = __importDefault(__webpack_require__(9402));
 var mithril_materialized_1 = __webpack_require__(6777);
-var mithril_ui_form_1 = __webpack_require__(498);
-var models_1 = __webpack_require__(9694);
+var mithril_ui_form_1 = __webpack_require__(6813);
+var models_1 = __webpack_require__(6505);
 var supRegex = /\^([^_ ]+)(_|$|\s)/g;
 var subRegex = /\_([^\^ ]+)(\^|$|\s)/g;
 /** Expand markdown notation by converting A_1 to subscript and x^2 to superscript. */
@@ -18641,9 +18641,13 @@ var interventionForm = function (users, interventionOptions) {
             },
             {
                 id: 'future',
-                label: 'Future',
-                type: 'checkbox',
-                className: 'col s3 m2 form-checkbox',
+                label: 'Future intervention',
+                type: 'switch',
+                options: [
+                    { id: 'no', label: 'NO' },
+                    { id: 'yes', label: 'YES' },
+                ],
+                className: 'col s3 m2 highlight-switch',
             },
             {
                 id: 'desc',
@@ -18981,7 +18985,7 @@ exports.createInterventionFilter = createInterventionFilter;
 
 /***/ }),
 
-/***/ 7796:
+/***/ 2008:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -19334,7 +19338,7 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	
 /******/ 	/* webpack/runtime/publicPath */
 /******/ 	(() => {
-/******/ 		__webpack_require__.p = "https://tno.github.io/hei-beta/";
+/******/ 		__webpack_require__.p = "https://tno.github.io/hei/";
 /******/ 	})();
 /******/ 	
 /************************************************************************/
@@ -19342,8 +19346,8 @@ module.exports = __webpack_require__.p + "0dd34d8173d8eabed924.svg";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(8351);
+/******/ 	var __webpack_exports__ = __webpack_require__(3266);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-beta.bundle.js.map
+//# sourceMappingURL=main.bundle.js.map

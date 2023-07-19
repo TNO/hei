@@ -178,7 +178,7 @@ module.exports = (env) => {
       ],
     },
     output: {
-      filename: '[name]-beta.bundle.js',
+      filename: '[name].bundle.js',
       path: outputPath,
       publicPath,
       clean: true,
