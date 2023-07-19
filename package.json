@@ -1,13 +1,13 @@
 {
   "name": "hei",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Web application to display Human Enhancement Interventions Technologies.",
   "scripts": {
     "clean": "rimraf ./public ./.parcel-cache ./.cache ./dist ./docs",
     "cleanup": "npm run clean",
     "dev": "npm start",
     "start": "webpack serve --env development --open",
-    "build": "webpack --env production --env PUBLIC_URL=https://tno.github.io/hei-beta/",
+    "build": "webpack --env production --env PUBLIC_URL=https://tno.github.io/hei/",
     "build:domain": "npm run clean && npm run build"
   },
   "repository": {
@@ -34,9 +34,7 @@
     "meiosis-setup": "^6.2.3",
     "mithril": "^2.2.2",
     "mithril-materialized": "^1.0.1",
-    "mithril-ui-form": "^1.8.6",
-    "mithril-ui-form-plugin": "^0.5.2-next.0",
-    "mithril-ui-form-rating-plugin": "^0.6.1"
+    "mithril-ui-form": "^1.9.1"
   },
   "devDependencies": {
     "@types/materialize-css": "^1.0.11",
@@ -48,9 +46,9 @@
     "mini-css-extract-plugin": "^2.7.6",
     "rimraf": "^5.0.1",
     "style-loader": "^3.3.3",
-    "ts-loader": "^9.4.3",
-    "typescript": "^5.1.3",
-    "webpack": "^5.88.0",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
     "webpack-pwa-manifest": "^4.3.0",

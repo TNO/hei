@@ -94,7 +94,7 @@ export const SettingsPage: MeiosisComponent = () => {
                     form: userForm,
                     obj: user,
                     onchange: () => saveModel(model),
-                  } as FormAttributes),
+                  } as FormAttributes<User>),
                   m(FlatButton, {
                     label: 'Delete',
                     iconName: 'delete',
@@ -120,7 +120,7 @@ export const SettingsPage: MeiosisComponent = () => {
                 onchange: (isValid) => {
                   canSaveUser = isValid;
                 },
-              } as FormAttributes),
+              } as FormAttributes<User>),
             m(FlatButton, {
               label: addUser ? 'Save' : 'Add User',
               disabled: addUser ? !canSaveUser : false,

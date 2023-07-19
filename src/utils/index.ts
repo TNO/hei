@@ -689,9 +689,13 @@ export const interventionForm = (
       },
       {
         id: 'future',
-        label: 'Future',
-        type: 'checkbox',
-        className: 'col s3 m2 form-checkbox',
+        label: 'Future intervention',
+        type: 'switch',
+        options: [
+          { id: 'no', label: 'NO' },
+          { id: 'yes', label: 'YES' },
+        ],
+        className: 'col s3 m2 highlight-switch',
       },
       {
         id: 'desc',

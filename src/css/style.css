@@ -60,6 +60,7 @@
 .nav-content {
   background-color: white;
 }
+label,
 .input-field,
 .input-field > label,
 .input-field > .material-icons,
@@ -762,4 +763,10 @@ table th {
 
 .col.form-checkbox {
   margin-top: 24px;
+}
+
+.col .highlight-switch {
+  background: #fbe3d3;
+  padding: 8px 15px;
+  border-radius: 15px;
 }

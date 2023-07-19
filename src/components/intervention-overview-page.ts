@@ -751,7 +751,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
               ] as UIForm<SearchFilter>,
               obj: searchFilters,
               onchange: () => setSearchFilters(searchFilters),
-            } as FormAttributes)
+            } as FormAttributes<SearchFilter>)
           ),
           bottomSheet: true,
           fixedFooter: true,

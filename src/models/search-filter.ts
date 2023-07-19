@@ -1,4 +1,4 @@
-export type SearchFilter = {
+export interface SearchFilter {
   selectedFilters: string[];
   searchFilter: string;
   mainCapFilter: number;
@@ -12,4 +12,4 @@ export type SearchFilter = {
   evidenceDirFilter: number;
   evidenceQualityFilter: number;
   bookmarked: boolean;
-};
+}

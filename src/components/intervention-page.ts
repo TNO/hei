@@ -197,7 +197,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     );
                     saveModel(model);
                   },
-                } as FormAttributes),
+                } as FormAttributes<Intervention>),
                 m(
                   '.row',
                   m(
@@ -227,7 +227,7 @@ export const InterventionPage: MeiosisComponent = () => {
                     );
                     saveModel(model);
                   },
-                } as FormAttributes),
+                } as FormAttributes<Intervention>),
               ])
             : [
                 m('h3', [
