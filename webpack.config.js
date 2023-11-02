@@ -28,13 +28,13 @@ module.exports = (env) => {
         'process.env': JSON.stringify({ NODE_ENV: mode, PUBLIC_URL: publicPath }),
       }),
       new HtmlWebpackPlugin({
-        title: 'Database for Human Enhancement Interventions',
+        title: 'Human Performance Optimization Dashboard',
         favicon: './src/favicon.ico',
         meta: { viewport: 'width=device-width, initial-scale=1' },
       }),
       new WebpackPwaManifest({
-        name: 'Database for Human Enhancement Interventions',
-        short_name: 'HEI',
+        name: 'Human Performance Optimization Dashboard',
+        short_name: "H'POD",
         start_url: publicPath,
         scope: '/',
         description: 'A database with known interventions to enhance human performance.',
@@ -75,7 +75,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:title',
-              content: 'Database for Human Enhancement Interventions',
+              content: "H'POD, Human Performance Optimization Dashboard",
             },
           },
           {
@@ -106,7 +106,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:image:alt',
-              content: 'Database for Human Enhancement Interventions',
+              content: 'Human Performance Optimization Dashboard ',
             },
           },
           {
