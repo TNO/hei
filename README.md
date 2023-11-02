@@ -1,6 +1,6 @@
-# Database for Human Enhancement Interventions
+# s
 
-Web application to display Human Enhancement Interventions Technologies.
+Web application to display human performance optimization technologies.
 
 ## Development
 
@@ -21,9 +21,9 @@ npm run build:domain
 
 ## TODO
 
-- [ ] Add specific capabilities
-- [ ] Initialize similar technologies based on existing specific capabilities?
-- [ ] Add a page to compare technologies (
+- [x] Add specific capabilities
+- [x] Initialize similar technologies based on existing specific capabilities?
+- [x] Add a page to compare technologies
   - Category
 	- Main capability + HPE classification (gecombineerd dus bv ‘Physical enhancement’)
 	- Invasive
@@ -36,21 +36,21 @@ npm run build:domain
 	- Evidence direction
 	- Evidence quality/score
 	- Availability
-- [ ] Add bookmark to technology page (so you can bookmark it from there too)
+- [x] Add bookmark to technology page (so you can bookmark it from there too)
 - [x] Combine main capability with HPE category, e.g. MENTAL ENHANCEMENT
-- [ ] Add search filters
-  - [x] Zoekbox die keywords zoekt in alles wat nu in tabblad Technologies staat, Technology title, specific capability, examples in practice en mechanism (verander ‘Filter’ in ‘Search’)
+- [x] Add search filters
+  - [x] Search box for keywords Technology title, specific capability, examples in practice and mechanism
   - [x] Main capability
-  - [ ] Specific capability (als het mogelijk is automatisch de lijst inkorten o.b.v. geselecteerde Main capability), anders werken met koppen in de lijst.
+  - [x] Specific capability.
   - [x] Technology category
   - [x] Invasiveness
   - [x] Booster
   - [x] Maturity (high, medium, low)
-  - [ ] Ethical considerations (alleen none, unknown en yes)
-  - [ ] Evidence direction
-  - [ ] Evidence quality
+  - [x] Ethical considerations (only none, unknown en yes)
+  - [x] Evidence direction
+  - [x] Evidence quality
   - [x] Availability
   - [x] Bookmark (!!)
-- [ ] Warn when deleting a technology
+- [x] Warn when deleting a technology
 - [x] First block is a description
 - [x] De-duplicate technologies: Merge by title
