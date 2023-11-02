@@ -31,8 +31,8 @@
       "type": "image/png"
     }
   ],
-  "name": "Database for Human Enhancement Interventions",
-  "short_name": "HEI",
+  "name": "Human Performance Optimization Dashboard",
+  "short_name": "H'POD",
   "orientation": "portrait",
   "display": "standalone",
   "start_url": "https://tno.github.io/hei/",
