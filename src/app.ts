@@ -1,11 +1,10 @@
 import m from 'mithril';
-import 'material-icons/iconfont/material-icons.css';
+import 'material-icons/iconfont/filled.css';
 import 'materialize-css/dist/css/materialize.min.css';
+import 'materialize-css/dist/js/materialize.min.js';
 import './css/style.css';
 import { routingSvc } from './services/routing-service';
 import { registerServiceWorker } from './services/register-service-worker';
-
-console.log(JSON.stringify(process.env));
 
 registerServiceWorker({
   onSuccess: (registration) => console.log('SW registered: ', registration),
