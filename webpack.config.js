@@ -28,12 +28,12 @@ module.exports = (env) => {
         'process.env': JSON.stringify({ NODE_ENV: mode, PUBLIC_URL: publicPath }),
       }),
       new HtmlWebpackPlugin({
-        title: 'Human Performance Optimization Dashboard',
+        title: 'Human Performance Augmentation Dashboard',
         favicon: './src/favicon.ico',
         meta: { viewport: 'width=device-width, initial-scale=1' },
       }),
       new WebpackPwaManifest({
-        name: 'Human Performance Optimization Dashboard',
+        name: 'Human Performance Augmentation Dashboard',
         short_name: "H'POD",
         start_url: publicPath,
         scope: '/',
@@ -75,7 +75,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:title',
-              content: "H'POD, Human Performance Optimization Dashboard",
+              content: "H'POD, Human Performance Augmentation Dashboard",
             },
           },
           {
@@ -106,7 +106,7 @@ module.exports = (env) => {
           {
             attributes: {
               property: 'og:image:alt',
-              content: 'Human Performance Optimization Dashboard ',
+              content: 'Human Performance Augmentation Dashboard ',
             },
           },
           {

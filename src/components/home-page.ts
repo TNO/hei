@@ -43,9 +43,13 @@ export const HomePage: MeiosisComponent = () => {
       return [
         m('div', { style: 'position: relative;' }, [
           m(
-            ".overlay.center",
-            { style: "position: absolute;" },
-            m("h3.bold", { style: 'background-color: #ffffff50; padding: 10px 0; border-radius: 10px;' }, m.trust("H'POD<br/>Human Performance Optimization Dashboard")),
+            '.overlay.center',
+            { style: 'position: absolute;' },
+            m(
+              'h3.bold',
+              { style: 'background-color: #ffffff50; padding: 10px 0; border-radius: 10px;' },
+              m.trust("H'PAD<br/>Human Performance Augmentation Dashboard")
+            )
           ),
           m('img.responsive-img.center', { src: background }),
           m('.buttons.center', { style: 'margin: 10px auto;' }, [
@@ -92,36 +96,36 @@ export const HomePage: MeiosisComponent = () => {
             }),
             m('input#selectFiles[type=file][accept=.json]', { style: 'display:none' }),
             readerAvailable &&
-            m(Button, {
-              iconName: 'upload',
-              className: 'btn-large',
-              label: 'Upload',
-              onclick: () => {
-                const fileInput = document.getElementById('selectFiles') as HTMLInputElement;
-                fileInput.onchange = () => {
-                  if (!fileInput) {
-                    return;
-                  }
-                  const files = fileInput.files;
-                  if (files && files.length <= 0) {
-                    return;
-                  }
-                  const reader = new FileReader();
-                  reader.onload = (e: ProgressEvent<FileReader>) => {
-                    const result =
-                      e &&
-                      e.target &&
-                      e.target.result &&
-                      (JSON.parse(e.target.result.toString()) as DataModel);
-                    result && result.version && saveModel(result);
-                    changePage(Dashboards.INTERVENTIONS);
+              m(Button, {
+                iconName: 'upload',
+                className: 'btn-large',
+                label: 'Upload',
+                onclick: () => {
+                  const fileInput = document.getElementById('selectFiles') as HTMLInputElement;
+                  fileInput.onchange = () => {
+                    if (!fileInput) {
+                      return;
+                    }
+                    const files = fileInput.files;
+                    if (files && files.length <= 0) {
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e: ProgressEvent<FileReader>) => {
+                      const result =
+                        e &&
+                        e.target &&
+                        e.target.result &&
+                        (JSON.parse(e.target.result.toString()) as DataModel);
+                      result && result.version && saveModel(result);
+                      changePage(Dashboards.INTERVENTIONS);
+                    };
+                    const data = files && files.item(0);
+                    data && reader.readAsText(data);
                   };
-                  const data = files && files.item(0);
-                  data && reader.readAsText(data);
-                };
-                fileInput.click();
-              },
-            }),
+                  fileInput.click();
+                },
+              }),
             // m(Button, {
             //   iconName: 'link',
             //   className: 'btn-large',

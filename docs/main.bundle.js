@@ -3253,7 +3253,7 @@ var HomePage = function () {
             var isCleared = !model.interventions || model.interventions.length === 0;
             return [
                 (0, mithril_1.default)('div', { style: 'position: relative;' }, [
-                    (0, mithril_1.default)(".overlay.center", { style: "position: absolute;" }, (0, mithril_1.default)("h3.bold", { style: 'background-color: #ffffff50; padding: 10px 0; border-radius: 10px;' }, mithril_1.default.trust("H'POD<br/>Human Performance Optimization Dashboard"))),
+                    (0, mithril_1.default)('.overlay.center', { style: 'position: absolute;' }, (0, mithril_1.default)('h3.bold', { style: 'background-color: #ffffff50; padding: 10px 0; border-radius: 10px;' }, mithril_1.default.trust("H'PAD<br/>Human Performance Augmentation Dashboard"))),
                     (0, mithril_1.default)('img.responsive-img.center', { src: background_jpg_1.default }),
                     (0, mithril_1.default)('.buttons.center', { style: 'margin: 10px auto;' }, [
                         (0, mithril_1.default)(mithril_materialized_1.Button, {
