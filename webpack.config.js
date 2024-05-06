@@ -32,10 +32,9 @@ module.exports = (env) => {
         favicon: './src/favicon.ico',
         meta: {
           viewport: 'width=device-width, initial-scale=1',
-          '': { 'http-equiv': 'Permissions-Policy', content: 'interest-cohort=()' },
+          '': { 'http-equiv': 'Permissions-Policy', content: 'interest-cohort=(), user-id=()' },
           'og:title': 'Human Performance Augmentation Dashboard',
-          'og:description':
-            'Compare and select interventions so you can choose the one that fits best with your needs.',
+          'og:description': 'A database with known interventions to enhance human performance.',
           'og:url': 'https://tno.github.io/hei/',
           'og:site_name': 'Human Performance Augmentation Dashboard',
           'og:image:alt': 'Human Performance Augmentation Dashboard',
@@ -48,8 +47,8 @@ module.exports = (env) => {
       new WebpackPwaManifest({
         name: 'Human Performance Augmentation Dashboard',
         short_name: "H'POD",
-        start_url: publicPath,
-        scope: '/',
+        // start_url: '.',
+        // scope: '/',
         description: 'A database with known interventions to enhance human performance.',
         background_color: '#ffffff',
         theme_color: '#ffffff',
