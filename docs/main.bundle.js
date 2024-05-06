@@ -3483,11 +3483,12 @@ var InterventionOverviewPage = function () {
     var specificPersonalityCapabilityOpt = toOptions(utils_1.specificPersonalityCapabilityOptions);
     var toInterventions = function (allInterventions) {
         return Object.values(allInterventions.reduce(function (acc, cur) {
-            var _a, _b;
-            var id = cur.id, img = cur.img, url = cur.url, intervention = cur.intervention, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, _c = cur.specificCap, specificCap = _c === void 0 ? [] : _c, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore, _d = cur.future, future = _d === void 0 ? false : _d;
+            var _a, _b, _c;
+            var id = cur.id, img = cur.img, url = cur.url, intervention = cur.intervention, mechanism = cur.mechanism, desc = cur.desc, keywords = cur.keywords, booster = cur.booster, mainCap = cur.mainCap, hpeClassification = cur.hpeClassification, category = cur.category, invasive = cur.invasive, availability = cur.availability, maturity = cur.maturity, _d = cur.specificCap, specificCap = _d === void 0 ? [] : _d, hasEthical = cur.hasEthical, evidenceDir = cur.evidenceDir, evidenceScore = cur.evidenceScore, _e = cur.future, future = _e === void 0 ? false : _e;
             var key = intervention;
             var sc = specificCap instanceof Array ? specificCap : [specificCap];
             var search = "".concat(intervention, " ").concat(desc, " ").concat((0, utils_1.getOptionsLabel)(utils_1.mainCapabilityOptions, mainCap), " ").concat(mechanism, " ").concat(keywords && keywords.length ? keywords.join(' ') : '', " ").concat((0, utils_1.getOptionsLabel)(utils_1.interventionCategoryOptions, category), " ").concat(sc.map(function (c) { return (0, utils_1.getOptionsLabel)(utils_1.specificCapabilityOptions, c); }).join(' '));
+            var categories = category && category instanceof Array ? category : [category];
             if (acc.hasOwnProperty(key)) {
                 acc[key].id.push(id);
                 mechanism && acc[key].mechanism.push(mechanism);
@@ -3497,7 +3498,7 @@ var InterventionOverviewPage = function () {
                 mainCap && acc[key].mainCap.push(mainCap);
                 specificCap && specificCap instanceof Array && (_b = acc[key].specificCap).push.apply(_b, specificCap);
                 hpeClassification && acc[key].hpeClassification.push(hpeClassification);
-                category && acc[key].category.push(category);
+                category && (_c = acc[key].category).push.apply(_c, categories);
                 invasive && acc[key].invasive.push(invasive);
                 availability && acc[key].availability.push(availability);
                 maturity && acc[key].maturity.push(maturity);
@@ -3519,7 +3520,7 @@ var InterventionOverviewPage = function () {
                     mainCap: [mainCap],
                     specificCap: specificCap instanceof Array ? __spreadArray([], specificCap, true) : [specificCap],
                     hpeClassification: [hpeClassification],
-                    category: [category],
+                    category: categories,
                     invasive: [invasive],
                     availability: [availability],
                     maturity: [maturity],
@@ -4888,8 +4889,8 @@ var INTERVENTION_CATEGORY;
     INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["TRAINING"] = 4] = "TRAINING";
     INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["SELF_REGULATION"] = 5] = "SELF_REGULATION";
     INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["NUTRITION"] = 6] = "NUTRITION";
-    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["THERAPY"] = 7] = "THERAPY";
-    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["OTHER"] = 8] = "OTHER";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["OTHER"] = 7] = "OTHER";
+    INTERVENTION_CATEGORY[INTERVENTION_CATEGORY["THERAPY"] = 8] = "THERAPY";
 })(INTERVENTION_CATEGORY || (exports.INTERVENTION_CATEGORY = INTERVENTION_CATEGORY = {}));
 var STATUS;
 (function (STATUS) {

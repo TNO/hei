@@ -11,7 +11,7 @@ module.exports = (env) => {
   console.log(JSON.stringify(env, null, 2));
   const isProduction = env.production;
   const outputPath = path.resolve(__dirname, isProduction ? 'docs' : 'dist');
-  const publicPath = isProduction ? env.PUBLIC_URL : '/';
+  const publicPath = isProduction ? 'https://tno.github.io/hei/' : '/';
 
   const mode = isProduction ? 'production' : 'development';
   console.log(`Running in ${mode} mode, path ${publicPath}, output directed to ${outputPath}.`);
