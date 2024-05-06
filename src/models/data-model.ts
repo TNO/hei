@@ -19,8 +19,8 @@ export enum INTERVENTION_CATEGORY {
   TRAINING,
   SELF_REGULATION,
   NUTRITION,
-  THERAPY,
   OTHER,
+  THERAPY,
 }
 
 export enum STATUS {
@@ -252,7 +252,7 @@ export type Intervention = {
   status: STATUS;
   intervention: string;
   desc?: string;
-  category: INTERVENTION_CATEGORY;
+  category: INTERVENTION_CATEGORY | INTERVENTION_CATEGORY[];
   hpeClassification: HPE_CLASSIFICATION;
   /** Similar technologies */
   similar: ID[];

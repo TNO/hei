@@ -100,6 +100,8 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           category
         )} ${sc.map((c) => getOptionsLabel(specificCapabilityOptions, c)).join(' ')}`;
 
+        const categories = category && category instanceof Array ? category : [category];
+
         if (acc.hasOwnProperty(key)) {
           acc[key].id.push(id);
           mechanism && acc[key].mechanism.push(mechanism);
@@ -109,7 +111,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
           mainCap && acc[key].mainCap.push(mainCap);
           specificCap && specificCap instanceof Array && acc[key].specificCap.push(...specificCap);
           hpeClassification && acc[key].hpeClassification.push(hpeClassification);
-          category && acc[key].category.push(category);
+          category && acc[key].category.push(...categories);
           invasive && acc[key].invasive.push(invasive);
           availability && acc[key].availability.push(availability);
           maturity && acc[key].maturity.push(maturity);
@@ -130,7 +132,7 @@ export const InterventionOverviewPage: MeiosisComponent = () => {
             mainCap: [mainCap],
             specificCap: specificCap instanceof Array ? [...specificCap] : [specificCap],
             hpeClassification: [hpeClassification],
-            category: [category],
+            category: categories,
             invasive: [invasive],
             availability: [availability],
             maturity: [maturity],
