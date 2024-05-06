@@ -30,7 +30,20 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         title: 'Human Performance Augmentation Dashboard',
         favicon: './src/favicon.ico',
-        meta: { viewport: 'width=device-width, initial-scale=1' },
+        meta: {
+          viewport: 'width=device-width, initial-scale=1',
+          '': { 'http-equiv': 'Permissions-Policy', content: 'interest-cohort=()' },
+          'og:title': 'Human Performance Augmentation Dashboard',
+          'og:description':
+            'Compare and select interventions so you can choose the one that fits best with your needs.',
+          'og:url': 'https://tno.github.io/hei/',
+          'og:site_name': 'Human Performance Augmentation Dashboard',
+          'og:image:alt': 'Human Performance Augmentation Dashboard',
+          'og:image': './src/assets/logo.svg',
+          'og:image:type': 'image/svg',
+          'og:image:width': '200',
+          'og:image:height': '200',
+        },
       }),
       new WebpackPwaManifest({
         name: 'Human Performance Augmentation Dashboard',
