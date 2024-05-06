@@ -145,16 +145,17 @@ export const resolveChoice = (choice?: CHOICE, text?: string) =>
     : text;
 
 export const interventionCategoryOptions = [
-  { id: INTERVENTION_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
   { id: INTERVENTION_CATEGORY.BIO_ENHANCEMENT, label: 'Bio-enhancement', title: '' },
+  { id: INTERVENTION_CATEGORY.HARDWARE, label: 'Hardware', title: '' },
+  { id: INTERVENTION_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
   {
     id: INTERVENTION_CATEGORY.PHARMACOLOGICAL_SUBSTANCES_SUPPLEMENTS_AND_NUTRITION,
     label: 'Pharmacological substances, supplements and nutrition',
     title: '',
   },
-  { id: INTERVENTION_CATEGORY.TRAINING, label: 'Training', title: '' },
   { id: INTERVENTION_CATEGORY.SELF_REGULATION, label: 'Self-regulation', title: '' },
-  { id: INTERVENTION_CATEGORY.NUTRITION, label: 'Nutrition', title: '' },
+  { id: INTERVENTION_CATEGORY.THERAPY, label: 'Therapy', title: '' },
+  { id: INTERVENTION_CATEGORY.TRAINING, label: 'Training', title: '' },
   { id: INTERVENTION_CATEGORY.OTHER, label: 'Other', title: '' },
 ];
 

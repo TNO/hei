@@ -80,7 +80,6 @@ export const ComparisonPage: MeiosisComponent = () => {
             },
             data: compareList.map((id) => ({ tag: interventionLookup[id].name })),
             onchange: (chips) => {
-              console.log(chips);
               const ids = chips.filter((c) => c.tag).map((c) => interventionLookup[c.tag].name);
               setCompareList(ids);
             },
